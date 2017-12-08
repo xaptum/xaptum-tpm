@@ -172,7 +172,8 @@ TSS2_RC transmit_socket(TSS2_TCTI_CONTEXT *tcti_context,
     // We're assuming we're talking to the Microsoft simulator.
     // A proxy that is passing these commands to a real TPM can just ignore this
     uint8_t send_command[sizeof(uint32_t)];
-    marshal_uint32(SIMULATOR_SEND_COMMAND, send_command);
+    uint8_t *send_ptr = send_command;
+    marshal_uint32(SIMULATOR_SEND_COMMAND, &send_ptr);
     send_ret = send_all(cast_context->sock, send_command, sizeof(send_command));
     if (send_ret != TSS2_RC_SUCCESS) {
         return send_ret;
@@ -199,12 +200,6 @@ TSS2_RC transmit_socket(TSS2_TCTI_CONTEXT *tcti_context,
 
     // Send total command size
     uint8_t *size_buffer = command + sizeof(TPM_ST);    // skip the ST_SESSIONS code
-#ifndef NDEBUG
-    uint32_t size_from_command;
-    unmarshal_uint32(size_buffer,
-                     &size_from_command);
-    assert(size_from_command == size);
-#endif
     send_ret = send_all(cast_context->sock,
                         size_buffer,
                         sizeof(uint32_t));
@@ -261,10 +256,8 @@ TSS2_RC receive_socket(TSS2_TCTI_CONTEXT *tcti_context,
     }
     uint32_t size_from_response;
     uint8_t *size_ptr = response;
-    unmarshal_uint32(size_ptr, &size_from_response);
-#ifdef TCTI_VERBOSE_LOGGING
-    printf("tcti: receive_socket: [size=%zu, ", *size);
-#endif
+    uint32_t trash = sizeof(uint32_t);
+    unmarshal_uint32(&size_ptr, &trash, &size_from_response);
 
     // If the provided buffer is too small,
     // return the error and clear the TCP stream.
@@ -283,6 +276,10 @@ TSS2_RC receive_socket(TSS2_TCTI_CONTEXT *tcti_context,
     }
 
     *size = (size_t)size_from_response;
+
+#ifdef TCTI_VERBOSE_LOGGING
+    printf("tcti: receive_socket: [size=%zu, ", *size);
+#endif
 
     // Read the rest of the response
     recv_ret = recv_all(cast_context->sock, response, *size);
@@ -319,7 +316,8 @@ TSS2_RC finalize_socket(TSS2_TCTI_CONTEXT *tcti_context)
     // We're assuming we're talking to the Microsoft simulator.
     // A proxy that is passing these commands to a real TPM can just ignore this
     uint8_t session_end[sizeof(uint32_t)];
-    marshal_uint32(SIMULATOR_SESSION_END, session_end);
+    uint8_t *session_ptr = session_end;
+    marshal_uint32(SIMULATOR_SESSION_END, &session_ptr);
     ret = send_all(cast_context->sock, session_end, sizeof(session_end));
 
     close(cast_context->sock);

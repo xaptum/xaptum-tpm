@@ -21,7 +21,15 @@ project(xaptum-tpm
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -std=c99 -D_POSIX_C_SOURCE=200112L")
 
 SET(SRCS src/tss2_tcti_socket.c
-         src/internal/marshal.c)
+         src/tss2_sys_context_allocation.c
+         src/tss2_sys_createprimary.c
+         src/tss2_sys_commit.c
+         src/tss2_sys_sign.c
+         src/internal/cmdauths.c
+         src/internal/execute.c
+         src/internal/marshal.c
+         src/internal/sys_context_common.c
+         src/internal/command_utils.c)
 
 add_library(xaptum-tpm
         ${SRCS}
