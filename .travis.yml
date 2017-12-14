@@ -1,0 +1,78 @@
+# Copyright 2017 Xaptum, Inc.
+# 
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+# 
+#        http://www.apache.org/licenses/LICENSE-2.0
+# 
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License
+
+language: c
+
+compiler: gcc
+
+env:
+  global:
+  - IBM_TPM_DIR=${TRAVIS_BUILD_DIR}/ibm-tpm-simulator
+
+jobs:
+  include:
+
+  # Release build, gcc
+  - env: TYPE=RELEASE
+    before_script:
+      - .travis/install-ibm-tpm2.sh ${IBM_TPM_DIR}
+      - cmake . -DCMAKE_BUILD_TYPE=Release
+    script:
+      - cmake --build . -- -j2
+      - .travis/run-ibm-tpm2.sh ${IBM_TPM_DIR}
+      - ctest -VV
+
+  # Debug build, to get code coverage with gcov
+  - env: TYPE=DEBUG
+    before_script:
+      - .travis/install-ibm-tpm2.sh ${IBM_TPM_DIR}
+      - cmake . -DCMAKE_BUILD_TYPE=Debug
+    script:
+      - cmake --build . -- -j2
+      - .travis/run-ibm-tpm2.sh ${IBM_TPM_DIR}
+      - ctest -VV
+
+  # Release build, clang
+  - env: TYPE=RELEASE-WITH-CLANG
+    compiler: clang
+    before_script:
+      - .travis/install-ibm-tpm2.sh ${IBM_TPM_DIR}
+      - cmake . -DCMAKE_BUILD_TYPE=Release
+    script:
+      - cmake --build . -- -j2
+      - .travis/run-ibm-tpm2.sh ${IBM_TPM_DIR}
+      - ctest -VV
+
+  # cppcheck
+  - env: TYPE=CPPCHECK
+    addons:
+      apt:
+        packages:
+          - cppcheck
+    before_script:
+      - cmake . -DCMAKE_BUILD_TYPE=Release
+    script:
+      - cmake --build . -- -j2
+      - .travis/run-cppcheck.sh
+
+  # Sanitizers
+  - env: TYPE=SANITIZE
+    compiler: clang
+    before_script:
+      - .travis/install-ibm-tpm2.sh ${IBM_TPM_DIR}
+      - cmake . -DCMAKE_BUILD_TYPE=RelWithSanitize
+    script:
+      - cmake --build . -- -j2
+      - .travis/run-ibm-tpm2.sh ${IBM_TPM_DIR}
+      - ctest -VV -E benchmarks
