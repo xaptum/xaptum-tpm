@@ -37,8 +37,10 @@ static void setlocality_test();
 static void startup_test();
 static void getrandom_test();
 
-int main()
+int main(int argc, char *argv[])
 {
+    parse_cmd_args(argc, argv);
+
     init_test();
     getpollhandles_test();
     setlocality_test();
@@ -50,23 +52,21 @@ void initialize(struct test_context *ctx)
 {
     ctx->tcti_ctx = NULL;
 
-    const char *hostname = "10.0.2.2";
-    // const char *hostname = "localhost";
-    const char *port = "2321";
-
     size_t ctx_size = tss2_tcti_getsize_socket();
 
     ctx->tcti_ctx = malloc(ctx_size);
     TEST_EXPECT(NULL != ctx->tcti_ctx);
     
-    TSS2_RC init_ret = tss2_tcti_init_socket(hostname, port, ctx->tcti_ctx);
+    TSS2_RC init_ret = tss2_tcti_init_socket(hostname_g, port_g, ctx->tcti_ctx);
     TEST_ASSERT(TSS2_RC_SUCCESS == init_ret);
 }
 
 void cleanup(struct test_context *ctx)
 {
-    if (NULL != ctx->tcti_ctx)
+    if (NULL != ctx->tcti_ctx) {
+        tss2_tcti_finalize(ctx->tcti_ctx);
         free(ctx->tcti_ctx);
+    }
 }
 
 void init_test()
@@ -140,6 +140,8 @@ void startup_test()
                             response,
                             TSS2_TCTI_TIMEOUT_BLOCK);
 
+    TEST_ASSERT(TSS2_RC_SUCCESS == ret);
+
     printf("Got response from startup command, of size %zu, with code ", response_size);
     uint8_t *response_code = &response[sizeof(uint16_t) + sizeof(uint32_t)];
     printf("(%#X, ", *response_code);
@@ -181,6 +183,8 @@ void getrandom_test()
                             &response_size,
                             response,
                             TSS2_TCTI_TIMEOUT_BLOCK);
+
+    TEST_ASSERT(TSS2_RC_SUCCESS == ret);
 
     printf("Got response from getrandom command, of size %zu\n", response_size);
 

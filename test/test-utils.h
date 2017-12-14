@@ -18,6 +18,9 @@
 
 #include <stdio.h>
 
+char *hostname_g = "localhost";
+const char *port_g = "2321";
+
 #define TEST_ASSERT(cond) \
     do \
     { \
@@ -37,3 +40,11 @@
         } \
     } while(0);
 
+#define parse_cmd_args(argc, argv) \
+    do \
+    { \
+        if (argc == 2) { \
+            hostname_g = argv[1]; \
+        } \
+        printf("Connecting to %s:%s for TPM testing\n", hostname_g, port_g); \
+    } while(0);

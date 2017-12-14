@@ -18,7 +18,7 @@ project(xaptum-tpm
         LANGUAGES C
         VERSION "0.1.0")
 
-SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -std=c99 -D_POSIX_C_SOURCE=200112L")
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -Wno-missing-field-initializers -std=c99 -D_POSIX_C_SOURCE=200112L")
 
 SET(SRCS src/tss2_tcti_socket.c
          src/tss2_sys_context_allocation.c

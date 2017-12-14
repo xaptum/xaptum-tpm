@@ -32,17 +32,15 @@ static void cleanup(struct test_context *ctx);
 
 static void init_test();
 
-int main()
+int main(int argc, char *argv[])
 {
+    parse_cmd_args(argc, argv);
+
     init_test();
 }
 
 void initialize(struct test_context *ctx)
 {
-    const char *hostname = "10.0.2.2";
-    // const char *hostname = "localhost";
-    const char *port = "2321";
-
     size_t tcti_ctx_size = tss2_tcti_getsize_socket();
 
     TSS2_TCTI_CONTEXT *tcti_ctx = malloc(tcti_ctx_size);
@@ -50,7 +48,7 @@ void initialize(struct test_context *ctx)
     
     TSS2_RC init_ret;
 
-    init_ret = tss2_tcti_init_socket(hostname, port, tcti_ctx);
+    init_ret = tss2_tcti_init_socket(hostname_g, port_g, tcti_ctx);
     TEST_ASSERT(TSS2_RC_SUCCESS == init_ret);
 
     size_t sapi_ctx_size = Tss2_Sys_GetContextSize(0);
@@ -72,15 +70,15 @@ void cleanup(struct test_context *ctx)
     TSS2_RC rc;
 
     if (ctx->sapi_ctx != NULL) {
+        rc = Tss2_Sys_GetTctiContext(ctx->sapi_ctx, &tcti_context);
+        TEST_ASSERT(TSS2_RC_SUCCESS == rc);
+
+        tss2_tcti_finalize(tcti_context);
+        free(tcti_context);
+
         Tss2_Sys_Finalize(ctx->sapi_ctx);
         free(ctx->sapi_ctx);
     }
-
-    rc = Tss2_Sys_GetTctiContext(ctx->sapi_ctx, &tcti_context);
-    TEST_ASSERT(TSS2_RC_SUCCESS == rc);
-
-    tss2_tcti_finalize(tcti_context);
-    free(tcti_context);
 }
 
 void init_test()
