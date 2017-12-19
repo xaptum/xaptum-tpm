@@ -33,17 +33,14 @@ SET(SRCS src/tss2_tcti_socket.c
          src/internal/sys_context_common.c
          src/internal/command_utils.c)
 
-add_library(xaptum-tpm
+add_library(xaptumtpm
+        OBJECT
         ${SRCS}
         )
-
-target_include_directories(xaptum-tpm
-        PRIVATE
-        ./include/
-        )
-
-target_link_libraries(xaptum-tpm
-        )
+set_property(TARGET xaptumtpm PROPERTY POSITION_INDEPENDENT_CODE 1)
+target_include_directories(xaptumtpm PUBLIC ./include/)
+add_library(xaptumtpm-shared SHARED $<TARGET_OBJECTS:xaptumtpm>)
+add_library(xaptumtpm-static STATIC $<TARGET_OBJECTS:xaptumtpm>)
 
 enable_testing()
 add_subdirectory(test)
