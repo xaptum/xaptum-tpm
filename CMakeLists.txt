@@ -28,6 +28,7 @@ SET(SRCS src/tss2_tcti_socket.c
          src/tss2_sys_commit.c
          src/tss2_sys_sign.c
          src/internal/cmdauths.c
+         src/internal/constants.c
          src/internal/execute.c
          src/internal/marshal.c
          src/internal/sys_context_common.c
