@@ -35,10 +35,7 @@ typedef struct {
     uint32_t tssVersion;      
 } TSS2_ABI_VERSION;
 
-#define TSS2_ABI_CURRENT_VERSION {.tssCreator = 0x1,    \
-                                  .tssFamily = 0x1,     \
-                                  .tssLevel = 0x1,        \
-                                  .tssVersion = 0x1 }
+extern const TSS2_ABI_VERSION TSS2_ABI_CURRENT_VERSION;
 
 typedef uint32_t TSS2_RC;
 

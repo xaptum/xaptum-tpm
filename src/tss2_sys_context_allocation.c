@@ -47,11 +47,10 @@ Tss2_Sys_Initialize(TSS2_SYS_CONTEXT *sysContext,
         return TSS2_SYS_RC_BAD_TCTI_STRUCTURE;
     }
 
-    TSS2_ABI_VERSION current = TSS2_ABI_CURRENT_VERSION;
-    if (abiVersion->tssCreator != current.tssCreator ||
-            abiVersion->tssFamily != current.tssFamily ||
-            abiVersion->tssLevel != current.tssLevel ||
-            abiVersion->tssVersion != current.tssVersion) {
+    if (abiVersion->tssCreator != TSS2_ABI_CURRENT_VERSION.tssCreator ||
+            abiVersion->tssFamily != TSS2_ABI_CURRENT_VERSION.tssFamily ||
+            abiVersion->tssLevel != TSS2_ABI_CURRENT_VERSION.tssLevel ||
+            abiVersion->tssVersion != TSS2_ABI_CURRENT_VERSION.tssVersion) {
         return TSS2_SYS_RC_ABI_MISMATCH;
     }
 
