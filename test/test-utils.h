@@ -26,7 +26,7 @@ const char *port_g = "2321";
     { \
         if (!(cond)) { \
             printf("Condition \'%s\' failed\n\tin file: \'%s\'\n\tin function: \'%s\'\n\tat line: %d\n", #cond,__FILE__,  __func__, __LINE__); \
-            printf("exiting"); \
+            printf("exiting\n"); \
             exit(1); \
         } \
     } while(0);
@@ -36,7 +36,7 @@ const char *port_g = "2321";
     { \
         if (!(cond)) { \
             printf("Condition \'%s\' failed\n\tin file: \'%s\'\n\tin function: \'%s\'\n\tat line: %d\n", #cond,__FILE__,  __func__, __LINE__); \
-            printf("continuing"); \
+            printf("continuing\n"); \
         } \
     } while(0);
 
