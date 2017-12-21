@@ -644,3 +644,104 @@ int unmarshal_tpmt_signature(uint8_t **in, uint32_t *in_max_length, TPMT_SIGNATU
 
     return 0;
 }
+
+void marshal_tpm2b_auth(TPM2B_AUTH *in, uint8_t **out)
+{
+    marshal_tpm2b_simple((TPM2B_SIMPLE*)in, out);
+}
+
+void marshal_tpmanv(TPMA_NV *in, uint8_t **out)
+{
+    memset(*out, 0, 4);  // clear all
+
+    if (in->TPMA_NV_PPWRITE)
+        (*out)[3] |= BIT_ZERO;
+    if (in->TPMA_OWNERWRITE)
+        (*out)[3] |= BIT_ONE;
+    if (in->TPMA_AUTHWRITE)
+        (*out)[3] |= BIT_TWO;
+    if (in->TPMA_POLICYWRITE)
+        (*out)[3] |= BIT_THREE;
+    if (in->TPMA_COUNTER)
+        (*out)[3] |= BIT_FOUR;
+    if (in->TPMA_BITS)
+        (*out)[3] |= BIT_FIVE;
+    if (in->TPMA_EXTEND)
+        (*out)[3] |= BIT_SIX;
+    // bit 7 reserved
+    // bit 8 reserved
+    // bit 9 reserved
+    if (in->TPMA_POLICY_DELETE)
+        (*out)[2] |= BIT_TWO;
+    if (in->TPMA_WRITELOCKED)
+        (*out)[2] |= BIT_THREE;
+    if (in->TPMA_WRITEALL)
+        (*out)[2] |= BIT_FOUR;
+    if (in->TPMA_WRITEDEFINE)
+        (*out)[2] |= BIT_FIVE;
+    if (in->TPMA_WRITE_STCLEAR)
+        (*out)[2] |= BIT_SIX;
+    if (in->TPMA_GLOBALLOCK)
+        (*out)[2] |= BIT_SEVEN;
+    if (in->TPMA_PPREAD)
+        (*out)[1] |= BIT_ZERO;
+    if (in->TPMA_OWNERREAD)
+        (*out)[1] |= BIT_ONE;
+    if (in->TPMA_AUTHREAD)
+        (*out)[1] |= BIT_TWO;
+    if (in->TPMA_POLICYREAD)
+        (*out)[1] |= BIT_THREE;
+    // bit 20 is reserved
+    // bit 21 is reserved
+    // bit 22 is reserved
+    // bit 23 is reserved
+    // bit 24 is reserved
+    if (in->TPMA_NO_DA)
+        (*out)[0] |= BIT_ONE;
+    if (in->TPMA_ORDERLY)
+        (*out)[0] |= BIT_TWO;
+    if (in->TPMA_CLEAR_STCLEAR)
+        (*out)[0] |= BIT_THREE;
+    if (in->TPMA_READLOCKED)
+        (*out)[0] |= BIT_FOUR;
+    if (in->TPMA_WRITTEN)
+        (*out)[0] |= BIT_FIVE;
+    if (in->TPMA_PLATFORMCREATE)
+        (*out)[0] |= BIT_SIX;
+    if (in->TPMA_READ_STCLEAR)
+        (*out)[0] |= BIT_SEVEN;
+
+    *out += 4;
+}
+
+void marshal_tpm2b_nvpublic(TPM2B_NV_PUBLIC *in, uint8_t **out)
+{
+    uint8_t *size_ptr = *out;
+    *out += sizeof(uint16_t);
+
+    marshal_uint32(in->nvPublic.nvIndex, out);
+
+    marshal_tpmi_alg_id(in->nvPublic.nameAlg, out);
+
+    marshal_tpmanv(&in->nvPublic.attributes, out);
+
+    marshal_tpm2b_digest(&in->nvPublic.authPolicy, out);
+
+    marshal_uint16(in->nvPublic.dataSize, out);
+
+    uint16_t size = *out - size_ptr - sizeof(uint16_t);
+    marshal_uint16(size, &size_ptr);
+}
+
+void marshal_tpm2b_maxnvbuffer(TPM2B_MAX_NV_BUFFER *in, uint8_t **out)
+{
+    marshal_tpm2b_simple((TPM2B_SIMPLE*)in, out);
+}
+
+int unmarshal_tpm2b_maxnvbuffer(uint8_t **in, uint32_t *in_max_length, TPM2B_MAX_NV_BUFFER *out)
+{
+    if (0 != unmarshal_tpm2b_simple(in, in_max_length, (TPM2B_SIMPLE*)out))
+        return -1;
+
+    return 0;
+}

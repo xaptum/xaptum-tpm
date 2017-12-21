@@ -26,9 +26,11 @@ extern "C" {
 
 #include <stdint.h>
 
+// TODO: Make sure these make sense (they should work well with an Infineon SLB9670)
 #define COMMANDRESPONSE_SIZE 4096
 #define MAX_SYM_DATA 128
-#define  MAX_ECC_KEY_BYTES 32
+#define MAX_ECC_KEY_BYTES 32
+#define MAX_NV_BUFFER_SIZE 768
 #define HASH_COUNT 1
 #define PCR_SELECT_MAX 1
 
@@ -62,6 +64,9 @@ typedef	TPM_HANDLE TPMI_SH_AUTH_SESSION;
 typedef TPM_HANDLE TPMI_DH_OBJECT;
 
 typedef	TPM_HANDLE TPMI_RH_HIERARCHY;
+typedef	TPM_HANDLE TPMI_RH_PROVISION;
+typedef TPM_HANDLE TPMI_RH_NV_INDEX;
+typedef TPM_HANDLE TPMI_RH_NV_AUTH;
 #define TPM_RH_OWNER 0x40000001
 #define TPM_RH_ENDORSEMENT 0x4000000B
 #define TPM_RH_PLATFORM 0x4000000C
@@ -331,6 +336,53 @@ typedef struct {
     TPMI_ALG_SIG_SCHEME sigAlg;
     TPMU_SIGNATURE signature;
 } TPMT_SIGNATURE;
+
+typedef struct {
+    unsigned TPMA_NV_PPWRITE : 1;
+    unsigned TPMA_OWNERWRITE : 1;
+    unsigned TPMA_AUTHWRITE : 1;
+    unsigned TPMA_POLICYWRITE : 1;
+    unsigned TPMA_COUNTER : 1;
+    unsigned TPMA_BITS : 1;
+    unsigned TPMA_EXTEND : 1;
+    unsigned Reserved1 : 3;
+    unsigned TPMA_POLICY_DELETE : 1;
+    unsigned TPMA_WRITELOCKED : 1;
+    unsigned TPMA_WRITEALL : 1;
+    unsigned TPMA_WRITEDEFINE : 1;
+    unsigned TPMA_WRITE_STCLEAR : 1;
+    unsigned TPMA_GLOBALLOCK : 1;
+    unsigned TPMA_PPREAD : 1;
+    unsigned TPMA_OWNERREAD : 1;
+    unsigned TPMA_AUTHREAD : 1;
+    unsigned TPMA_POLICYREAD : 1;
+    unsigned Reserved2 : 5;
+    unsigned TPMA_NO_DA : 1;
+    unsigned TPMA_ORDERLY : 1;
+    unsigned TPMA_CLEAR_STCLEAR : 1;
+    unsigned TPMA_READLOCKED : 1;
+    unsigned TPMA_WRITTEN : 1;
+    unsigned TPMA_PLATFORMCREATE : 1;
+    unsigned TPMA_READ_STCLEAR : 1;
+} TPMA_NV;
+
+typedef struct {
+    TPMI_RH_NV_INDEX nvIndex;
+    TPMI_ALG_HASH nameAlg;
+    TPMA_NV attributes;
+    TPM2B_DIGEST authPolicy;
+    uint16_t dataSize;
+} TPMS_NV_PUBLIC;
+
+typedef struct {
+    uint16_t size;
+    TPMS_NV_PUBLIC nvPublic;
+} TPM2B_NV_PUBLIC;
+
+typedef struct {
+    uint16_t size;
+    uint8_t buffer[MAX_NV_BUFFER_SIZE];
+} TPM2B_MAX_NV_BUFFER;
 
 #ifdef __cplusplus
 }

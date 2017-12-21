@@ -73,6 +73,14 @@ void marshal_tpmt_tkhashcheck(TPMT_TK_HASHCHECK *in, uint8_t **out);
 
 int unmarshal_tpmt_signature(uint8_t **in, uint32_t *in_max_length, TPMT_SIGNATURE *out);
 
+void marshal_tpm2b_auth(TPM2B_AUTH *in, uint8_t **out);
+
+void marshal_tpm2b_nvpublic(TPM2B_NV_PUBLIC *in, uint8_t **out);
+
+void marshal_tpm2b_maxnvbuffer(TPM2B_MAX_NV_BUFFER *in, uint8_t **out);
+
+int unmarshal_tpm2b_maxnvbuffer(uint8_t **in, uint32_t *in_max_length, TPM2B_MAX_NV_BUFFER *out);
+
 #ifdef __cplusplus
 }
 #endif
