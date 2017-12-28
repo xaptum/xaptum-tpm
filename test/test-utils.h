@@ -20,6 +20,8 @@
 
 char *hostname_g = "localhost";
 const char *port_g = "2321";
+char *pub_key_filename_g = "pub_key.txt";
+char *handle_filename_g = "handle.txt";
 
 #define TEST_ASSERT(cond) \
     do \
@@ -43,8 +45,13 @@ const char *port_g = "2321";
 #define parse_cmd_args(argc, argv) \
     do \
     { \
-        if (argc == 2) { \
+        if (argc >= 2) { \
             hostname_g = argv[1]; \
         } \
         printf("Connecting to %s:%s for TPM testing\n", hostname_g, port_g); \
+        if (argc == 4) { \
+            pub_key_filename_g = argv[2]; \
+            handle_filename_g = argv[3]; \
+        } \
+        printf("Saving public key to %s and handle to %s\n", pub_key_filename_g, handle_filename_g);\
     } while(0);

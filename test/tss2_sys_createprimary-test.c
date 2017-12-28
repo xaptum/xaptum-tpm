@@ -22,6 +22,8 @@
 #include "test-utils.h"
 
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 struct test_context {
     TSS2_SYS_CONTEXT *sapi_ctx;
@@ -36,7 +38,7 @@ int main(int argc, char *argv[])
 {
     parse_cmd_args(argc, argv);
 
-    full_test();
+    full_test(pub_key_filename_g, handle_filename_g);
 }
 
 void initialize(struct test_context *ctx)
@@ -81,7 +83,7 @@ void cleanup(struct test_context *ctx)
     }
 }
 
-void full_test()
+void full_test(const char* pub_key_filename, const char* handle_filename)
 {
     printf("In tss2_sys_createprimary-test::full_test...\n");
 
@@ -156,7 +158,55 @@ void full_test()
 
     TEST_ASSERT(TSS2_RC_SUCCESS == ret);
 
+    int write_ret = 0;
+
+    FILE *pub_key_file_ptr = fopen(pub_key_filename, "w");
+    if (NULL == pub_key_file_ptr)
+        return;
+    do {
+        if (fprintf(pub_key_file_ptr, "%02X", 4) != 2)
+            break;
+
+        for (unsigned i=0; i < public_key.publicArea.unique.ecc.x.size; i++) {
+            if (fprintf(pub_key_file_ptr, "%02X", public_key.publicArea.unique.ecc.x.buffer[i]) != 2) {
+                write_ret = -1;
+                break;
+            }
+        }
+        if (0 != write_ret)
+            break;
+
+        for (unsigned i=0; i < public_key.publicArea.unique.ecc.y.size; i++) {
+            if (fprintf(pub_key_file_ptr, "%02X", public_key.publicArea.unique.ecc.y.buffer[i]) != 2) {
+                write_ret = -1;
+                break;
+            }
+        }
+        if (0 != write_ret)
+            break;
+    } while(0);
+    (void)fclose(pub_key_file_ptr);
+
+    (void)handle_filename;
+    FILE *handle_file_ptr = fopen(handle_filename, "w");
+    if (NULL == handle_file_ptr)
+        return;
+    write_ret = 0;
+    do {
+        for (int i=(sizeof(key_handle)-1); i >= 0; i--) {
+            if (fprintf(handle_file_ptr, "%02X", (key_handle >> i*8) & 0xFF) != 2) {
+                write_ret = -1;
+                break;
+            }
+        }
+        if (0 != write_ret)
+            break;
+    } while(0);
+    (void)fclose(handle_file_ptr);
+
     cleanup(&ctx);
+
+    TEST_ASSERT(0 == write_ret);
 
     printf("ok\n");
 }
