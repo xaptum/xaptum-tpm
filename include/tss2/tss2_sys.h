@@ -140,6 +140,13 @@ Tss2_Sys_NV_UndefineSpace(TSS2_SYS_CONTEXT *sysContext,
                           TSS2_SYS_CMD_AUTHS const *cmdAuthsArray,
                           TSS2_SYS_RSP_AUTHS *rspAuthsArray);
 
+TSS2_RC
+Tss2_Sys_HierarchyChangeAuth(TSS2_SYS_CONTEXT *sysContext,
+                             TPMI_RH_HIERARCHY_AUTH authHandle,
+                             TSS2_SYS_CMD_AUTHS const *cmdAuthsArray,
+                             TPM2B_AUTH *newAuth,
+                             TSS2_SYS_RSP_AUTHS *rspAuthsArray);
+
 #ifdef __cplusplus
 }
 #endif

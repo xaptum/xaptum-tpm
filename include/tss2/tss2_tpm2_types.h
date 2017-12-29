@@ -49,6 +49,7 @@ typedef uint32_t TPM_HANDLE;
 
 typedef uint32_t TPM_CC;
 #define TPM_CC_NV_UndefineSpace 0x00000122
+#define TPM_CC_HierarchyChangeAuth 0x00000129
 #define TPM_CC_NV_DefineSpace 0x0000012A
 #define TPM_CC_CreatePrimary 0x00000131
 #define TPM_CC_NV_Write 0x00000137
@@ -67,6 +68,7 @@ typedef	TPM_HANDLE TPMI_RH_HIERARCHY;
 typedef	TPM_HANDLE TPMI_RH_PROVISION;
 typedef TPM_HANDLE TPMI_RH_NV_INDEX;
 typedef TPM_HANDLE TPMI_RH_NV_AUTH;
+typedef	TPM_HANDLE TPMI_RH_HIERARCHY_AUTH;
 #define TPM_RH_OWNER 0x40000001
 #define TPM_RH_ENDORSEMENT 0x4000000B
 #define TPM_RH_PLATFORM 0x4000000C
