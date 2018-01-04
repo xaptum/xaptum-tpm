@@ -39,7 +39,7 @@ set(XAPTUM_TPM_SRCS
 )
 
 add_library(xaptum_tpm-obj OBJECT ${XAPTUM_TPM_SRCS})
-set_property(TARGET xaptum_tpm-obj PROPERTY POSITION_INDEPENDENT_CODE 1)
+set_target_properties(xaptum_tpm-obj PROPERTIES POSITION_INDEPENDENT_CODE 1)
 target_include_directories(xaptum_tpm-obj PUBLIC ./include/)
 
 add_library(xaptum_tpm-shared SHARED $<TARGET_OBJECTS:xaptum_tpm-obj>)
