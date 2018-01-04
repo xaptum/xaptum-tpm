@@ -24,20 +24,20 @@ foreach(case_file ${TEST_SRCS})
   get_filename_component(case_name ${case_file} NAME_WE)
 
   add_executable(${case_name} ${case_file})
+
   target_link_libraries(${case_name}
-    PRIVATE xaptumtpm-static
-    )
+    PRIVATE xaptum_tpm-static
+  )
   target_include_directories(${case_name}
-          PRIVATE ${PROJECT_SOURCE_DIR}/include/
-          )
+    PRIVATE ${PROJECT_SOURCE_DIR}/include/
+  )
   set_target_properties(${case_name} PROPERTIES
-          RUNTIME_OUTPUT_DIRECTORY ${CURRENT_TEST_BINARY_DIR}
-          )
+    RUNTIME_OUTPUT_DIRECTORY ${CURRENT_TEST_BINARY_DIR}
+  )
 
   add_test(NAME ${case_name}
-          COMMAND ${CURRENT_TEST_BINARY_DIR}/${case_name}
-          )
+           COMMAND ${CURRENT_TEST_BINARY_DIR}/${case_name}
+  )
 
-  add_dependencies(${case_name} xaptumtpm-static)
+  add_dependencies(${case_name} xaptum_tpm-static)
 endforeach()
-
