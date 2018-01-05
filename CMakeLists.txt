@@ -16,7 +16,8 @@ cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 
 project(xaptum-tpm
         LANGUAGES C
-        VERSION "0.3.0")
+        VERSION "0.3.0"
+)
 
 include(GNUInstallDirs)
 include(CTest)
@@ -53,6 +54,9 @@ set(XAPTUM_TPM_SRCS
     src/internal/command_utils.c
 )
 
+################################################################################
+# Shared Libary
+################################################################################
 if(BUILD_SHARED_LIBS)
   add_library(xaptum-tpm SHARED ${XAPTUM_TPM_SRCS})
 
@@ -74,6 +78,9 @@ if(BUILD_SHARED_LIBS)
   )
 endif()
 
+################################################################################
+# Static Libary
+################################################################################
 if(BUILD_STATIC_LIBS)
   add_library(xaptum-tpm_static STATIC ${XAPTUM_TPM_SRCS})
 
@@ -96,11 +103,20 @@ if(BUILD_STATIC_LIBS)
   )
 endif()
 
+################################################################################
+# Headers
+################################################################################
 install(DIRECTORY include/tss2 DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 
+################################################################################
+# pkgconfig
+################################################################################
 configure_file(xaptum-tpm.pc.in xaptum-tpm.pc @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/xaptum-tpm.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
+################################################################################
+# CMake export
+################################################################################
 install(EXPORT ${CMAKE_PROJECT_NAME}Targets
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${CMAKE_PROJECT_NAME}
         FILE        ${CMAKE_PROJECT_NAME}Config.cmake
