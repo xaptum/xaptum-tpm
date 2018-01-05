@@ -13,12 +13,37 @@ Utilities for interacting with a TPM2.0 used for access to the Xaptum Edge Netwo
 
 ## Building
 
+`xaptum-tpm` uses CMake as its build system:
+
 ```bash
+# Create a subdirectory to hold the build
 mkdir -p build
 cd build
-cmake .. -DCMAKE_BUILD_TYPE=Debug
-cmake --build . -- -j4
+
+# Configure the build
+cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON
+
+# Build the library
+cmake --build .
 ```
+
+In addition to the standard CMake options the following configuration
+options and variables are supported.
+
+If `BUILD_SHARED_LIBS` is set, the shared library is built. If
+`BUILD_STATIC_LIBS` is set, the static library is built. If both are
+set, both libraries will be built.  If neither is set, the static
+library will be built.
+
+`STATIC_SUFFIX`, if defined, will be appended to the static library
+name.  For example,
+
+```bash
+cmake .. -DBUILD_STATIC_LIBS=ON -DSTATIC_SUFFIX=_static
+cmake --build .
+```
+
+will create a static library named `libxaptum_tpm_static.a`.
 
 ## Running the tests
 The tests assume that a TPM2.0 simulator (for instance, [IBM's simulator](https://sourceforge.net/projects/ibmswtpm2/))

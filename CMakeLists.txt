@@ -22,6 +22,16 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -Wno-missing-field-ini
 
 set(CMAKE_C_FLAGS_RELWITHSANITIZE "${CMAKE_C_FLAGS_RELWITHSANITIZE} -O2 -g -fsanitize=address,undefined -fsanitize=unsigned-integer-overflow")
 
+option(BUILD_SHARED_LIBS "Build as a shared library" ON)
+option(BUILD_STATIC_LIBS "Build as a static library" OFF)
+
+# If not building as a shared library, force build as a static.  This
+# is to match the CMake default semantics of using
+# BUILD_SHARED_LIBS = OFF to indicate a static build.
+if(NOT DEFINED BUILD_SHARED_LIBS OR NOT  "${BUILD_SHARED_LIBS}")
+  set(BUILD_STATIC_LIBS ON CACHE BOOL "Build as a static library" FORCE)
+endif()
+
 set(XAPTUM_TPM_SRCS
     src/tss2_tcti_socket.c
     src/tss2_sys_context_allocation.c
@@ -38,12 +48,26 @@ set(XAPTUM_TPM_SRCS
     src/internal/command_utils.c
 )
 
-add_library(xaptum_tpm-obj OBJECT ${XAPTUM_TPM_SRCS})
-set_target_properties(xaptum_tpm-obj PROPERTIES POSITION_INDEPENDENT_CODE 1)
-target_include_directories(xaptum_tpm-obj PUBLIC include)
+if(BUILD_SHARED_LIBS)
+  add_library(xaptum_tpm SHARED ${XAPTUM_TPM_SRCS})
 
-add_library(xaptum_tpm-shared SHARED $<TARGET_OBJECTS:xaptum_tpm-obj>)
-add_library(xaptum_tpm-static STATIC $<TARGET_OBJECTS:xaptum_tpm-obj>)
+  set_target_properties(xaptum_tpm PROPERTIES
+    POSITION_INDEPENDENT_CODE 1
+  )
+
+  target_include_directories(xaptum_tpm PUBLIC include)
+endif()
+
+if(BUILD_STATIC_LIBS)
+  add_library(xaptum_tpm_static STATIC ${XAPTUM_TPM_SRCS})
+
+  set_target_properties(xaptum_tpm_static PROPERTIES
+    OUTPUT_NAME "xaptum_tpm${STATIC_SUFFIX}"
+    POSITION_INDEPENDENT_CODE 1
+  )
+
+  target_include_directories(xaptum_tpm_static PUBLIC include)
+endif()
 
 enable_testing()
 add_subdirectory(test)
