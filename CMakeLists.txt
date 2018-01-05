@@ -34,6 +34,9 @@ if(NOT DEFINED BUILD_SHARED_LIBS OR NOT  "${BUILD_SHARED_LIBS}")
   set(BUILD_STATIC_LIBS ON CACHE BOOL "Build as a static library" FORCE)
 endif()
 
+set(XAPTUM_TPM_VERSION ${PROJECT_VERSION})
+set(XAPTUM_TPM_SOVERSION ${PROJECT_VERSION_MAJOR})
+
 set(XAPTUM_TPM_SRCS
     src/tss2_tcti_socket.c
     src/tss2_sys_context_allocation.c
@@ -52,6 +55,12 @@ set(XAPTUM_TPM_SRCS
 
 if(BUILD_SHARED_LIBS)
   add_library(xaptum_tpm SHARED ${XAPTUM_TPM_SRCS})
+
+  set_target_properties(xaptum_tpm PROPERTIES
+    VERSION "${XAPTUM_TPM_VERSION}"
+    SOVERSION "${XAPTUM_TPM_SOVERSION}"
+  )
+  
   target_include_directories(xaptum_tpm PUBLIC include)
 
   install(TARGETS xaptum_tpm
@@ -66,6 +75,8 @@ if(BUILD_STATIC_LIBS)
 
   set_target_properties(xaptum_tpm_static PROPERTIES
     OUTPUT_NAME "xaptum_tpm${STATIC_SUFFIX}"
+    VERSION "${XAPTUM_TPM_VERSION}"
+    SOVERSION "${XAPTUM_TPM_SOVERSION}"
   )
 
   target_include_directories(xaptum_tpm_static PUBLIC include)
