@@ -51,11 +51,6 @@ set(XAPTUM_TPM_SRCS
 
 if(BUILD_SHARED_LIBS)
   add_library(xaptum_tpm SHARED ${XAPTUM_TPM_SRCS})
-
-  set_target_properties(xaptum_tpm PROPERTIES
-    POSITION_INDEPENDENT_CODE 1
-  )
-
   target_include_directories(xaptum_tpm PUBLIC include)
 endif()
 
@@ -64,7 +59,6 @@ if(BUILD_STATIC_LIBS)
 
   set_target_properties(xaptum_tpm_static PROPERTIES
     OUTPUT_NAME "xaptum_tpm${STATIC_SUFFIX}"
-    POSITION_INDEPENDENT_CODE 1
   )
 
   target_include_directories(xaptum_tpm_static PUBLIC include)

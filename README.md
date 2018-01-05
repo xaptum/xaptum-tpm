@@ -47,6 +47,11 @@ cmake --build .
 
 will create a static library named `libxaptum_tpm_static.a`.
 
+### Force Position Independent Code (-fPIC)
+Set the standard CMake variable `CMAKE_POSITION_INDEPENDENT_CODE` to
+`ON` to force compilation with `-fPIC` for static libraries.  The
+default is `OFF` for static libraries and `ON` for shared libraries.
+
 ### Disable Building of Tests
 Set the standard CMake variable `BUILD_TESTING` to `OFF` to disable
 the building of tests.  The default value is `ON`.
