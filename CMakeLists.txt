@@ -18,6 +18,7 @@ project(xaptum-tpm
         LANGUAGES C
         VERSION "0.3.0")
 
+include(GNUInstallDirs)
 include(CTest)
       
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -Wno-missing-field-initializers -std=c99 -D_POSIX_C_SOURCE=200112L")
@@ -52,6 +53,12 @@ set(XAPTUM_TPM_SRCS
 if(BUILD_SHARED_LIBS)
   add_library(xaptum_tpm SHARED ${XAPTUM_TPM_SRCS})
   target_include_directories(xaptum_tpm PUBLIC include)
+
+  install(TARGETS xaptum_tpm
+          RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+          LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+          ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  )
 endif()
 
 if(BUILD_STATIC_LIBS)
@@ -62,6 +69,14 @@ if(BUILD_STATIC_LIBS)
   )
 
   target_include_directories(xaptum_tpm_static PUBLIC include)
+
+  install(TARGETS xaptum_tpm_static
+          RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+          LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+          ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+  )
 endif()
+
+install(DIRECTORY include/tss2 DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 
 add_subdirectory(test)

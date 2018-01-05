@@ -56,6 +56,18 @@ default is `OFF` for static libraries and `ON` for shared libraries.
 Set the standard CMake variable `BUILD_TESTING` to `OFF` to disable
 the building of tests.  The default value is `ON`.
 
+## Installation
+
+CMake creates a target for installation.
+
+```bash
+cd build
+cmake --build . --target install
+```
+
+Set the `CMAKE_INSTALL_PREFIX` variable when configuring the build to
+modify the installation location.
+
 ## Running the tests
 The tests assume that a TPM2.0 simulator (for instance, [IBM's simulator](https://sourceforge.net/projects/ibmswtpm2/))
 is listening locally on TCP port 2321.
