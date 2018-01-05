@@ -30,11 +30,13 @@ cmake --build .
 In addition to the standard CMake options the following configuration
 options and variables are supported.
 
+### Static vs Shared Libary
 If `BUILD_SHARED_LIBS` is set, the shared library is built. If
 `BUILD_STATIC_LIBS` is set, the static library is built. If both are
 set, both libraries will be built.  If neither is set, the static
 library will be built.
 
+### Static Library Name
 `STATIC_SUFFIX`, if defined, will be appended to the static library
 name.  For example,
 
@@ -44,6 +46,10 @@ cmake --build .
 ```
 
 will create a static library named `libxaptum_tpm_static.a`.
+
+### Disable Building of Tests
+Set the standard CMake variable `BUILD_TESTING` to `OFF` to disable
+the building of tests.  The default value is `ON`.
 
 ## Running the tests
 The tests assume that a TPM2.0 simulator (for instance, [IBM's simulator](https://sourceforge.net/projects/ibmswtpm2/))

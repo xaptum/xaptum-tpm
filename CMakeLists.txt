@@ -18,8 +18,9 @@ project(xaptum-tpm
         LANGUAGES C
         VERSION "0.3.0")
 
+include(CTest)
+      
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -Wno-missing-field-initializers -std=c99 -D_POSIX_C_SOURCE=200112L")
-
 set(CMAKE_C_FLAGS_RELWITHSANITIZE "${CMAKE_C_FLAGS_RELWITHSANITIZE} -O2 -g -fsanitize=address,undefined -fsanitize=unsigned-integer-overflow")
 
 option(BUILD_SHARED_LIBS "Build as a shared library" ON)
@@ -69,5 +70,4 @@ if(BUILD_STATIC_LIBS)
   target_include_directories(xaptum_tpm_static PUBLIC include)
 endif()
 
-enable_testing()
 add_subdirectory(test)
