@@ -45,7 +45,7 @@ cmake .. -DBUILD_STATIC_LIBS=ON -DSTATIC_SUFFIX=_static
 cmake --build .
 ```
 
-will create a static library named `libxaptum_tpm_static.a`.
+will create a static library named `libxaptum-tpm_static.a`.
 
 ### Force Position Independent Code (-fPIC)
 Set the standard CMake variable `CMAKE_POSITION_INDEPENDENT_CODE` to

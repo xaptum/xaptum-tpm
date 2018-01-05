@@ -20,9 +20,9 @@ macro(add_test_case case_file)
   add_executable(${case_name} ${case_file})
 
   if(BUILD_SHARED_LIBS)
-    target_link_libraries(${case_name} PRIVATE xaptum_tpm)
+    target_link_libraries(${case_name} PRIVATE xaptum-tpm)
   else()
-    target_link_libraries(${case_name} PRIVATE xaptum_tpm_static)
+    target_link_libraries(${case_name} PRIVATE xaptum-tpm_static)
   endif()
 
   target_include_directories(${case_name}

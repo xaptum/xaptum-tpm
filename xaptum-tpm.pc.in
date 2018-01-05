@@ -3,8 +3,8 @@ exec_prefix=${prefix}
 libdir=${exec_prefix}/@CMAKE_INSTALL_LIBDIR@
 includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
 
-Name: XaptumTPM
+Name: xaptum-tpm
 Description: Library for the TPM 2.0 used to access the Xaptum ENF
 Version: @XAPTUM_TPM_VERSION@
-Libs: -L{libdir} -lxaptum_tpm
+Libs: -L{libdir} -lxaptum-tpm
 Cflags: -I${includedir}

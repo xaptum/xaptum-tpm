@@ -14,7 +14,7 @@
 
 cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 
-project(xaptum_tpm
+project(xaptum-tpm
         LANGUAGES C
         VERSION "0.3.0")
 
@@ -54,19 +54,19 @@ set(XAPTUM_TPM_SRCS
 )
 
 if(BUILD_SHARED_LIBS)
-  add_library(xaptum_tpm SHARED ${XAPTUM_TPM_SRCS})
+  add_library(xaptum-tpm SHARED ${XAPTUM_TPM_SRCS})
 
-  set_target_properties(xaptum_tpm PROPERTIES
+  set_target_properties(xaptum-tpm PROPERTIES
     VERSION "${XAPTUM_TPM_VERSION}"
     SOVERSION "${XAPTUM_TPM_SOVERSION}"
   )
   
-  target_include_directories(xaptum_tpm PUBLIC
+  target_include_directories(xaptum-tpm PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
 
-  install(TARGETS xaptum_tpm
+  install(TARGETS xaptum-tpm
           EXPORT ${CMAKE_PROJECT_NAME}Targets
           RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
           LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -75,20 +75,20 @@ if(BUILD_SHARED_LIBS)
 endif()
 
 if(BUILD_STATIC_LIBS)
-  add_library(xaptum_tpm_static STATIC ${XAPTUM_TPM_SRCS})
+  add_library(xaptum-tpm_static STATIC ${XAPTUM_TPM_SRCS})
 
-  set_target_properties(xaptum_tpm_static PROPERTIES
-    OUTPUT_NAME "xaptum_tpm${STATIC_SUFFIX}"
+  set_target_properties(xaptum-tpm_static PROPERTIES
+    OUTPUT_NAME "xaptum-tpm${STATIC_SUFFIX}"
     VERSION "${XAPTUM_TPM_VERSION}"
     SOVERSION "${XAPTUM_TPM_SOVERSION}"
   )
 
-  target_include_directories(xaptum_tpm_static PUBLIC
+  target_include_directories(xaptum-tpm_static PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
 
-  install(TARGETS xaptum_tpm_static
+  install(TARGETS xaptum-tpm_static
           EXPORT ${CMAKE_PROJECT_NAME}Targets
           RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
           LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
@@ -98,8 +98,8 @@ endif()
 
 install(DIRECTORY include/tss2 DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 
-configure_file(xaptum_tpm.pc.in xaptum_tpm.pc @ONLY)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/xaptum_tpm.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+configure_file(xaptum-tpm.pc.in xaptum-tpm.pc @ONLY)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/xaptum-tpm.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
 install(EXPORT ${CMAKE_PROJECT_NAME}Targets
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${CMAKE_PROJECT_NAME}
