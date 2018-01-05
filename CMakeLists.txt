@@ -90,4 +90,7 @@ endif()
 
 install(DIRECTORY include/tss2 DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 
+configure_file(xaptum_tpm.pc.in xaptum_tpm.pc @ONLY)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/xaptum_tpm.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+
 add_subdirectory(test)
