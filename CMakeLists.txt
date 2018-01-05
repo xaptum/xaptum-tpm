@@ -14,7 +14,7 @@
 
 cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 
-project(xaptum-tpm
+project(xaptum_tpm
         LANGUAGES C
         VERSION "0.3.0")
 
@@ -61,9 +61,13 @@ if(BUILD_SHARED_LIBS)
     SOVERSION "${XAPTUM_TPM_SOVERSION}"
   )
   
-  target_include_directories(xaptum_tpm PUBLIC include)
+  target_include_directories(xaptum_tpm PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+  )
 
   install(TARGETS xaptum_tpm
+          EXPORT ${CMAKE_PROJECT_NAME}Targets
           RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
           LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
           ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -79,9 +83,13 @@ if(BUILD_STATIC_LIBS)
     SOVERSION "${XAPTUM_TPM_SOVERSION}"
   )
 
-  target_include_directories(xaptum_tpm_static PUBLIC include)
+  target_include_directories(xaptum_tpm_static PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+  )
 
   install(TARGETS xaptum_tpm_static
+          EXPORT ${CMAKE_PROJECT_NAME}Targets
           RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
           LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
           ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
@@ -92,5 +100,10 @@ install(DIRECTORY include/tss2 DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 
 configure_file(xaptum_tpm.pc.in xaptum_tpm.pc @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/xaptum_tpm.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+
+install(EXPORT ${CMAKE_PROJECT_NAME}Targets
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${CMAKE_PROJECT_NAME}
+        FILE        ${CMAKE_PROJECT_NAME}Config.cmake
+)
 
 add_subdirectory(test)
