@@ -16,34 +16,110 @@ cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 
 project(xaptum-tpm
         LANGUAGES C
-        VERSION "0.3.0")
+        VERSION "0.3.0"
+)
 
-SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -Wno-missing-field-initializers -std=c99 -D_POSIX_C_SOURCE=200112L")
+include(GNUInstallDirs)
+include(CTest)
+      
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -Wno-missing-field-initializers -std=c99 -D_POSIX_C_SOURCE=200112L")
+set(CMAKE_C_FLAGS_RELWITHSANITIZE "${CMAKE_C_FLAGS_RELWITHSANITIZE} -O2 -g -fsanitize=address,undefined -fsanitize=unsigned-integer-overflow")
 
-SET(CMAKE_C_FLAGS_RELWITHSANITIZE "${CMAKE_C_FLAGS_RELWITHSANITIZE} -O2 -g -fsanitize=address,undefined -fsanitize=unsigned-integer-overflow")
+option(BUILD_SHARED_LIBS "Build as a shared library" ON)
+option(BUILD_STATIC_LIBS "Build as a static library" OFF)
 
-SET(SRCS src/tss2_tcti_socket.c
-         src/tss2_sys_context_allocation.c
-         src/tss2_sys_createprimary.c
-         src/tss2_sys_commit.c
-         src/tss2_sys_hierarchychangeauth.c
-         src/tss2_sys_nv.c
-         src/tss2_sys_sign.c
-         src/internal/cmdauths.c
-         src/internal/constants.c
-         src/internal/execute.c
-         src/internal/marshal.c
-         src/internal/sys_context_common.c
-         src/internal/command_utils.c)
+# If not building as a shared library, force build as a static.  This
+# is to match the CMake default semantics of using
+# BUILD_SHARED_LIBS = OFF to indicate a static build.
+if(NOT DEFINED BUILD_SHARED_LIBS OR NOT  "${BUILD_SHARED_LIBS}")
+  set(BUILD_STATIC_LIBS ON CACHE BOOL "Build as a static library" FORCE)
+endif()
 
-add_library(xaptumtpm
-        OBJECT
-        ${SRCS}
-        )
-set_property(TARGET xaptumtpm PROPERTY POSITION_INDEPENDENT_CODE 1)
-target_include_directories(xaptumtpm PUBLIC ./include/)
-add_library(xaptumtpm-shared SHARED $<TARGET_OBJECTS:xaptumtpm>)
-add_library(xaptumtpm-static STATIC $<TARGET_OBJECTS:xaptumtpm>)
+set(XAPTUM_TPM_VERSION ${PROJECT_VERSION})
+set(XAPTUM_TPM_SOVERSION ${PROJECT_VERSION_MAJOR})
 
-enable_testing()
+set(XAPTUM_TPM_SRCS
+    src/tss2_tcti_socket.c
+    src/tss2_sys_context_allocation.c
+    src/tss2_sys_createprimary.c
+    src/tss2_sys_commit.c
+    src/tss2_sys_hierarchychangeauth.c
+    src/tss2_sys_nv.c
+    src/tss2_sys_sign.c
+    src/internal/cmdauths.c
+    src/internal/constants.c
+    src/internal/execute.c
+    src/internal/marshal.c
+    src/internal/sys_context_common.c
+    src/internal/command_utils.c
+)
+
+################################################################################
+# Shared Libary
+################################################################################
+if(BUILD_SHARED_LIBS)
+  add_library(xaptum-tpm SHARED ${XAPTUM_TPM_SRCS})
+
+  set_target_properties(xaptum-tpm PROPERTIES
+    VERSION "${XAPTUM_TPM_VERSION}"
+    SOVERSION "${XAPTUM_TPM_SOVERSION}"
+  )
+  
+  target_include_directories(xaptum-tpm PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+  )
+
+  install(TARGETS xaptum-tpm
+          EXPORT ${CMAKE_PROJECT_NAME}Targets
+          RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+          LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+          ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  )
+endif()
+
+################################################################################
+# Static Libary
+################################################################################
+if(BUILD_STATIC_LIBS)
+  add_library(xaptum-tpm_static STATIC ${XAPTUM_TPM_SRCS})
+
+  set_target_properties(xaptum-tpm_static PROPERTIES
+    OUTPUT_NAME "xaptum-tpm${STATIC_SUFFIX}"
+    VERSION "${XAPTUM_TPM_VERSION}"
+    SOVERSION "${XAPTUM_TPM_SOVERSION}"
+  )
+
+  target_include_directories(xaptum-tpm_static PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+  )
+
+  install(TARGETS xaptum-tpm_static
+          EXPORT ${CMAKE_PROJECT_NAME}Targets
+          RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+          LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+          ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+  )
+endif()
+
+################################################################################
+# Headers
+################################################################################
+install(DIRECTORY include/tss2 DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+
+################################################################################
+# pkgconfig
+################################################################################
+configure_file(xaptum-tpm.pc.in xaptum-tpm.pc @ONLY)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/xaptum-tpm.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+
+################################################################################
+# CMake export
+################################################################################
+install(EXPORT ${CMAKE_PROJECT_NAME}Targets
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${CMAKE_PROJECT_NAME}
+        FILE        ${CMAKE_PROJECT_NAME}Config.cmake
+)
+
 add_subdirectory(test)

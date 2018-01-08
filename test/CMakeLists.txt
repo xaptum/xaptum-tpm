@@ -14,30 +14,36 @@
 
 cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 
-include(CTest)
-
-set(CURRENT_TEST_BINARY_DIR ${CMAKE_BINARY_DIR}/testBin/)
-
-file(GLOB_RECURSE TEST_SRCS "*.c")
-
-foreach(case_file ${TEST_SRCS})
+macro(add_test_case case_file)
   get_filename_component(case_name ${case_file} NAME_WE)
 
   add_executable(${case_name} ${case_file})
-  target_link_libraries(${case_name}
-    PRIVATE xaptumtpm-static
-    )
+
+  if(BUILD_SHARED_LIBS)
+    target_link_libraries(${case_name} PRIVATE xaptum-tpm)
+  else()
+    target_link_libraries(${case_name} PRIVATE xaptum-tpm_static)
+  endif()
+
   target_include_directories(${case_name}
-          PRIVATE ${PROJECT_SOURCE_DIR}/include/
-          )
+    PRIVATE ${PROJECT_SOURCE_DIR}/include/
+  )
+
   set_target_properties(${case_name} PROPERTIES
-          RUNTIME_OUTPUT_DIRECTORY ${CURRENT_TEST_BINARY_DIR}
-          )
+    RUNTIME_OUTPUT_DIRECTORY ${CURRENT_TEST_BINARY_DIR}
+  )
 
-  add_test(NAME ${case_name}
-          COMMAND ${CURRENT_TEST_BINARY_DIR}/${case_name}
-          )
+  add_test(NAME ${case_name} 
+    COMMAND ${CURRENT_TEST_BINARY_DIR}/${case_name}
+  )
+endmacro()
 
-  add_dependencies(${case_name} xaptumtpm-static)
-endforeach()
+if(BUILD_TESTING)
+  set(CURRENT_TEST_BINARY_DIR ${CMAKE_BINARY_DIR}/testBin/)
 
+  file(GLOB_RECURSE TEST_SRCS "*.c")
+  foreach(case_file ${TEST_SRCS})
+    add_test_case(${case_file})
+  endforeach()
+
+endif()
