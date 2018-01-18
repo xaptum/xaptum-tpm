@@ -30,9 +30,9 @@
 TSS2_RC
 Tss2_Sys_NV_DefineSpace(TSS2_SYS_CONTEXT *sysContext,
                         TPMI_RH_PROVISION authHandle,
-                        TSS2_SYS_CMD_AUTHS const *cmdAuthsArray,
-                        TPM2B_AUTH *auth,
-                        TPM2B_NV_PUBLIC *publicInfo,
+                        const TSS2_SYS_CMD_AUTHS *cmdAuthsArray,
+                        const TPM2B_AUTH *auth,
+                        const TPM2B_NV_PUBLIC *publicInfo,
                         TSS2_SYS_RSP_AUTHS *rspAuthsArray)
 {
     if (NULL == sysContext || NULL == cmdAuthsArray)
@@ -73,7 +73,7 @@ TSS2_RC
 Tss2_Sys_NV_UndefineSpace(TSS2_SYS_CONTEXT *sysContext,
                           TPMI_RH_PROVISION authHandle,
                           TPMI_RH_NV_INDEX nvIndex,
-                          TSS2_SYS_CMD_AUTHS const *cmdAuthsArray,
+                          const TSS2_SYS_CMD_AUTHS *cmdAuthsArray,
                           TSS2_SYS_RSP_AUTHS *rspAuthsArray)
 {
     if (NULL == sysContext || NULL == cmdAuthsArray)
@@ -112,8 +112,8 @@ TSS2_RC
 Tss2_Sys_NV_Write(TSS2_SYS_CONTEXT *sysContext,
                   TPMI_RH_NV_AUTH authHandle,
                   TPMI_RH_NV_INDEX nvIndex,
-                  TSS2_SYS_CMD_AUTHS const *cmdAuthsArray,
-                  TPM2B_MAX_NV_BUFFER *data,
+                  const TSS2_SYS_CMD_AUTHS *cmdAuthsArray,
+                  const TPM2B_MAX_NV_BUFFER *data,
                   uint16_t offset,
                   TSS2_SYS_RSP_AUTHS *rspAuthsArray)
 {
@@ -157,7 +157,7 @@ TSS2_RC
 Tss2_Sys_NV_Read(TSS2_SYS_CONTEXT *sysContext,
                  TPMI_RH_NV_AUTH authHandle,
                  TPMI_RH_NV_INDEX nvIndex,
-                 TSS2_SYS_CMD_AUTHS const *cmdAuthsArray,
+                 const TSS2_SYS_CMD_AUTHS *cmdAuthsArray,
                  uint16_t size,
                  uint16_t offset,
                  TPM2B_MAX_NV_BUFFER *data,

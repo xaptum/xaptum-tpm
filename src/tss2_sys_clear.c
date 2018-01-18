@@ -27,17 +27,10 @@
 #include <assert.h>
 
 TSS2_RC
-Tss2_Sys_Commit(TSS2_SYS_CONTEXT *sysContext,
-                TPMI_DH_OBJECT signHandle,
-                const TSS2_SYS_CMD_AUTHS *cmdAuthsArray,
-                const TPM2B_ECC_POINT *P1,
-                const TPM2B_SENSITIVE_DATA *s2,
-                const TPM2B_ECC_PARAMETER *y2,
-                TPM2B_ECC_POINT *K,
-                TPM2B_ECC_POINT *L,
-                TPM2B_ECC_POINT *E,
-                uint16_t *counter,
-                TSS2_SYS_RSP_AUTHS *rspAuthsArray)
+Tss2_Sys_Clear(TSS2_SYS_CONTEXT *sysContext,
+               TPMI_RH_CLEAR authHandle,
+               const TSS2_SYS_CMD_AUTHS *cmdAuthsArray,
+               TSS2_SYS_RSP_AUTHS *rspAuthsArray)
 {
     if (NULL == sysContext || NULL == cmdAuthsArray)
         return TSS2_SYS_RC_BAD_REFERENCE;
@@ -46,19 +39,13 @@ Tss2_Sys_Commit(TSS2_SYS_CONTEXT *sysContext,
 
     TSS2_SYS_CONTEXT_OPAQUE *sys_context = down_cast(sysContext);
 
-    build_command_header(sys_context, TPM_CC_Commit, TPM_ST_SESSIONS);
+    build_command_header(sys_context, TPM_CC_Clear, TPM_ST_SESSIONS);
 
-    marshal_uint32(signHandle, &sys_context->ptr);
+    marshal_uint32(authHandle, &sys_context->ptr);
 
     ret = set_cmdauths(sys_context, cmdAuthsArray);
     if (TSS2_RC_SUCCESS != ret)
         return ret;
-
-    marshal_tpm2b_eccpoint(P1, &sys_context->ptr);
-
-    marshal_tpm2b_sensitivedata(s2, &sys_context->ptr);
-
-    marshal_tpm2b_eccparameter(y2, &sys_context->ptr);
 
     set_command_size(sys_context);
 
@@ -69,18 +56,6 @@ Tss2_Sys_Commit(TSS2_SYS_CONTEXT *sysContext,
     ret = get_rspauths(sys_context, rspAuthsArray);
     if (ret)
         return ret;
-
-    if (0 != unmarshal_tpm2b_eccpoint(&sys_context->ptr, &sys_context->remaining_response, K))
-        return TSS2_SYS_RC_MALFORMED_RESPONSE;
-
-    if (0 != unmarshal_tpm2b_eccpoint(&sys_context->ptr, &sys_context->remaining_response, L))
-        return TSS2_SYS_RC_MALFORMED_RESPONSE;
-
-    if (0 != unmarshal_tpm2b_eccpoint(&sys_context->ptr, &sys_context->remaining_response, E))
-        return TSS2_SYS_RC_MALFORMED_RESPONSE;
-
-    if (0 != unmarshal_uint16(&sys_context->ptr, &sys_context->remaining_response, counter))
-        return TSS2_SYS_RC_MALFORMED_RESPONSE;
 
     assert(sys_context->remaining_response == 0);
 

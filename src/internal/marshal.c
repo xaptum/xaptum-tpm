@@ -94,7 +94,7 @@ int unmarshal_tpmi_alg_id(uint8_t **in, uint32_t *in_max_length, TPM_ALG_ID *out
     return unmarshal_uint16(in, in_max_length, out);
 }
 
-void  marshal_tpma_object(TPMA_OBJECT *in, uint8_t **out)
+void  marshal_tpma_object(const TPMA_OBJECT *in, uint8_t **out)
 {
     memset(*out, 0, 4);  // clear all
 
@@ -175,7 +175,7 @@ int  unmarshal_tpma_object(uint8_t **in, uint32_t *in_max_length, TPMA_OBJECT *o
     return 0;
 }
 
-void marshal_tpm2b_simple(TPM2B_SIMPLE *in, uint8_t **out)
+void marshal_tpm2b_simple(const TPM2B_SIMPLE *in, uint8_t **out)
 {
     marshal_uint16(in->size, out);
     memcpy(*out, in->buffer, in->size);
@@ -197,11 +197,17 @@ int unmarshal_tpm2b_simple(uint8_t **in, uint32_t *in_max_length, TPM2B_SIMPLE *
     return 0;
 }
 
-void marshal_tpmt_sym_def_object(TPMT_SYM_DEF_OBJECT *in, uint8_t **out)
+void marshal_tpmt_sym_def_object(const TPMT_SYM_DEF_OBJECT *in, uint8_t **out)
 {
     switch (in->algorithm) {
         case TPM_ALG_NULL:
             marshal_uint16(TPM_ALG_NULL, out);
+            break;
+        case TPM_ALG_AES:
+            marshal_uint16(TPM_ALG_AES, out);
+            marshal_uint16(in->keyBits.aes, out);
+            marshal_tpmi_alg_id(in->mode.sym, out);
+            break;
     }
 }
 
@@ -217,6 +223,12 @@ int unmarshal_tpmt_sym_def_object(uint8_t **in, uint32_t *in_max_length, TPMT_SY
             (void)in_max_length;
             (void)out;
             break;
+        case TPM_ALG_AES:
+            if (0 != unmarshal_uint16(in, in_max_length, &out->keyBits.aes))
+                return -1;
+            if (0 != unmarshal_tpmi_alg_id(in, in_max_length, &out->mode.sym))
+                return -1;
+            break;
         default:
             return -2;
     }
@@ -224,7 +236,7 @@ int unmarshal_tpmt_sym_def_object(uint8_t **in, uint32_t *in_max_length, TPMT_SY
     return 0;
 }
 
-void marshal_tpmt_ecc_scheme(TPMT_ECC_SCHEME * in, uint8_t **out)
+void marshal_tpmt_ecc_scheme(const TPMT_ECC_SCHEME * in, uint8_t **out)
 {
     marshal_tpmi_alg_id(in->scheme, out);
 
@@ -248,7 +260,9 @@ int unmarshal_tpmt_ecc_scheme(uint8_t **in, uint32_t *in_max_length, TPMT_ECC_SC
 
             if (0 != unmarshal_uint16(in, in_max_length, &out->details.ecdaa.count))
                 return -1;
-
+            break;
+        case TPM_ALG_NULL:
+            // do nothing
             break;
         default:
             return -2;
@@ -257,7 +271,7 @@ int unmarshal_tpmt_ecc_scheme(uint8_t **in, uint32_t *in_max_length, TPMT_ECC_SC
     return 0;
 }
 
-void marshal_tpms_ecc_parms(TPMS_ECC_PARMS *in, uint8_t **out)
+void marshal_tpms_ecc_parms(const TPMS_ECC_PARMS *in, uint8_t **out)
 {
     marshal_tpmt_sym_def_object(&in->symmetric, out);
 
@@ -288,7 +302,7 @@ int unmarshal_tpms_ecc_parms(uint8_t **in, uint32_t *in_max_length, TPMS_ECC_PAR
     return 0;
 }
 
-void marshal_tpms_ecc_point(TPMS_ECC_POINT *in, uint8_t **out)
+void marshal_tpms_ecc_point(const TPMS_ECC_POINT *in, uint8_t **out)
 {
     marshal_tpm2b_simple((TPM2B_SIMPLE*)&in->x, out);
 
@@ -306,7 +320,7 @@ int unmarshal_tpms_ecc_point(uint8_t **in, uint32_t *in_max_length, TPMS_ECC_POI
     return 0;
 }
 
-void marshal_tpm2b_public(TPM2B_PUBLIC *in, uint8_t **out)
+void marshal_tpm2b_public(const TPM2B_PUBLIC *in, uint8_t **out)
 {
     uint8_t *size_ptr = *out;
     *out += sizeof(uint16_t);
@@ -364,12 +378,12 @@ int unmarshal_tpm2b_public(uint8_t **in, uint32_t *in_max_length, TPM2B_PUBLIC *
     return 0;
 }
 
-void marshal_tpm2b_data(TPM2B_DATA *in, uint8_t **out)
+void marshal_tpm2b_data(const TPM2B_DATA *in, uint8_t **out)
 {
     marshal_tpm2b_simple((TPM2B_SIMPLE*)in, out);
 }
 
-void marshal_tpml_pcrselection(TPML_PCR_SELECTION *in, uint8_t **out)
+void marshal_tpml_pcrselection(const TPML_PCR_SELECTION *in, uint8_t **out)
 {
     marshal_uint32(in->count, out);
 
@@ -409,7 +423,7 @@ int unmarshal_tpml_pcrselection(uint8_t **in, uint32_t *in_max_length, TPML_PCR_
     return 0;
 }
 
-void marshal_tpma_session(TPMA_SESSION *in, uint8_t **out)
+void marshal_tpma_session(const TPMA_SESSION *in, uint8_t **out)
 {
     memset(*out, 0, 1);  // clear all
 
@@ -459,7 +473,7 @@ int unmarshal_tpma_session(uint8_t **in, uint32_t *in_max_length, TPMA_SESSION *
     return 0;
 }
 
-void marshal_tpms_authcommand(TPMS_AUTH_COMMAND *in, uint8_t **out)
+void marshal_tpms_authcommand(const TPMS_AUTH_COMMAND *in, uint8_t **out)
 {
     marshal_uint32(in->sessionHandle, out);
 
@@ -484,7 +498,7 @@ int unmarshal_tpms_authresponse(uint8_t **in, uint32_t *in_max_length, TPMS_AUTH
     return 0;
 }
 
-void marshal_tpm2b_sensitivecreate(TPM2B_SENSITIVE_CREATE *in, uint8_t **out)
+void marshal_tpm2b_sensitivecreate(const TPM2B_SENSITIVE_CREATE *in, uint8_t **out)
 {
     uint8_t *size_ptr = *out;
     *out += sizeof(uint16_t);
@@ -531,7 +545,7 @@ int unmarshal_tpm2b_creationdata(uint8_t **in, uint32_t *in_max_length, TPM2B_CR
     return 0;
 }
 
-void marshal_tpm2b_digest(TPM2B_DIGEST *in, uint8_t **out)
+void marshal_tpm2b_digest(const TPM2B_DIGEST *in, uint8_t **out)
 {
     marshal_tpm2b_simple((TPM2B_SIMPLE*)in, out);
 }
@@ -566,7 +580,7 @@ int unmarshal_tpm2b_name(uint8_t **in, uint32_t *in_max_length, TPM2B_NAME *out)
     return 0;
 }
 
-void marshal_tpm2b_eccpoint(TPM2B_ECC_POINT *in, uint8_t **out)
+void marshal_tpm2b_eccpoint(const TPM2B_ECC_POINT *in, uint8_t **out)
 {
     uint8_t *size_ptr = *out;
     *out += sizeof(uint16_t);
@@ -590,17 +604,17 @@ int unmarshal_tpm2b_eccpoint(uint8_t **in, uint32_t *in_max_length, TPM2B_ECC_PO
     return 0;
 }
 
-void marshal_tpm2b_sensitivedata(TPM2B_SENSITIVE_DATA *in, uint8_t **out)
+void marshal_tpm2b_sensitivedata(const TPM2B_SENSITIVE_DATA *in, uint8_t **out)
 {
     marshal_tpm2b_simple((TPM2B_SIMPLE*)in, out);
 }
 
-void marshal_tpm2b_eccparameter(TPM2B_ECC_PARAMETER *in, uint8_t **out)
+void marshal_tpm2b_eccparameter(const TPM2B_ECC_PARAMETER *in, uint8_t **out)
 {
     marshal_tpm2b_simple((TPM2B_SIMPLE*)in, out);
 }
 
-void marshal_tpmt_sigscheme(TPMT_SIG_SCHEME *in, uint8_t **out)
+void marshal_tpmt_sigscheme(const TPMT_SIG_SCHEME *in, uint8_t **out)
 {
     marshal_tpmi_alg_id(in->scheme, out);
 
@@ -611,7 +625,7 @@ void marshal_tpmt_sigscheme(TPMT_SIG_SCHEME *in, uint8_t **out)
     }
 }
 
-void marshal_tpmt_tkhashcheck(TPMT_TK_HASHCHECK *in, uint8_t **out)
+void marshal_tpmt_tkhashcheck(const TPMT_TK_HASHCHECK *in, uint8_t **out)
 {
     marshal_uint16(in->tag, out);
 
@@ -645,12 +659,12 @@ int unmarshal_tpmt_signature(uint8_t **in, uint32_t *in_max_length, TPMT_SIGNATU
     return 0;
 }
 
-void marshal_tpm2b_auth(TPM2B_AUTH *in, uint8_t **out)
+void marshal_tpm2b_auth(const TPM2B_AUTH *in, uint8_t **out)
 {
     marshal_tpm2b_simple((TPM2B_SIMPLE*)in, out);
 }
 
-void marshal_tpmanv(TPMA_NV *in, uint8_t **out)
+void marshal_tpmanv(const TPMA_NV *in, uint8_t **out)
 {
     memset(*out, 0, 4);  // clear all
 
@@ -714,7 +728,7 @@ void marshal_tpmanv(TPMA_NV *in, uint8_t **out)
     *out += 4;
 }
 
-void marshal_tpm2b_nvpublic(TPM2B_NV_PUBLIC *in, uint8_t **out)
+void marshal_tpm2b_nvpublic(const TPM2B_NV_PUBLIC *in, uint8_t **out)
 {
     uint8_t *size_ptr = *out;
     *out += sizeof(uint16_t);
@@ -733,12 +747,25 @@ void marshal_tpm2b_nvpublic(TPM2B_NV_PUBLIC *in, uint8_t **out)
     marshal_uint16(size, &size_ptr);
 }
 
-void marshal_tpm2b_maxnvbuffer(TPM2B_MAX_NV_BUFFER *in, uint8_t **out)
+void marshal_tpm2b_maxnvbuffer(const TPM2B_MAX_NV_BUFFER *in, uint8_t **out)
 {
     marshal_tpm2b_simple((TPM2B_SIMPLE*)in, out);
 }
 
 int unmarshal_tpm2b_maxnvbuffer(uint8_t **in, uint32_t *in_max_length, TPM2B_MAX_NV_BUFFER *out)
+{
+    if (0 != unmarshal_tpm2b_simple(in, in_max_length, (TPM2B_SIMPLE*)out))
+        return -1;
+
+    return 0;
+}
+
+void marshal_tpm2b_private(const TPM2B_PRIVATE *in, uint8_t **out)
+{
+    marshal_tpm2b_simple((TPM2B_SIMPLE*)in, out);
+}
+
+int unmarshal_tpm2b_private(uint8_t **in, uint32_t *in_max_length, TPM2B_PRIVATE *out)
 {
     if (0 != unmarshal_tpm2b_simple(in, in_max_length, (TPM2B_SIMPLE*)out))
         return -1;

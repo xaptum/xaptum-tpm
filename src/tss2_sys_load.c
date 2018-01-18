@@ -27,43 +27,33 @@
 #include <assert.h>
 
 TSS2_RC
-Tss2_Sys_CreatePrimary(TSS2_SYS_CONTEXT *sysContext,
-                       TPMI_RH_HIERARCHY primaryHandle,
-                       const TSS2_SYS_CMD_AUTHS *cmdAuthsArray,
-                       const TPM2B_SENSITIVE_CREATE *inSensitive,
-                       const TPM2B_PUBLIC *inPublic,
-                       const TPM2B_DATA *outsideInfo,
-                       const TPML_PCR_SELECTION *creationPCR,
-                       TPM_HANDLE *objectHandle,
-                       TPM2B_PUBLIC *outPublic,
-                       TPM2B_CREATION_DATA *creationData,
-                       TPM2B_DIGEST *creationHash,
-                       TPMT_TK_CREATION *creationTicket,
-                       TPM2B_NAME *name,
-                       TSS2_SYS_RSP_AUTHS *rspAuthsArray)
+Tss2_Sys_Load(TSS2_SYS_CONTEXT *sysContext,
+              TPMI_DH_OBJECT parentHandle,
+              const TSS2_SYS_CMD_AUTHS *cmdAuthsArray,
+              const TPM2B_PRIVATE *inPrivate,
+              const TPM2B_PUBLIC *inPublic,
+              TPM_HANDLE *objectHandle,
+              TPM2B_NAME *name,
+              TSS2_SYS_RSP_AUTHS *rspAuthsArray)
 {
-    if (NULL == sysContext || NULL == creationPCR || NULL == cmdAuthsArray)
+    if (NULL == sysContext || NULL == cmdAuthsArray)
         return TSS2_SYS_RC_BAD_REFERENCE;
 
     TSS2_RC ret = TSS2_RC_SUCCESS;
 
     TSS2_SYS_CONTEXT_OPAQUE *sys_context = down_cast(sysContext);
 
-    build_command_header(sys_context, TPM_CC_CreatePrimary, TPM_ST_SESSIONS);
+    build_command_header(sys_context, TPM_CC_Load, TPM_ST_SESSIONS);
 
-    marshal_uint32(primaryHandle, &sys_context->ptr);
+    marshal_uint32(parentHandle, &sys_context->ptr);
 
     ret = set_cmdauths(sys_context, cmdAuthsArray);
     if (TSS2_RC_SUCCESS != ret)
         return ret;
 
-    marshal_tpm2b_sensitivecreate(inSensitive, &sys_context->ptr);
+    marshal_tpm2b_private(inPrivate, &sys_context->ptr);
 
     marshal_tpm2b_public(inPublic, &sys_context->ptr);
-
-    marshal_tpm2b_data(outsideInfo, &sys_context->ptr);
-
-    marshal_tpml_pcrselection(creationPCR, &sys_context->ptr);
 
     set_command_size(sys_context);
 
@@ -77,18 +67,6 @@ Tss2_Sys_CreatePrimary(TSS2_SYS_CONTEXT *sysContext,
     ret = get_rspauths(sys_context, rspAuthsArray);
     if (ret)
         return ret;
-
-    if (0 != unmarshal_tpm2b_public(&sys_context->ptr, &sys_context->remaining_response, outPublic))
-        return TSS2_SYS_RC_MALFORMED_RESPONSE;
-
-    if (0 != unmarshal_tpm2b_creationdata(&sys_context->ptr, &sys_context->remaining_response, creationData))
-        return TSS2_SYS_RC_MALFORMED_RESPONSE;
-
-    if (0 != unmarshal_tpm2b_digest(&sys_context->ptr, &sys_context->remaining_response, creationHash))
-        return TSS2_SYS_RC_MALFORMED_RESPONSE;
-
-    if (0 != unmarshal_tpmt_tkcreation(&sys_context->ptr, &sys_context->remaining_response, creationTicket))
-        return TSS2_SYS_RC_MALFORMED_RESPONSE;
 
     if (0 != unmarshal_tpm2b_name(&sys_context->ptr, &sys_context->remaining_response, name))
         return TSS2_SYS_RC_MALFORMED_RESPONSE;
