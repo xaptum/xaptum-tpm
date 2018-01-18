@@ -68,6 +68,7 @@ jobs:
 
   # Sanitizers
   - env: TYPE=SANITIZE
+    sudo: true
     compiler: clang
     before_script:
       - .travis/install-ibm-tpm2.sh ${IBM_TPM_DIR}
