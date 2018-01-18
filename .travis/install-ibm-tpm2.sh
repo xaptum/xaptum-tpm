@@ -28,7 +28,7 @@ cd ${install_dir}
 
 mkdir -p ./tpm
 cd ./tpm
-wget https://sourceforge.net/projects/ibmswtpm2/files/ibmtpm${tpm_version}.tar
+wget https://sourceforge.net/projects/ibmswtpm2/files/ibmtpm${tpm_version}.tar --no-check-certificate
 tar xvf ibmtpm${tpm_version}.tar
 cd ./src/
 make
@@ -36,7 +36,7 @@ cd ../../
 
 mkdir -p ./tss
 cd ./tss
-wget https://sourceforge.net/projects/ibmtpm20tss/files/ibmtss${tss_version}.tar
+wget https://sourceforge.net/projects/ibmtpm20tss/files/ibmtss${tss_version}.tar --no-check-certificate
 tar xvf ibmtss${tss_version}.tar
 cd ./utils/
 make
