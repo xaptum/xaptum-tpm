@@ -62,6 +62,8 @@ typedef uint32_t TPM_CC;
 #define TPM_CC_GetCapability 0x0000017A
 #define TPM_CC_Commit 0x0000018B
 #define TPM_CC_EvictControl 0x00000120
+#define TPM_CC_Clear 0x00000126
+#define TPM_CC_ClearControl 0x00000127
 
 // Only password-authorizations are supported
 typedef	TPM_HANDLE TPMI_SH_AUTH_SESSION;
@@ -75,10 +77,12 @@ typedef	TPM_HANDLE TPMI_RH_PROVISION;
 typedef TPM_HANDLE TPMI_RH_NV_INDEX;
 typedef TPM_HANDLE TPMI_RH_NV_AUTH;
 typedef	TPM_HANDLE TPMI_RH_HIERARCHY_AUTH;
+typedef	TPM_HANDLE TPMI_RH_CLEAR;
 #define TPM_RH_OWNER 0x40000001
 #define TPM_RH_ENDORSEMENT 0x4000000B
 #define TPM_RH_PLATFORM 0x4000000C
 #define TPM_RH_NULL 0x40000007
+#define TPM_RH_LOCKOUT 0x4000000A
 
 typedef uint16_t TPM_ALG_ID;
 typedef	TPM_ALG_ID TPMI_ALG_PUBLIC;

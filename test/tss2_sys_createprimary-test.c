@@ -31,6 +31,7 @@ struct test_context {
 
 static void initialize(struct test_context *ctx);
 static void cleanup(struct test_context *ctx);
+static int clear(struct test_context *ctx);
 
 static void full_test();
 
@@ -89,6 +90,8 @@ void full_test(const char* pub_key_filename, const char* handle_filename)
 
     struct test_context ctx;
     initialize(&ctx);
+
+    TEST_ASSERT(0 == clear(&ctx));
 
     TPMI_RH_HIERARCHY hierarchy = TPM_RH_ENDORSEMENT;
 
@@ -211,3 +214,34 @@ void full_test(const char* pub_key_filename, const char* handle_filename)
     printf("ok\n");
 }
 
+int clear(struct test_context *ctx)
+{
+   TPMI_RH_CLEAR auth_handle = TPM_RH_PLATFORM;
+
+    TPMS_AUTH_COMMAND session_data = {
+        .sessionHandle = TPM_RS_PW,
+        .sessionAttributes = {0},
+    };
+    TPMS_AUTH_RESPONSE sessionDataOut = {{0}, {0}, {0}};
+    (void)sessionDataOut;
+    TSS2_SYS_CMD_AUTHS sessionsData;
+    TSS2_SYS_RSP_AUTHS sessionsDataOut;
+    TPMS_AUTH_COMMAND *sessionDataArray[1];
+    sessionDataArray[0] = &session_data;
+    TPMS_AUTH_RESPONSE *sessionDataOutArray[1];
+    sessionDataOutArray[0] = &sessionDataOut;
+    sessionsDataOut.rspAuths = &sessionDataOutArray[0];
+    sessionsData.cmdAuths = &sessionDataArray[0];
+    sessionsDataOut.rspAuthsCount = 1;
+    sessionsData.cmdAuthsCount = 1;
+    sessionsData.cmdAuths[0] = &session_data;
+
+    TSS2_RC ret = Tss2_Sys_Clear(ctx->sapi_ctx,
+                                 auth_handle,
+                                 &sessionsData,
+                                 &sessionsDataOut);
+
+    printf("Clear ret=%#X\n", ret);
+
+    return ret;
+}

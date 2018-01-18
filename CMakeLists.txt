@@ -41,6 +41,7 @@ set(XAPTUM_TPM_SOVERSION ${PROJECT_VERSION_MAJOR})
 set(XAPTUM_TPM_SRCS
     src/tss2_tcti_socket.c
     src/tss2_sys_context_allocation.c
+    src/tss2_sys_clear.c
     src/tss2_sys_create.c
     src/tss2_sys_createprimary.c
     src/tss2_sys_commit.c

@@ -39,6 +39,7 @@ static void initialize(struct test_context *ctx);
 static void cleanup(struct test_context *ctx);
 
 static void full_test(const char* pub_key_filename, const char* handle_filename);
+static int clear(struct test_context *ctx);
 static int create_primary(struct test_context *ctx);
 static int create(struct test_context *ctx);
 static int load(struct test_context *ctx);
@@ -105,6 +106,10 @@ void full_test(const char* pub_key_filename, const char* handle_filename)
     initialize(&ctx);
 
     int ret = 0;
+
+    ret = clear(&ctx);
+
+    TEST_ASSERT(TSS2_RC_SUCCESS == ret);
 
     ret = create_primary(&ctx);
 
@@ -180,6 +185,38 @@ int save_public_key_info(const struct test_context *ctx, const char* pub_key_fil
     (void)fclose(handle_file_ptr);
 
     return write_ret;
+}
+
+int clear(struct test_context *ctx)
+{
+   TPMI_RH_CLEAR auth_handle = TPM_RH_PLATFORM;
+
+    TPMS_AUTH_COMMAND session_data = {
+        .sessionHandle = TPM_RS_PW,
+        .sessionAttributes = {0},
+    };
+    TPMS_AUTH_RESPONSE sessionDataOut = {{0}, {0}, {0}};
+    (void)sessionDataOut;
+    TSS2_SYS_CMD_AUTHS sessionsData;
+    TSS2_SYS_RSP_AUTHS sessionsDataOut;
+    TPMS_AUTH_COMMAND *sessionDataArray[1];
+    sessionDataArray[0] = &session_data;
+    TPMS_AUTH_RESPONSE *sessionDataOutArray[1];
+    sessionDataOutArray[0] = &sessionDataOut;
+    sessionsDataOut.rspAuths = &sessionDataOutArray[0];
+    sessionsData.cmdAuths = &sessionDataArray[0];
+    sessionsDataOut.rspAuthsCount = 1;
+    sessionsData.cmdAuthsCount = 1;
+    sessionsData.cmdAuths[0] = &session_data;
+
+    TSS2_RC ret = Tss2_Sys_Clear(ctx->sapi_ctx,
+                                 auth_handle,
+                                 &sessionsData,
+                                 &sessionsDataOut);
+
+    printf("Clear ret=%#X\n", ret);
+
+    return ret;
 }
 
 int create_primary(struct test_context *ctx)
@@ -379,12 +416,12 @@ int evict_control(struct test_context *ctx)
 
     ctx->persistent_key_handle = 0x81010000;
 
-    int ret = Tss2_Sys_EvictControl(ctx->sapi_ctx,
-                                    TPM_RH_OWNER,
-                                    ctx->signing_key_handle,
-                                    &sessionsData,
-                                    ctx->persistent_key_handle,
-                                    &sessionsDataOut);
+    TSS2_RC ret = Tss2_Sys_EvictControl(ctx->sapi_ctx,
+                                        TPM_RH_OWNER,
+                                        ctx->signing_key_handle,
+                                        &sessionsData,
+                                        ctx->persistent_key_handle,
+                                        &sessionsDataOut);
 
     printf("EvictControl ret=%#X\n", ret);
 

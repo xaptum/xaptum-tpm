@@ -180,6 +180,11 @@ Tss2_Sys_EvictControl(TSS2_SYS_CONTEXT *sysContext,
                       TPMI_DH_PERSISTENT persistentHandle,
                       TSS2_SYS_RSP_AUTHS *rspAuthsArray);
 
+TSS2_RC
+Tss2_Sys_Clear(TSS2_SYS_CONTEXT *sysContext,
+               TPMI_RH_CLEAR authHandle,
+               const TSS2_SYS_CMD_AUTHS *cmdAuthsArray,
+               TSS2_SYS_RSP_AUTHS *rspAuthsArray);
 
 #ifdef __cplusplus
 }
