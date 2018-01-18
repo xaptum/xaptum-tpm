@@ -73,7 +73,7 @@ The tests assume that a TPM2.0 simulator (for instance, [IBM's simulator](https:
 is listening locally on TCP port 2321.
 This can be achieved by running the following in the background, before starting the tests:
 ```
-.travis/install-ibm-tpm2.sh
+.travis/install-ibm-tpm2.sh <installation dir>
 .travis/run-ibm-tpm2.sh
 ```
 
