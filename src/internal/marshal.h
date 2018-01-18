@@ -34,24 +34,24 @@ void marshal_uint32(uint32_t in, uint8_t **out);
 int unmarshal_uint16(uint8_t **in, uint32_t *in_max_length, uint16_t *out);
 void marshal_uint16(uint16_t in, uint8_t **out);
 
-void marshal_tpms_ecc_point(TPMS_ECC_POINT *in, uint8_t **out);
+void marshal_tpms_ecc_point(const TPMS_ECC_POINT *in, uint8_t **out);
 
 int unmarshal_tpm2b_public(uint8_t **in, uint32_t *in_max_length, TPM2B_PUBLIC *out);
-void marshal_tpm2b_public(TPM2B_PUBLIC *in, uint8_t **out);
+void marshal_tpm2b_public(const TPM2B_PUBLIC *in, uint8_t **out);
 
-void marshal_tpm2b_data(TPM2B_DATA *in, uint8_t **out);
+void marshal_tpm2b_data(const TPM2B_DATA *in, uint8_t **out);
 
-void marshal_tpml_pcrselection(TPML_PCR_SELECTION *in, uint8_t **out);
+void marshal_tpml_pcrselection(const TPML_PCR_SELECTION *in, uint8_t **out);
 
-void marshal_tpms_authcommand(TPMS_AUTH_COMMAND *in, uint8_t **out);
+void marshal_tpms_authcommand(const TPMS_AUTH_COMMAND *in, uint8_t **out);
 
 int unmarshal_tpms_authresponse(uint8_t **in, uint32_t *in_max_length, TPMS_AUTH_RESPONSE *out);
 
-void marshal_tpm2b_sensitivecreate(TPM2B_SENSITIVE_CREATE *in, uint8_t **out);
+void marshal_tpm2b_sensitivecreate(const TPM2B_SENSITIVE_CREATE *in, uint8_t **out);
 
 int unmarshal_tpm2b_creationdata(uint8_t **in, uint32_t *in_max_length, TPM2B_CREATION_DATA *out);
 
-void marshal_tpm2b_digest(TPM2B_DIGEST *in, uint8_t **out);
+void marshal_tpm2b_digest(const TPM2B_DIGEST *in, uint8_t **out);
 
 int unmarshal_tpm2b_digest(uint8_t **in, uint32_t *in_max_length, TPM2B_DIGEST *out);
 
@@ -59,25 +59,25 @@ int unmarshal_tpmt_tkcreation(uint8_t **in, uint32_t *in_max_length, TPMT_TK_CRE
 
 int unmarshal_tpm2b_name(uint8_t **in, uint32_t *in_max_length, TPM2B_NAME *out);
 
-void marshal_tpm2b_eccpoint(TPM2B_ECC_POINT *in, uint8_t **out);
+void marshal_tpm2b_eccpoint(const TPM2B_ECC_POINT *in, uint8_t **out);
 
 int unmarshal_tpm2b_eccpoint(uint8_t **in, uint32_t *in_max_length, TPM2B_ECC_POINT *out);
 
-void marshal_tpm2b_sensitivedata(TPM2B_SENSITIVE_DATA *in, uint8_t **out);
+void marshal_tpm2b_sensitivedata(const TPM2B_SENSITIVE_DATA *in, uint8_t **out);
 
-void marshal_tpm2b_eccparameter(TPM2B_ECC_PARAMETER *in, uint8_t **out);
+void marshal_tpm2b_eccparameter(const TPM2B_ECC_PARAMETER *in, uint8_t **out);
 
-void marshal_tpmt_sigscheme(TPMT_SIG_SCHEME *in, uint8_t **out);
+void marshal_tpmt_sigscheme(const TPMT_SIG_SCHEME *in, uint8_t **out);
 
-void marshal_tpmt_tkhashcheck(TPMT_TK_HASHCHECK *in, uint8_t **out);
+void marshal_tpmt_tkhashcheck(const TPMT_TK_HASHCHECK *in, uint8_t **out);
 
 int unmarshal_tpmt_signature(uint8_t **in, uint32_t *in_max_length, TPMT_SIGNATURE *out);
 
-void marshal_tpm2b_auth(TPM2B_AUTH *in, uint8_t **out);
+void marshal_tpm2b_auth(const TPM2B_AUTH *in, uint8_t **out);
 
-void marshal_tpm2b_nvpublic(TPM2B_NV_PUBLIC *in, uint8_t **out);
+void marshal_tpm2b_nvpublic(const TPM2B_NV_PUBLIC *in, uint8_t **out);
 
-void marshal_tpm2b_maxnvbuffer(TPM2B_MAX_NV_BUFFER *in, uint8_t **out);
+void marshal_tpm2b_maxnvbuffer(const TPM2B_MAX_NV_BUFFER *in, uint8_t **out);
 
 int unmarshal_tpm2b_maxnvbuffer(uint8_t **in, uint32_t *in_max_length, TPM2B_MAX_NV_BUFFER *out);
 

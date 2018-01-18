@@ -29,10 +29,10 @@
 TSS2_RC
 Tss2_Sys_Sign(TSS2_SYS_CONTEXT *sysContext,
               TPMI_DH_OBJECT keyHandle,
-              TSS2_SYS_CMD_AUTHS const *cmdAuthsArray,
-              TPM2B_DIGEST *digest,
-              TPMT_SIG_SCHEME *inScheme,
-              TPMT_TK_HASHCHECK *validation,
+              const TSS2_SYS_CMD_AUTHS *cmdAuthsArray,
+              const TPM2B_DIGEST *digest,
+              const TPMT_SIG_SCHEME *inScheme,
+              const TPMT_TK_HASHCHECK *validation,
               TPMT_SIGNATURE *signature,
               TSS2_SYS_RSP_AUTHS *rspAuthsArray)
 {
