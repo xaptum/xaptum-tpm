@@ -84,6 +84,21 @@ Tss2_Sys_CreatePrimary(TSS2_SYS_CONTEXT *sysContext,
                        TSS2_SYS_RSP_AUTHS *rspAuthsArray);
 
 TSS2_RC
+Tss2_Sys_Create(TSS2_SYS_CONTEXT *sysContext,
+                TPMI_DH_OBJECT parentHandle,
+                const TSS2_SYS_CMD_AUTHS *cmdAuthsArray,
+                const TPM2B_SENSITIVE_CREATE *inSensitive,
+                const TPM2B_PUBLIC *inPublic,
+                const TPM2B_DATA *outsideInfo,
+                const TPML_PCR_SELECTION *creationPCR,
+                TPM2B_PRIVATE *outPrivate,
+                TPM2B_PUBLIC *outPublic,
+                TPM2B_CREATION_DATA *creationData,
+                TPM2B_DIGEST *creationHash,
+                TPMT_TK_CREATION *creationTicket,
+                TSS2_SYS_RSP_AUTHS *rspAuthsArray);
+
+TSS2_RC
 Tss2_Sys_Commit(TSS2_SYS_CONTEXT *sysContext,
                 TPMI_DH_OBJECT signHandle,
                 const TSS2_SYS_CMD_AUTHS *cmdAuthsArray,
@@ -146,6 +161,25 @@ Tss2_Sys_HierarchyChangeAuth(TSS2_SYS_CONTEXT *sysContext,
                              TSS2_SYS_CMD_AUTHS const *cmdAuthsArray,
                              TPM2B_AUTH *newAuth,
                              TSS2_SYS_RSP_AUTHS *rspAuthsArray);
+
+TSS2_RC
+Tss2_Sys_Load(TSS2_SYS_CONTEXT *sysContext,
+              TPMI_DH_OBJECT parentHandle,
+              const TSS2_SYS_CMD_AUTHS *cmdAuthsArray,
+              const TPM2B_PRIVATE *inPrivate,
+              const TPM2B_PUBLIC *inPublic,
+              TPM_HANDLE *objectHandle,
+              TPM2B_NAME *name,
+              TSS2_SYS_RSP_AUTHS *rspAuthsArray);
+
+TSS2_RC
+Tss2_Sys_EvictControl(TSS2_SYS_CONTEXT *sysContext,
+                      TPMI_RH_PROVISION auth,
+                      TPMI_DH_OBJECT objectHandle,
+                      const TSS2_SYS_CMD_AUTHS *cmdAuthsArray,
+                      TPMI_DH_PERSISTENT persistentHandle,
+                      TSS2_SYS_RSP_AUTHS *rspAuthsArray);
+
 
 #ifdef __cplusplus
 }

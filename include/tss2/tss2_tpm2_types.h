@@ -47,6 +47,8 @@ typedef TPM_ST TPMI_ST_COMMAND_TAG;
 
 typedef uint32_t TPM_HANDLE;
 
+typedef uint16_t TPM_KEY_BITS;
+
 typedef uint32_t TPM_CC;
 #define TPM_CC_NV_UndefineSpace 0x00000122
 #define TPM_CC_HierarchyChangeAuth 0x00000129
@@ -54,15 +56,19 @@ typedef uint32_t TPM_CC;
 #define TPM_CC_CreatePrimary 0x00000131
 #define TPM_CC_NV_Write 0x00000137
 #define TPM_CC_NV_Read 0x0000014E
+#define TPM_CC_Create 0x00000153
+#define TPM_CC_Load 0x00000157
 #define TPM_CC_Sign 0x0000015D
 #define TPM_CC_GetCapability 0x0000017A
 #define TPM_CC_Commit 0x0000018B
+#define TPM_CC_EvictControl 0x00000120
 
 // Only password-authorizations are supported
 typedef	TPM_HANDLE TPMI_SH_AUTH_SESSION;
 #define TPM_RS_PW 0x40000009
 
 typedef TPM_HANDLE TPMI_DH_OBJECT;
+typedef TPM_HANDLE TPMI_DH_PERSISTENT;
 
 typedef	TPM_HANDLE TPMI_RH_HIERARCHY;
 typedef	TPM_HANDLE TPMI_RH_PROVISION;
@@ -81,15 +87,20 @@ typedef	TPM_ALG_ID TPMI_ALG_SYM_OBJECT;
 typedef TPM_ALG_ID TPMI_ALG_ECC_SCHEME;
 typedef TPM_ALG_ID TPMI_ALG_KDF;
 typedef TPM_ALG_ID TPMI_ALG_SIG_SCHEME;
+typedef TPM_ALG_ID TPMI_ALG_SYM_MODE;
+#define TPM_ALG_AES 0x0006
 #define TPM_ALG_SHA256 0x000B
 #define TPM_ALG_SHA512 0x000D
 #define TPM_ALG_NULL 0x0010
 #define TPM_ALG_ECDAA 0x001A
+#define TPM_ALG_KDF1_SP800_108 0x0022
 #define TPM_ALG_ECC 0x0023
+#define TPM_ALG_CFB 0x0043
 
 typedef uint16_t TPM_ECC_CURVE;
 typedef TPM_ECC_CURVE TPMI_ECC_CURVE;
 #define TPM_ECC_BN_P256 0x0010
+#define TPM_ECC_NIST_P256 0x0003
 
 typedef uint8_t TPMA_LOCALITY;
 #define TPM_LOC_ZERO 1
@@ -180,6 +191,22 @@ typedef struct {
     uint8_t buffer[MAX_SYM_DATA];
 } TPM2B_SENSITIVE_DATA;
 
+typedef union {
+    TPM2B_SENSITIVE_DATA bits;
+} TPMU_SENSITIVE_COMPOSITE;
+
+typedef struct {
+    TPMI_ALG_PUBLIC sensitiveType;
+    TPM2B_AUTH authValue;
+    TPM2B_DIGEST seedValue;
+    TPMU_SENSITIVE_COMPOSITE sensitive;
+} TPMT_SENSITIVE;
+
+typedef struct {
+    uint16_t size;
+    TPMT_SENSITIVE sensitiveArea;
+} TPM2B_SENSITIVE;
+
 typedef struct {
     TPM2B_AUTH userAuth;
     TPM2B_SENSITIVE_DATA data;
@@ -191,10 +218,12 @@ typedef struct {
 } TPM2B_SENSITIVE_CREATE;
 
 typedef union {
+    TPM_KEY_BITS aes;
     uint8_t null;
 } TPMU_SYM_KEY_BITS;
 
 typedef union {
+    TPMI_ALG_SYM_MODE sym;
     uint8_t null;
 } TPMU_SYM_MODE;
 
@@ -291,6 +320,17 @@ typedef union {
     TPMT_HA digest;
     TPM_HANDLE handle;
 } TPMU_NAME;
+
+typedef	struct {
+	TPM2B_DIGEST integrityOuter;
+	TPM2B_DIGEST integrityInner;
+	TPM2B_SENSITIVE sensitive;
+} _PRIVATE;
+
+typedef struct {
+    uint16_t size;
+    uint8_t buffer[sizeof(_PRIVATE)];
+} TPM2B_PRIVATE;
 
 typedef struct {
     uint16_t size;

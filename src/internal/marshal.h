@@ -81,6 +81,10 @@ void marshal_tpm2b_maxnvbuffer(const TPM2B_MAX_NV_BUFFER *in, uint8_t **out);
 
 int unmarshal_tpm2b_maxnvbuffer(uint8_t **in, uint32_t *in_max_length, TPM2B_MAX_NV_BUFFER *out);
 
+void marshal_tpm2b_private(const TPM2B_PRIVATE *in, uint8_t **out);
+
+int unmarshal_tpm2b_private(uint8_t **in, uint32_t *in_max_length, TPM2B_PRIVATE *out);
+
 #ifdef __cplusplus
 }
 #endif

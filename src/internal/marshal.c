@@ -202,6 +202,12 @@ void marshal_tpmt_sym_def_object(const TPMT_SYM_DEF_OBJECT *in, uint8_t **out)
     switch (in->algorithm) {
         case TPM_ALG_NULL:
             marshal_uint16(TPM_ALG_NULL, out);
+            break;
+        case TPM_ALG_AES:
+            marshal_uint16(TPM_ALG_AES, out);
+            marshal_uint16(in->keyBits.aes, out);
+            marshal_tpmi_alg_id(in->mode.sym, out);
+            break;
     }
 }
 
@@ -216,6 +222,12 @@ int unmarshal_tpmt_sym_def_object(uint8_t **in, uint32_t *in_max_length, TPMT_SY
             (void)in;
             (void)in_max_length;
             (void)out;
+            break;
+        case TPM_ALG_AES:
+            if (0 != unmarshal_uint16(in, in_max_length, &out->keyBits.aes))
+                return -1;
+            if (0 != unmarshal_tpmi_alg_id(in, in_max_length, &out->mode.sym))
+                return -1;
             break;
         default:
             return -2;
@@ -248,7 +260,9 @@ int unmarshal_tpmt_ecc_scheme(uint8_t **in, uint32_t *in_max_length, TPMT_ECC_SC
 
             if (0 != unmarshal_uint16(in, in_max_length, &out->details.ecdaa.count))
                 return -1;
-
+            break;
+        case TPM_ALG_NULL:
+            // do nothing
             break;
         default:
             return -2;
@@ -739,6 +753,19 @@ void marshal_tpm2b_maxnvbuffer(const TPM2B_MAX_NV_BUFFER *in, uint8_t **out)
 }
 
 int unmarshal_tpm2b_maxnvbuffer(uint8_t **in, uint32_t *in_max_length, TPM2B_MAX_NV_BUFFER *out)
+{
+    if (0 != unmarshal_tpm2b_simple(in, in_max_length, (TPM2B_SIMPLE*)out))
+        return -1;
+
+    return 0;
+}
+
+void marshal_tpm2b_private(const TPM2B_PRIVATE *in, uint8_t **out)
+{
+    marshal_tpm2b_simple((TPM2B_SIMPLE*)in, out);
+}
+
+int unmarshal_tpm2b_private(uint8_t **in, uint32_t *in_max_length, TPM2B_PRIVATE *out)
 {
     if (0 != unmarshal_tpm2b_simple(in, in_max_length, (TPM2B_SIMPLE*)out))
         return -1;
