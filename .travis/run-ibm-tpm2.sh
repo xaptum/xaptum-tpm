@@ -18,14 +18,20 @@ if [[ $# -ne 1 ]]; then
         exit 1
 fi
 
-cd "$1"
+installation_dir="$1"
 
 pkill tpm_server
-cd ./tpm/src/
+
+pushd $installation_dir
+
+pushd tpm
 ./tpm_server -rm &
 sleep 2
-cd ../..
+popd
 
-cd ./tss/utils/
+pushd tss/utils/
 ./powerup
 ./startup
+popd
+
+popd
