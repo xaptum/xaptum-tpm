@@ -18,25 +18,22 @@ if [[ $# -ne 1 ]]; then
         exit 1
 fi
 
-tpm_version=532
-tss_version=593
+installation_dir="$1"
 
-install_dir="$1"
+if [[ ! -d "$installation_dir" ]]; then
+        git clone https://github.com/zanebeckwith/ibm-tpm2-simulator-mirror "$installation_dir"
+fi
 
-mkdir -p ${install_dir}
-cd ${install_dir}
+pushd $installation_dir 
 
-mkdir -p ./tpm
-cd ./tpm
-wget https://sourceforge.net/projects/ibmswtpm2/files/ibmtpm${tpm_version}.tar
-tar xvf ibmtpm${tpm_version}.tar
-cd ./src/
+pushd ./tpm
 make
-cd ../../
+popd
 
-mkdir -p ./tss
-cd ./tss
-wget https://sourceforge.net/projects/ibmtpm20tss/files/ibmtss${tss_version}.tar
-tar xvf ibmtss${tss_version}.tar
-cd ./utils/
+pushd ./tss
+pushd ./utils/
 make
+popd
+popd
+
+popd
