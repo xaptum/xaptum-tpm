@@ -385,31 +385,31 @@ typedef struct {
 
 typedef struct {
     unsigned TPMA_NV_PPWRITE : 1;
-    unsigned TPMA_OWNERWRITE : 1;
-    unsigned TPMA_AUTHWRITE : 1;
-    unsigned TPMA_POLICYWRITE : 1;
-    unsigned TPMA_COUNTER : 1;
-    unsigned TPMA_BITS : 1;
-    unsigned TPMA_EXTEND : 1;
+    unsigned TPMA_NV_OWNERWRITE : 1;
+    unsigned TPMA_NV_AUTHWRITE : 1;
+    unsigned TPMA_NV_POLICYWRITE : 1;
+    unsigned TPMA_NV_COUNTER : 1;
+    unsigned TPMA_NV_BITS : 1;
+    unsigned TPMA_NV_EXTEND : 1;
     unsigned Reserved1 : 3;
-    unsigned TPMA_POLICY_DELETE : 1;
-    unsigned TPMA_WRITELOCKED : 1;
-    unsigned TPMA_WRITEALL : 1;
-    unsigned TPMA_WRITEDEFINE : 1;
-    unsigned TPMA_WRITE_STCLEAR : 1;
-    unsigned TPMA_GLOBALLOCK : 1;
-    unsigned TPMA_PPREAD : 1;
-    unsigned TPMA_OWNERREAD : 1;
-    unsigned TPMA_AUTHREAD : 1;
-    unsigned TPMA_POLICYREAD : 1;
+    unsigned TPMA_NV_POLICY_DELETE : 1;
+    unsigned TPMA_NV_WRITELOCKED : 1;
+    unsigned TPMA_NV_WRITEALL : 1;
+    unsigned TPMA_NV_WRITEDEFINE : 1;
+    unsigned TPMA_NV_WRITE_STCLEAR : 1;
+    unsigned TPMA_NV_GLOBALLOCK : 1;
+    unsigned TPMA_NV_PPREAD : 1;
+    unsigned TPMA_NV_OWNERREAD : 1;
+    unsigned TPMA_NV_AUTHREAD : 1;
+    unsigned TPMA_NV_POLICYREAD : 1;
     unsigned Reserved2 : 5;
-    unsigned TPMA_NO_DA : 1;
-    unsigned TPMA_ORDERLY : 1;
-    unsigned TPMA_CLEAR_STCLEAR : 1;
-    unsigned TPMA_READLOCKED : 1;
-    unsigned TPMA_WRITTEN : 1;
-    unsigned TPMA_PLATFORMCREATE : 1;
-    unsigned TPMA_READ_STCLEAR : 1;
+    unsigned TPMA_NV_NO_DA : 1;
+    unsigned TPMA_NV_ORDERLY : 1;
+    unsigned TPMA_NV_CLEAR_STCLEAR : 1;
+    unsigned TPMA_NV_READLOCKED : 1;
+    unsigned TPMA_NV_WRITTEN : 1;
+    unsigned TPMA_NV_PLATFORMCREATE : 1;
+    unsigned TPMA_NV_READ_STCLEAR : 1;
 } TPMA_NV;
 
 typedef struct {
