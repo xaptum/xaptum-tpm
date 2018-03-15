@@ -106,9 +106,9 @@ int define(struct test_context *ctx, int index, uint16_t size)
     public_info.nvPublic.nvIndex = index;
     public_info.nvPublic.nameAlg = TPM_ALG_SHA256;
     // TODO
-    public_info.nvPublic.attributes.TPMA_OWNERWRITE = 1;
-    public_info.nvPublic.attributes.TPMA_POLICYWRITE = 1;
-    public_info.nvPublic.attributes.TPMA_OWNERREAD = 1;
+    public_info.nvPublic.attributes.TPMA_NV_OWNERWRITE = 1;
+    public_info.nvPublic.attributes.TPMA_NV_POLICYWRITE = 1;
+    public_info.nvPublic.attributes.TPMA_NV_OWNERREAD = 1;
     public_info.nvPublic.authPolicy.size = 0;
     public_info.nvPublic.dataSize = size;
 

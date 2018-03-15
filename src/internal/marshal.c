@@ -670,59 +670,59 @@ void marshal_tpmanv(const TPMA_NV *in, uint8_t **out)
 
     if (in->TPMA_NV_PPWRITE)
         (*out)[3] |= BIT_ZERO;
-    if (in->TPMA_OWNERWRITE)
+    if (in->TPMA_NV_OWNERWRITE)
         (*out)[3] |= BIT_ONE;
-    if (in->TPMA_AUTHWRITE)
+    if (in->TPMA_NV_AUTHWRITE)
         (*out)[3] |= BIT_TWO;
-    if (in->TPMA_POLICYWRITE)
+    if (in->TPMA_NV_POLICYWRITE)
         (*out)[3] |= BIT_THREE;
-    if (in->TPMA_COUNTER)
+    if (in->TPMA_NV_COUNTER)
         (*out)[3] |= BIT_FOUR;
-    if (in->TPMA_BITS)
+    if (in->TPMA_NV_BITS)
         (*out)[3] |= BIT_FIVE;
-    if (in->TPMA_EXTEND)
+    if (in->TPMA_NV_EXTEND)
         (*out)[3] |= BIT_SIX;
     // bit 7 reserved
     // bit 8 reserved
     // bit 9 reserved
-    if (in->TPMA_POLICY_DELETE)
+    if (in->TPMA_NV_POLICY_DELETE)
         (*out)[2] |= BIT_TWO;
-    if (in->TPMA_WRITELOCKED)
+    if (in->TPMA_NV_WRITELOCKED)
         (*out)[2] |= BIT_THREE;
-    if (in->TPMA_WRITEALL)
+    if (in->TPMA_NV_WRITEALL)
         (*out)[2] |= BIT_FOUR;
-    if (in->TPMA_WRITEDEFINE)
+    if (in->TPMA_NV_WRITEDEFINE)
         (*out)[2] |= BIT_FIVE;
-    if (in->TPMA_WRITE_STCLEAR)
+    if (in->TPMA_NV_WRITE_STCLEAR)
         (*out)[2] |= BIT_SIX;
-    if (in->TPMA_GLOBALLOCK)
+    if (in->TPMA_NV_GLOBALLOCK)
         (*out)[2] |= BIT_SEVEN;
-    if (in->TPMA_PPREAD)
+    if (in->TPMA_NV_PPREAD)
         (*out)[1] |= BIT_ZERO;
-    if (in->TPMA_OWNERREAD)
+    if (in->TPMA_NV_OWNERREAD)
         (*out)[1] |= BIT_ONE;
-    if (in->TPMA_AUTHREAD)
+    if (in->TPMA_NV_AUTHREAD)
         (*out)[1] |= BIT_TWO;
-    if (in->TPMA_POLICYREAD)
+    if (in->TPMA_NV_POLICYREAD)
         (*out)[1] |= BIT_THREE;
     // bit 20 is reserved
     // bit 21 is reserved
     // bit 22 is reserved
     // bit 23 is reserved
     // bit 24 is reserved
-    if (in->TPMA_NO_DA)
+    if (in->TPMA_NV_NO_DA)
         (*out)[0] |= BIT_ONE;
-    if (in->TPMA_ORDERLY)
+    if (in->TPMA_NV_ORDERLY)
         (*out)[0] |= BIT_TWO;
-    if (in->TPMA_CLEAR_STCLEAR)
+    if (in->TPMA_NV_CLEAR_STCLEAR)
         (*out)[0] |= BIT_THREE;
-    if (in->TPMA_READLOCKED)
+    if (in->TPMA_NV_READLOCKED)
         (*out)[0] |= BIT_FOUR;
-    if (in->TPMA_WRITTEN)
+    if (in->TPMA_NV_WRITTEN)
         (*out)[0] |= BIT_FIVE;
-    if (in->TPMA_PLATFORMCREATE)
+    if (in->TPMA_NV_PLATFORMCREATE)
         (*out)[0] |= BIT_SIX;
-    if (in->TPMA_READ_STCLEAR)
+    if (in->TPMA_NV_READ_STCLEAR)
         (*out)[0] |= BIT_SEVEN;
 
     *out += 4;
