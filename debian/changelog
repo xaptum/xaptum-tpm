@@ -1,3 +1,9 @@
+xaptum-tpm (0.5.1-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- David R. Bild <david.bild@xaptum.com>  Thu, 22 Mar 2018 21:34:54 +0000
+
 xaptum-tpm (0.5.0-1) unstable; urgency=medium
 
   * New upstream release
