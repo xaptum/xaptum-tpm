@@ -13,36 +13,24 @@ be built from source.
 
 ### Debian (Jessie or Stretch)
 
-Install the repository GPG key.
-
 ``` bash
-apt-key adv --keyserver keyserver.ubuntu.com --recv-keys c615bfaa7fe1b4ca
-```
+# Install the Xaptum API repo GPG signing key.
+apt-get adv --keyserver keyserver.ubuntu.com --recv-keys c615bfaa7fe1b4ca
 
-Add the repository to APT sources, replacing `<dist>` with either `jessie`
-or `stretch`.
+# Add the repository to your APT sources, replacing <dist> with either jessie or stretch.
+echo "deb http://dl.bintray.com/xaptum/deb <dist> main" > /etc/apt/sources.list.d/xaptum.list
 
-``` bash
-echo "deb http://dl.bintray.com/xaptum/deb <dist> main" | sudo tee -a /etc/apt/sources.list
-sudo apt-get update
-```
-
-Install the library.
-
-``` bash
+# Install the library
 sudo apt-get install libxaptum-tpm-dev
 ```
 
 ### Homebrew (MacOS)
 
-Tap the Xaptum repository.
-
 ``` bash
+# Tap the Xaptum repository.
 brew tap xaptum/xaptum
-```
 
-Install the library.
-``` bash
+# Install the library.
 brew install xaptum-tpm
 ```
 
@@ -87,15 +75,18 @@ The following CMake configuration options are supported.
 
 ### Testing
 
-The tests assume that a TPM2.0 simulator (for instance, [IBM's simulator](https://sourceforge.net/projects/ibmswtpm2/))
-is listening locally on TCP port 2321.
-This can be achieved by running the following in the background, before starting the tests:
+The TPM tests require a [TPM 2.0
+simulator](https://sourceforge.net/projects/ibmswtpm2/) running
+locally on TCP port 2321.
+
+Use the following commands to start the simulator before running the tests.
 ```
 .travis/install-ibm-tpm2.sh <installation dir>
 .travis/run-ibm-tpm2.sh
 ```
 
-Then, to run the test suite:
+To run the tests:
+
 ```bash
 cd build
 ctest -V
@@ -107,3 +98,18 @@ ctest -V
 cd build
 cmake --build . --target install
 ```
+
+# License
+Copyright 2017-2018 Xaptum, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this work except in compliance with the License. You may obtain a copy of
+the License from the LICENSE.txt file or at
+
+[http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations under
+the License.
