@@ -99,6 +99,12 @@ cd build
 cmake --build . --target install
 ```
 
+## Utilities
+The following command-line utilities are provided by `xaptum-tpm` for interacting with a Xaptum TPM2.0:
+- `xtpm_read_nvram`
+  - Query the value of one of the pre-created NVRAM indices `gpk`, `cred`, `cred_sig`, `root_id`, `root_pubkey`, or `root_cert`:
+  - `xtpm_read_nvram <index-name> <output-file>`
+
 # License
 Copyright 2017-2018 Xaptum, Inc.
 
