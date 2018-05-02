@@ -16,7 +16,7 @@
  *
  *****************************************************************************/
 
-#include <tss2/xaptum_nvram.h>
+#include <xaptum/tpm/nvram.h>
 
 #include <tss2/tss2_sys.h>
 

@@ -17,7 +17,7 @@
  *****************************************************************************/
 
 #include <tss2/tss2_tcti_socket.h>
-#include <tss2/xaptum_nvram.h>
+#include <xaptum/tpm/nvram.h>
 
 #include <stdlib.h>
 #include <string.h>
