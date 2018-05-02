@@ -39,6 +39,7 @@ set(XAPTUM_TPM_VERSION ${PROJECT_VERSION})
 set(XAPTUM_TPM_SOVERSION ${PROJECT_VERSION_MAJOR})
 
 set(XAPTUM_TPM_SRCS
+    src/xaptum_nvram.c
     src/tss2_tcti_socket.c
     src/tss2_sys_context_allocation.c
     src/tss2_sys_clear.c
