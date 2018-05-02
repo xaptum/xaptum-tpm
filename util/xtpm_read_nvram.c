@@ -72,6 +72,8 @@ int main(int argc, char *argv[])
 
     dump_binary_to_file(ctx.out_filename, output_data, ctx.size);
 
+    tss2_tcti_finalize(ctx.tcti_context);
+
     printf("\tok\n");
 }
 

@@ -95,7 +95,6 @@ xtpm_read_nvram(unsigned char *out,
 
 finish:
     Tss2_Sys_Finalize(sapi_context);
-    tss2_tcti_finalize(tcti_context);
 
     return ret;
 }
