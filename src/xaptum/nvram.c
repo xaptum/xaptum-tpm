@@ -22,19 +22,65 @@
 
 #include <string.h>
 
-#define GPK_LENGTH 258
-#define CRED_LENGTH 260
-#define CRED_SIG_LENGTH 64
-#define ROOT_ID_LENGTH 16
-#define ROOT_PUBKEY_LENGTH 32
-#define ROOT_ASN1CERT_LENGTH 276
+uint16_t xtpm_gpk_length()
+{
+    return XTPM_GPK_LENGTH;
+}
 
-TPMI_RH_NV_INDEX xtpm_gpk_handle_g = 0x1410000;
-TPMI_RH_NV_INDEX xtpm_cred_handle_g = 0x1410001;
-TPMI_RH_NV_INDEX xtpm_cred_sig_handle_g = 0x1410002;
-TPMI_RH_NV_INDEX xtpm_root_id_handle_g = 0x1410003;
-TPMI_RH_NV_INDEX xtpm_root_pubkey_handle_g = 0x1410004;
-TPMI_RH_NV_INDEX xtpm_root_asn1cert_handle_g = 0x1410005;
+uint16_t xtpm_cred_length()
+{
+    return XTPM_CRED_LENGTH;
+}
+
+uint16_t xtpm_cred_sig_length()
+{
+    return XTPM_CRED_SIG_LENGTH;
+}
+
+uint16_t xtpm_root_id_length()
+{
+    return XTPM_ROOT_ID_LENGTH;
+}
+
+uint16_t xtpm_root_pubkey_length()
+{
+    return XTPM_ROOT_PUBKEY_LENGTH;
+}
+
+uint16_t xtpm_root_asn1cert_length()
+{
+    return XTPM_ROOT_ASN1CERT_LENGTH;
+}
+
+TPMI_RH_NV_INDEX xtpm_gpk_handle()
+{
+    return XTPM_GPK_HANDLE;
+}
+
+TPMI_RH_NV_INDEX xtpm_cred_handle()
+{
+    return XTPM_CRED_HANDLE;
+}
+
+TPMI_RH_NV_INDEX xtpm_cred_sig_handle()
+{
+    return XTPM_CRED_SIG_HANDLE;
+}
+
+TPMI_RH_NV_INDEX xtpm_root_id_handle()
+{
+    return XTPM_ROOT_ID_HANDLE;
+}
+
+TPMI_RH_NV_INDEX xtpm_root_pubkey_handle()
+{
+    return XTPM_ROOT_PUBKEY_HANDLE;
+}
+
+TPMI_RH_NV_INDEX xtpm_root_asn1cert_handle()
+{
+    return XTPM_ROOT_ASN1CERT_HANDLE;
+}
 
 TSS2_RC
 xtpm_read_object(unsigned char* out_buffer,
@@ -48,28 +94,28 @@ xtpm_read_object(unsigned char* out_buffer,
 
     switch (object_name) {
         case XTPM_GROUP_PUBLIC_KEY:
-            index = xtpm_gpk_handle_g;
-            size = GPK_LENGTH;
+            index = XTPM_GPK_HANDLE;
+            size = XTPM_GPK_LENGTH;
             break;
         case XTPM_CREDENTIAL:
-            index = xtpm_cred_handle_g;
-            size = CRED_LENGTH;
+            index = XTPM_CRED_HANDLE;
+            size = XTPM_CRED_LENGTH;
             break;
         case XTPM_CREDENTIAL_SIGNATURE:
-            index = xtpm_cred_sig_handle_g;
-            size = CRED_SIG_LENGTH;
+            index = XTPM_CRED_SIG_HANDLE;
+            size = XTPM_CRED_SIG_LENGTH;
             break;
         case XTPM_ROOT_ID:
-            index = xtpm_root_id_handle_g;
-            size = ROOT_ID_LENGTH;
+            index = XTPM_ROOT_ID_HANDLE;
+            size = XTPM_ROOT_ID_LENGTH;
             break;
         case XTPM_ROOT_PUBKEY:
-            index = xtpm_root_pubkey_handle_g;
-            size = ROOT_PUBKEY_LENGTH;
+            index = XTPM_ROOT_PUBKEY_HANDLE;
+            size = XTPM_ROOT_PUBKEY_LENGTH;
             break;
         case XTPM_ROOT_ASN1_CERTIFICATE:
-            index = xtpm_root_asn1cert_handle_g;
-            size = ROOT_ASN1CERT_LENGTH;
+            index = XTPM_ROOT_ASN1CERT_HANDLE;
+            size = XTPM_ROOT_ASN1CERT_LENGTH;
             break;
         default:
             return TSS2_BASE_RC_GENERAL_FAILURE;
