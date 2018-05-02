@@ -29,9 +29,8 @@ struct nvram_context {
     const char *tpm_hostname;
     const char *tpm_port;
     const char *out_filename;
-    uint32_t index;
-    uint32_t size;
     unsigned char tcti_context_buffer[128];
+    enum xtpm_object_name obj_name;
     TSS2_TCTI_CONTEXT *tcti_context;
 };
 
@@ -59,18 +58,15 @@ int main(int argc, char *argv[])
     init_socket_tcti(&ctx);
 
     unsigned char output_data[MAX_NVRAM_SIZE];
-    if (ctx.size > sizeof(output_data)) {
-        fprintf(stderr, "Requested size is larger than allocated buffer\n");
-        exit(1);
-    }
-    printf("Reading from index %#X of size %u...", ctx.index, ctx.size);
-    TSS2_RC read_ret = xtpm_read_nvram(output_data, ctx.size, ctx.index, ctx.tcti_context);
+    uint16_t output_length;
+    printf("Reading object from NVRAM...");
+    TSS2_RC read_ret = xtpm_read_object(output_data, sizeof(output_data), &output_length, ctx.obj_name, ctx.tcti_context);
     if (TSS2_RC_SUCCESS != read_ret) {
         fprintf(stderr, "Bad read_ret: %#X\n", read_ret);
         exit(1);
     }
 
-    dump_binary_to_file(ctx.out_filename, output_data, ctx.size);
+    dump_binary_to_file(ctx.out_filename, output_data, output_length);
 
     tss2_tcti_finalize(ctx.tcti_context);
 
@@ -100,28 +96,28 @@ parse_cli_args(int argc,
                char *argv[],
                struct nvram_context *ctx)
 {
-    const char *usage_str = "usage: %s <index-name> <output file> [tpm hostname = 'localhost'] [tpm port = '2321']\n"
-                            "\twhere index-name:\n"
+    const char *usage_str = "usage: %s <object-name> <output file> [tpm hostname = 'localhost'] [tpm port = '2321']\n"
+                            "\twhere object-name:\n"
                             "\t\tgpk\n"
                             "\t\tcred\n"
                             "\t\tcred_sig\n"
                             "\t\troot_id\n"
                             "\t\troot_pubkey\n"
-                            "\t\troot_cert\n";
+                            "\t\troot_asn1_cert\n";
 
     ctx->tpm_hostname = "localhost";
     ctx->tpm_port = "2321";
 
-    const char *type = NULL;
+    const char *obj_name = NULL;
     if (3 == argc) {
-        type = argv[1];
+        obj_name = argv[1];
         ctx->out_filename = argv[2];
     } else if (4 == argc) {
-        type = argv[1];
+        obj_name = argv[1];
         ctx->out_filename = argv[2];
         ctx->tpm_hostname = argv[3];
     } else if (5 == argc) {
-        type = argv[1];
+        obj_name = argv[1];
         ctx->out_filename = argv[2];
         ctx->tpm_hostname = argv[3];
         ctx->tpm_port = argv[4];
@@ -131,26 +127,20 @@ parse_cli_args(int argc,
         exit(1);
     }
 
-    if (0 == strcmp(type, "gpk")) {
-        ctx->index = xtpm_gpk_handle_g;
-        ctx->size = GPK_LENGTH;
-    } else if (0 == strcmp(type, "cred")) {
-        ctx->index = xtpm_cred_handle_g;
-        ctx->size = CRED_LENGTH;
-    } else if (0 == strcmp(type, "cred_sig")) {
-        ctx->index = xtpm_cred_sig_handle_g;
-        ctx->size = CRED_SIG_LENGTH;
-    } else if (0 == strcmp(type, "root_id")) {
-        ctx->index = xtpm_root_id_handle_g;
-        ctx->size = ROOT_ID_LENGTH;
-    } else if (0 == strcmp(type, "root_pubkey")) {
-        ctx->index = xtpm_root_pubkey_handle_g;
-        ctx->size = ROOT_PUBKEY_LENGTH;
-    } else if (0 == strcmp(type, "root_cert")) {
-        ctx->index = xtpm_root_asn1cert_handle_g;
-        ctx->size = ROOT_ASN1CERT_LENGTH;
+    if (0 == strcmp(obj_name, "gpk")) {
+        ctx->obj_name = XTPM_GROUP_PUBLIC_KEY;
+    } else if (0 == strcmp(obj_name, "cred")) {
+        ctx->obj_name = XTPM_CREDENTIAL;
+    } else if (0 == strcmp(obj_name, "cred_sig")) {
+        ctx->obj_name = XTPM_CREDENTIAL_SIGNATURE;
+    } else if (0 == strcmp(obj_name, "root_id")) {
+        ctx->obj_name = XTPM_ROOT_ID;
+    } else if (0 == strcmp(obj_name, "root_pubkey")) {
+        ctx->obj_name = XTPM_ROOT_PUBKEY;
+    } else if (0 == strcmp(obj_name, "root_asn1_cert")) {
+        ctx->obj_name = XTPM_ROOT_ASN1_CERTIFICATE;
     } else {
-        fprintf(stderr, "Unrecognized index type '%s'\n", type);
+        fprintf(stderr, "Unrecognized object name '%s'\n", obj_name);
         exit(1);
     }
 }

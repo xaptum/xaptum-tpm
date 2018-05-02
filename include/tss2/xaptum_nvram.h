@@ -27,19 +27,21 @@
 extern "C" {
 #endif
 
-#define GPK_LENGTH 258
-#define CRED_LENGTH 260
-#define CRED_SIG_LENGTH 64
-#define ROOT_ID_LENGTH 16
-#define ROOT_PUBKEY_LENGTH 32
-#define ROOT_ASN1CERT_LENGTH 276
+enum xtpm_object_name {
+    XTPM_GROUP_PUBLIC_KEY,
+    XTPM_CREDENTIAL,
+    XTPM_CREDENTIAL_SIGNATURE,
+    XTPM_ROOT_ID,
+    XTPM_ROOT_PUBKEY,
+    XTPM_ROOT_ASN1_CERTIFICATE
+};
 
-TPMI_RH_NV_INDEX xtpm_gpk_handle_g = 0x1410000;
-TPMI_RH_NV_INDEX xtpm_cred_handle_g = 0x1410001;
-TPMI_RH_NV_INDEX xtpm_cred_sig_handle_g = 0x1410002;
-TPMI_RH_NV_INDEX xtpm_root_id_handle_g = 0x1410003;
-TPMI_RH_NV_INDEX xtpm_root_pubkey_handle_g = 0x1410004;
-TPMI_RH_NV_INDEX xtpm_root_asn1cert_handle_g = 0x1410005;
+TSS2_RC
+xtpm_read_object(unsigned char* out_buffer,
+                 uint16_t out_buffer_size,
+                 uint16_t *out_length,
+                 enum xtpm_object_name object_name,
+                 TSS2_TCTI_CONTEXT *tcti_context);
 
 TSS2_RC
 xtpm_read_nvram(unsigned char *out,
