@@ -20,8 +20,7 @@
 #define XAPTUM_TPM_XAPTUMNVRAM_H
 #pragma once
 
-#include <tss2/tss2_tcti.h>
-#include <tss2/tss2_tpm2_types.h>
+#include <tss2/tss2_sys.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -41,13 +40,13 @@ xtpm_read_object(unsigned char* out_buffer,
                  uint16_t out_buffer_size,
                  uint16_t *out_length,
                  enum xtpm_object_name object_name,
-                 TSS2_TCTI_CONTEXT *tcti_context);
+                 TSS2_SYS_CONTEXT *sapi_context);
 
 TSS2_RC
 xtpm_read_nvram(unsigned char *out,
                 uint16_t size,
                 TPM_HANDLE index,
-                TSS2_TCTI_CONTEXT *tcti_context);
+                TSS2_SYS_CONTEXT *sapi_context);
 
 
 #ifdef __cplusplus

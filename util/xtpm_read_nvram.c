@@ -29,14 +29,20 @@ struct nvram_context {
     const char *tpm_hostname;
     const char *tpm_port;
     const char *out_filename;
-    unsigned char tcti_context_buffer[128];
     enum xtpm_object_name obj_name;
+    unsigned char tcti_context_buffer[128];
     TSS2_TCTI_CONTEXT *tcti_context;
+    unsigned char sapi_context_buffer[5120];
+    TSS2_SYS_CONTEXT *sapi_context;
 };
 
 static
 void
 init_socket_tcti(struct nvram_context *ctx);
+
+static
+void
+init_sapi(struct nvram_context *ctx);
 
 static
 void
@@ -56,11 +62,12 @@ int main(int argc, char *argv[])
     parse_cli_args(argc, argv, &ctx);
 
     init_socket_tcti(&ctx);
+    init_sapi(&ctx);
 
     unsigned char output_data[MAX_NVRAM_SIZE];
     uint16_t output_length;
     printf("Reading object from NVRAM...");
-    TSS2_RC read_ret = xtpm_read_object(output_data, sizeof(output_data), &output_length, ctx.obj_name, ctx.tcti_context);
+    TSS2_RC read_ret = xtpm_read_object(output_data, sizeof(output_data), &output_length, ctx.obj_name, ctx.sapi_context);
     if (TSS2_RC_SUCCESS != read_ret) {
         fprintf(stderr, "Bad read_ret: %#X\n", read_ret);
         exit(1);
@@ -68,6 +75,7 @@ int main(int argc, char *argv[])
 
     dump_binary_to_file(ctx.out_filename, output_data, output_length);
 
+    Tss2_Sys_Finalize(ctx.sapi_context);
     tss2_tcti_finalize(ctx.tcti_context);
 
     printf("\tok\n");
@@ -87,6 +95,28 @@ init_socket_tcti(struct nvram_context *ctx)
     ret = tss2_tcti_init_socket(ctx->tpm_hostname, ctx->tpm_port, ctx->tcti_context);
     if (TSS2_RC_SUCCESS != ret) {
         fprintf(stderr, "Error initializing TCTI socket\n");
+        exit(1);
+    }
+}
+
+void
+init_sapi(struct nvram_context *ctx)
+{
+    TSS2_RC ret = TSS2_RC_SUCCESS;
+
+    if (Tss2_Sys_GetContextSize(0) > sizeof(ctx->sapi_context_buffer)) {
+        fprintf(stderr, "SAPI context larger than allocated buffer\n");
+        exit(1);
+    }
+    ctx->sapi_context = (TSS2_SYS_CONTEXT*)ctx->sapi_context_buffer;
+
+    TSS2_ABI_VERSION abi_version = TSS2_ABI_CURRENT_VERSION;
+    ret = Tss2_Sys_Initialize(ctx->sapi_context,
+                              Tss2_Sys_GetContextSize(0),
+                              ctx->tcti_context,
+                              &abi_version);
+    if (TSS2_RC_SUCCESS != ret) {
+        fprintf(stderr, "Error initializing SAPI context\n");
         exit(1);
     }
 }

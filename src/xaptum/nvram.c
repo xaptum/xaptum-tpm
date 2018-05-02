@@ -41,7 +41,7 @@ xtpm_read_object(unsigned char* out_buffer,
                  uint16_t out_buffer_size,
                  uint16_t *out_length,
                  enum xtpm_object_name object_name,
-                 TSS2_TCTI_CONTEXT *tcti_context)
+                 TSS2_SYS_CONTEXT *sapi_context)
 {
     uint16_t size;
     TPM_HANDLE index;
@@ -80,32 +80,16 @@ xtpm_read_object(unsigned char* out_buffer,
 
     *out_length = size;
 
-    return xtpm_read_nvram(out_buffer, size, index, tcti_context);
+    return xtpm_read_nvram(out_buffer, size, index, sapi_context);
 }
 
 TSS2_RC
 xtpm_read_nvram(unsigned char *out,
                 uint16_t size,
                 TPM_HANDLE index,
-                TSS2_TCTI_CONTEXT *tcti_context)
+                TSS2_SYS_CONTEXT *sapi_context)
 {
     TSS2_RC ret = TSS2_RC_SUCCESS;
-
-    // 1) Create SAPI context
-    unsigned char sapi_context_buffer[5120];
-    if (Tss2_Sys_GetContextSize(0) > sizeof(sapi_context_buffer)) {
-        return TSS2_SYS_RC_INSUFFICIENT_CONTEXT;
-    }
-    TSS2_SYS_CONTEXT *sapi_context = (TSS2_SYS_CONTEXT*)sapi_context_buffer;
-
-    TSS2_ABI_VERSION abi_version = TSS2_ABI_CURRENT_VERSION;
-    ret = Tss2_Sys_Initialize(sapi_context,
-                              Tss2_Sys_GetContextSize(0),
-                              tcti_context,
-                              &abi_version);
-    if (TSS2_RC_SUCCESS != ret) {
-        return ret;
-    }
 
     // We (Xaptum) set AUTHREAD and no password.
     //  This means anyone can read,
@@ -145,7 +129,7 @@ xtpm_read_nvram(unsigned char *out,
                                &sessionsDataOut);
 
         if (ret != TSS2_RC_SUCCESS) {
-            goto finish;
+            return ret;
         }
 
         size -= nv_data.size;
@@ -153,9 +137,6 @@ xtpm_read_nvram(unsigned char *out,
         memcpy(out + data_offset, nv_data.buffer, nv_data.size);
         data_offset += nv_data.size;
     }
-
-finish:
-    Tss2_Sys_Finalize(sapi_context);
 
     return ret;
 }
