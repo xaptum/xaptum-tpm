@@ -127,17 +127,17 @@ parse_cli_args(int argc,
         exit(1);
     }
 
-    if (0 == strcmp(obj_name, "gpk")) {
+    if (0 == strncmp(obj_name, "gpk", sizeof("gpk"))) {
         ctx->obj_name = XTPM_GROUP_PUBLIC_KEY;
-    } else if (0 == strcmp(obj_name, "cred")) {
+    } else if (0 == strncmp(obj_name, "cred", sizeof("cred"))) {
         ctx->obj_name = XTPM_CREDENTIAL;
-    } else if (0 == strcmp(obj_name, "cred_sig")) {
+    } else if (0 == strncmp(obj_name, "cred_sig", sizeof("cred_sig"))) {
         ctx->obj_name = XTPM_CREDENTIAL_SIGNATURE;
-    } else if (0 == strcmp(obj_name, "root_id")) {
+    } else if (0 == strncmp(obj_name, "root_id", sizeof("root_id"))) {
         ctx->obj_name = XTPM_ROOT_ID;
-    } else if (0 == strcmp(obj_name, "root_pubkey")) {
+    } else if (0 == strncmp(obj_name, "root_pubkey", sizeof("root_pubkey"))) {
         ctx->obj_name = XTPM_ROOT_PUBKEY;
-    } else if (0 == strcmp(obj_name, "root_asn1_cert")) {
+    } else if (0 == strncmp(obj_name, "root_asn1_cert", sizeof("root_asn1_cert"))) {
         ctx->obj_name = XTPM_ROOT_ASN1_CERTIFICATE;
     } else {
         fprintf(stderr, "Unrecognized object name '%s'\n", obj_name);
