@@ -39,6 +39,8 @@ set(XAPTUM_TPM_VERSION ${PROJECT_VERSION})
 set(XAPTUM_TPM_SOVERSION ${PROJECT_VERSION_MAJOR})
 
 set(XAPTUM_TPM_SRCS
+    src/xaptum/nvram.c
+
     src/tss2_tcti_socket.c
     src/tss2_sys_context_allocation.c
     src/tss2_sys_clear.c
@@ -50,6 +52,7 @@ set(XAPTUM_TPM_SRCS
     src/tss2_sys_evictcontrol.c
     src/tss2_sys_nv.c
     src/tss2_sys_sign.c
+
     src/internal/cmdauths.c
     src/internal/constants.c
     src/internal/execute.c
@@ -148,3 +151,8 @@ install(FILES
 )
 
 add_subdirectory(test)
+
+################################################################################
+# Util
+################################################################################
+add_subdirectory(util)
