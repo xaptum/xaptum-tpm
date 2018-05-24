@@ -27,6 +27,7 @@ extern "C" {
 #include <stdint.h>
 
 // TODO: Make sure these make sense (they should work well with an Infineon SLB9670)
+//  COMMANDRESPONSE_SIZE is probably too big. SLB9670 has an I/O buffer of 1280 B
 #define COMMANDRESPONSE_SIZE 4096
 #define MAX_SYM_DATA 128
 #define MAX_ECC_KEY_BYTES 32
