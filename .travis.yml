@@ -27,7 +27,7 @@ jobs:
   - env: TYPE=RELEASE
     before_script:
       - .travis/install-ibm-tpm2.sh ${IBM_TPM_DIR}
-      - cmake . -DCMAKE_BUILD_TYPE=Release
+      - cmake . -DCMAKE_BUILD_TYPE=Release -DTEST_USE_TCP_TPM=ON
     script:
       - cmake --build . -- -j2
       - .travis/run-ibm-tpm2.sh ${IBM_TPM_DIR}
@@ -37,7 +37,7 @@ jobs:
   - env: TYPE=DEBUG
     before_script:
       - .travis/install-ibm-tpm2.sh ${IBM_TPM_DIR}
-      - cmake . -DCMAKE_BUILD_TYPE=Debug
+      - cmake . -DCMAKE_BUILD_TYPE=Debug -DTEST_USE_TCP_TPM=ON
     script:
       - cmake --build . -- -j2
       - .travis/run-ibm-tpm2.sh ${IBM_TPM_DIR}
@@ -48,7 +48,7 @@ jobs:
     compiler: clang
     before_script:
       - .travis/install-ibm-tpm2.sh ${IBM_TPM_DIR}
-      - cmake . -DCMAKE_BUILD_TYPE=Release
+      - cmake . -DCMAKE_BUILD_TYPE=Release -DTEST_USE_TCP_TPM=ON
     script:
       - cmake --build . -- -j2
       - .travis/run-ibm-tpm2.sh ${IBM_TPM_DIR}
@@ -61,7 +61,7 @@ jobs:
         packages:
           - cppcheck
     before_script:
-      - cmake . -DCMAKE_BUILD_TYPE=Release
+      - cmake . -DCMAKE_BUILD_TYPE=Release -DTEST_USE_TCP_TPM=ON
     script:
       - cmake --build . -- -j2
       - .travis/run-cppcheck.sh
@@ -72,7 +72,7 @@ jobs:
     compiler: clang
     before_script:
       - .travis/install-ibm-tpm2.sh ${IBM_TPM_DIR}
-      - cmake . -DCMAKE_BUILD_TYPE=RelWithSanitize
+      - cmake . -DCMAKE_BUILD_TYPE=RelWithSanitize -DTEST_USE_TCP_TPM=ON
     script:
       - cmake --build . -- -j2
       - .travis/run-ibm-tpm2.sh ${IBM_TPM_DIR}
