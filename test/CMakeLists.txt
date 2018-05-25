@@ -14,6 +14,12 @@
 
 cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 
+option(TEST_USE_TCP_TPM "Use the socket-based TCTI in the tests" OFF)
+
+if(TEST_USE_TCP_TPM)
+        add_definitions(-DUSE_TCP_TPM)
+endif()
+
 macro(add_test_case case_file)
   get_filename_component(case_name ${case_file} NAME_WE)
 

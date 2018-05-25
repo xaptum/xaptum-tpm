@@ -18,6 +18,7 @@
 
 #include <tss2/tss2_sys.h>
 #include <tss2/tss2_tcti_socket.h>
+#include <tss2/tss2_tcti_device.h>
 
 #include "test-utils.h"
 
@@ -44,15 +45,23 @@ int main(int argc, char *argv[])
 
 void initialize(struct test_context *ctx)
 {
+    TSS2_RC init_ret;
+
+#ifdef USE_TCP_TPM
     size_t tcti_ctx_size = tss2_tcti_getsize_socket();
 
     TSS2_TCTI_CONTEXT *tcti_ctx = malloc(tcti_ctx_size);
     TEST_EXPECT(NULL != tcti_ctx);
-    
-    TSS2_RC init_ret;
 
     init_ret = tss2_tcti_init_socket(hostname_g, port_g, tcti_ctx);
-    TEST_ASSERT(TSS2_RC_SUCCESS == init_ret);
+#else
+    size_t tcti_ctx_size = tss2_tcti_getsize_device();
+
+    TSS2_TCTI_CONTEXT *tcti_ctx = malloc(tcti_ctx_size);
+    TEST_EXPECT(NULL != tcti_ctx);
+
+    init_ret = tss2_tcti_init_device(dev_file_path_g, dev_file_path_length_g, tcti_ctx);
+#endif
 
     size_t sapi_ctx_size = Tss2_Sys_GetContextSize(0);
 
@@ -220,7 +229,7 @@ void full_test()
 
 int clear(struct test_context *ctx)
 {
-   TPMI_RH_CLEAR auth_handle = TPM_RH_PLATFORM;
+   TPMI_RH_CLEAR auth_handle = TPM_RH_LOCKOUT;
 
     TPMS_AUTH_COMMAND session_data = {
         .sessionHandle = TPM_RS_PW,

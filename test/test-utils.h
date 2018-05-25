@@ -20,6 +20,8 @@
 
 char *hostname_g = "localhost";
 const char *port_g = "2321";
+const char* dev_file_path_g = NULL;   // indicates to use default
+const size_t dev_file_path_length_g = 0;
 char *pub_key_filename_g = "pub_key.txt";
 char *handle_filename_g = "handle.txt";
 
@@ -48,7 +50,6 @@ char *handle_filename_g = "handle.txt";
         if (argc >= 2) { \
             hostname_g = argv[1]; \
         } \
-        printf("Connecting to %s:%s for TPM testing\n", hostname_g, port_g); \
         if (argc == 4) { \
             pub_key_filename_g = argv[2]; \
             handle_filename_g = argv[3]; \
