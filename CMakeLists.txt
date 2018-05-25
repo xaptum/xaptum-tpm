@@ -16,7 +16,7 @@ cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 
 project(xaptum-tpm
         LANGUAGES C
-        VERSION "0.5.1"
+        VERSION "0.5.2"
 )
 
 include(GNUInstallDirs)
@@ -42,6 +42,7 @@ set(XAPTUM_TPM_SOVERSION ${PROJECT_VERSION_MAJOR})
 set(XAPTUM_TPM_SRCS
     src/xaptum/nvram.c
 
+    src/tss2_tcti_device.c
     src/tss2_tcti_socket.c
     src/tss2_sys_context_allocation.c
     src/tss2_sys_clear.c
