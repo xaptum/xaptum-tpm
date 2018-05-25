@@ -1,3 +1,10 @@
+xaptum-tpm (0.5.2-2) unstable; urgency=medium
+
+  [ Zane Beckwith ]
+  * Add the xtpm_read_nvram utility to the package.
+
+ -- Zane Beckwith <zane.beckwith@xaptum.com>  Fri, 25 May 2018 16:14:19 +0000
+
 xaptum-tpm (0.5.2-1) unstable; urgency=medium
 
   [ David R. Bild ]
