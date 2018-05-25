@@ -1,10 +1,9 @@
 # Xaptum TPM
 
-Utilities for interacting with a TPM2.0 used for access to the Xaptum Edge Network Fabric.
-
-## Project Status
-
+[![Release](https://img.shields.io/github/release/xaptum/xaptum-tpm.svg)](https://github.com/xaptum/xaptum-tpm/releases)
 [![Build Status](https://travis-ci.org/xaptum/xaptum-tpm.svg?branch=master)](https://travis-ci.org/xaptum/xaptum-tpm)
+
+Utilities for interacting with a TPM2.0 used for access to the Xaptum Edge Network Fabric.
 
 ## Installation
 
