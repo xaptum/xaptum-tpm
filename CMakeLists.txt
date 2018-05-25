@@ -16,13 +16,14 @@ cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 
 project(xaptum-tpm
         LANGUAGES C
-        VERSION "0.5.1"
+        VERSION "0.5.2"
 )
 
 include(GNUInstallDirs)
 include(CTest)
       
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -Wno-missing-field-initializers -std=c99 -D_POSIX_C_SOURCE=200112L")
+add_compile_options(-std=c99 -Werror -Wall -Wextra -Wno-missing-field-initializers)
+add_definitions(-D_POSIX_C_SOURCE=200112L)
 set(CMAKE_C_FLAGS_RELWITHSANITIZE "${CMAKE_C_FLAGS_RELWITHSANITIZE} -O2 -g -fsanitize=address,undefined -fsanitize=unsigned-integer-overflow")
 
 option(BUILD_SHARED_LIBS "Build as a shared library" ON)
@@ -39,6 +40,9 @@ set(XAPTUM_TPM_VERSION ${PROJECT_VERSION})
 set(XAPTUM_TPM_SOVERSION ${PROJECT_VERSION_MAJOR})
 
 set(XAPTUM_TPM_SRCS
+    src/xaptum/nvram.c
+
+    src/tss2_tcti_device.c
     src/tss2_tcti_socket.c
     src/tss2_sys_context_allocation.c
     src/tss2_sys_clear.c
@@ -50,6 +54,7 @@ set(XAPTUM_TPM_SRCS
     src/tss2_sys_evictcontrol.c
     src/tss2_sys_nv.c
     src/tss2_sys_sign.c
+
     src/internal/cmdauths.c
     src/internal/constants.c
     src/internal/execute.c
@@ -148,3 +153,8 @@ install(FILES
 )
 
 add_subdirectory(test)
+
+################################################################################
+# Util
+################################################################################
+add_subdirectory(util)

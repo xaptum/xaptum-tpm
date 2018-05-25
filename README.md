@@ -1,10 +1,9 @@
 # Xaptum TPM
 
-Utilities for interacting with a TPM2.0 used for access to the Xaptum Edge Network Fabric.
-
-## Project Status
-
+[![Release](https://img.shields.io/github/release/xaptum/xaptum-tpm.svg)](https://github.com/xaptum/xaptum-tpm/releases)
 [![Build Status](https://travis-ci.org/xaptum/xaptum-tpm.svg?branch=master)](https://travis-ci.org/xaptum/xaptum-tpm)
+
+Utilities for interacting with a TPM2.0 used for access to the Xaptum Edge Network Fabric.
 
 ## Installation
 
@@ -13,36 +12,24 @@ be built from source.
 
 ### Debian (Jessie or Stretch)
 
-Install the repository GPG key.
-
 ``` bash
+# Install the Xaptum API repo GPG signing key.
 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys c615bfaa7fe1b4ca
-```
 
-Add the repository to APT sources, replacing `<dist>` with either `jessie`
-or `stretch`.
+# Add the repository to your APT sources, replacing <dist> with either jessie or stretch.
+echo "deb http://dl.bintray.com/xaptum/deb <dist> main" > /etc/apt/sources.list.d/xaptum.list
 
-``` bash
-echo "deb http://dl.bintray.com/xaptum/deb <dist> main" | sudo tee -a /etc/apt/sources.list
-sudo apt-get update
-```
-
-Install the library.
-
-``` bash
+# Install the library
 sudo apt-get install libxaptum-tpm-dev
 ```
 
 ### Homebrew (MacOS)
 
-Tap the Xaptum repository.
-
 ``` bash
+# Tap the Xaptum repository.
 brew tap xaptum/xaptum
-```
 
-Install the library.
-``` bash
+# Install the library.
 brew install xaptum-tpm
 ```
 
@@ -87,15 +74,24 @@ The following CMake configuration options are supported.
 
 ### Testing
 
-The tests assume that a TPM2.0 simulator (for instance, [IBM's simulator](https://sourceforge.net/projects/ibmswtpm2/))
-is listening locally on TCP port 2321.
-This can be achieved by running the following in the background, before starting the tests:
+By default, the tests use a device-file-based TCTI.
+For this reason, `sudo` privileges may be required to run them.
+
+The tests can instead be build to use a TCP-socket-based TCTI,
+by using the CMake option `TEST_USE_TCP_TPM=ON`.
+
+If using the TCP-socket-based TCTI, the tests require a [TPM 2.0
+simulator](https://sourceforge.net/projects/ibmswtpm2/) running
+locally on TCP port 2321.
+
+Use the following commands to start the simulator before running the tests.
 ```
 .travis/install-ibm-tpm2.sh <installation dir>
 .travis/run-ibm-tpm2.sh
 ```
 
-Then, to run the test suite:
+To run the tests:
+
 ```bash
 cd build
 ctest -V
@@ -107,3 +103,24 @@ ctest -V
 cd build
 cmake --build . --target install
 ```
+
+## Utilities
+The following command-line utilities are provided by `xaptum-tpm` for interacting with a Xaptum TPM2.0:
+- `xtpm_read_nvram`
+  - Query the value of one of the pre-created NVRAM indices `gpk`, `cred`, `cred_sig`, `root_id`, `root_pubkey`, or `root_cert`:
+  - `xtpm_read_nvram <index-name> <output-file>`
+
+# License
+Copyright 2017-2018 Xaptum, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this work except in compliance with the License. You may obtain a copy of
+the License from the LICENSE.txt file or at
+
+[http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations under
+the License.

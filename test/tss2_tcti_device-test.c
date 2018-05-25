@@ -18,7 +18,17 @@
 
 #ifdef USE_TCP_TPM
 
-#include <tss2/tss2_tcti_socket.h>
+#include <stdio.h>
+
+int main()
+{
+    printf("Not running tss2_tcti_device-test\n");
+}
+
+#else
+
+#include <tss2/tss2_tcti_device.h>
+#include <tss2/tss2_tpm2_types.h>
 
 #include "../src/internal/tcti_common.h"
 
@@ -38,6 +48,7 @@ static void getpollhandles_test();
 static void setlocality_test();
 static void startup_test();
 static void getrandom_test();
+static void smallbuffer_test();
 
 int main(int argc, char *argv[])
 {
@@ -48,18 +59,21 @@ int main(int argc, char *argv[])
     setlocality_test();
     startup_test();
     getrandom_test();
+    smallbuffer_test();
 }
 
 void initialize(struct test_context *ctx)
 {
     ctx->tcti_ctx = NULL;
 
-    size_t ctx_size = tss2_tcti_getsize_socket();
+    size_t ctx_size = tss2_tcti_getsize_device();
 
     ctx->tcti_ctx = malloc(ctx_size);
     TEST_EXPECT(NULL != ctx->tcti_ctx);
     
-    TSS2_RC init_ret = tss2_tcti_init_socket(hostname_g, port_g, ctx->tcti_ctx);
+    TSS2_RC init_ret = tss2_tcti_init_device(NULL, 0, ctx->tcti_ctx);  // NULL means use default device
+    if (TSS2_RC_SUCCESS != init_ret)
+        fprintf(stderr, "tss2_tcti_init_device return code: %#X\n", init_ret);
     TEST_ASSERT(TSS2_RC_SUCCESS == init_ret);
 }
 
@@ -73,7 +87,7 @@ void cleanup(struct test_context *ctx)
 
 void init_test()
 {
-    printf("In tss2_tcti_socket-test::init_test...\n");
+    printf("In tss2_tcti_device-test::init_test...\n");
 
     struct test_context ctx;
     initialize(&ctx);
@@ -88,7 +102,7 @@ void init_test()
 
 void getpollhandles_test()
 {
-    printf("In tss2_tcti_socket-test::getpollhandles_test...\n");
+    printf("In tss2_tcti_device-test::getpollhandles_test...\n");
 
     struct test_context ctx;
     initialize(&ctx);
@@ -103,7 +117,7 @@ void getpollhandles_test()
 
 void setlocality_test()
 {
-    printf("In tss2_tcti_socket-test::setlocality_test...\n");
+    printf("In tss2_tcti_device-test::setlocality_test...\n");
 
     struct test_context ctx;
     initialize(&ctx);
@@ -118,7 +132,7 @@ void setlocality_test()
 
 void startup_test()
 {
-    printf("In tss2_tcti_socket-test::startup_test...\n");
+    printf("In tss2_tcti_device-test::startup_test...\n");
 
     TSS2_RC ret;
 
@@ -133,6 +147,8 @@ void startup_test()
     ret = tss2_tcti_transmit(ctx.tcti_ctx,
                              sizeof(startup_command),
                              startup_command);
+    if (TSS2_RC_SUCCESS != ret)
+        fprintf(stderr, "tss2_tcti_transmit return code: %#X\n", ret);
     TEST_ASSERT(TSS2_RC_SUCCESS == ret);
 
     uint8_t response[1024];
@@ -141,7 +157,8 @@ void startup_test()
                             &response_size,
                             response,
                             TSS2_TCTI_TIMEOUT_BLOCK);
-
+    if (TSS2_RC_SUCCESS != ret)
+        fprintf(stderr, "tss2_tcti_transmit return code: %#X\n", ret);
     TEST_ASSERT(TSS2_RC_SUCCESS == ret);
 
     printf("Got response from startup command, of size %zu, with code ", response_size);
@@ -162,7 +179,7 @@ void startup_test()
 
 void getrandom_test()
 {
-    printf("In tss2_tcti_socket-test::getrandom_test...\n");
+    printf("In tss2_tcti_device-test::getrandom_test...\n");
 
     TSS2_RC ret;
 
@@ -172,11 +189,13 @@ void getrandom_test()
     uint8_t getrandom_command[] = {0x80, 0x01,    // TPM_ST_NO_SESSION
                                    0x00, 0x00, 0x00, 0x0C,    // Size = 12 = 0x0C
                                    0x00, 0x00, 0x01, 0x7B,    // Command code = 0x17B = getrandom
-                                   0x00, 0x02};
+                                   0x00, 0x10}; // 16 bytes of randomness requested
 
     ret = tss2_tcti_transmit(ctx.tcti_ctx,
                              sizeof(getrandom_command),
                              getrandom_command);
+    if (TSS2_RC_SUCCESS != ret)
+        fprintf(stderr, "tss2_tcti_transmit return code: %#X\n", ret);
     TEST_ASSERT(TSS2_RC_SUCCESS == ret);
 
     uint8_t response[1024];
@@ -186,6 +205,8 @@ void getrandom_test()
                             response,
                             TSS2_TCTI_TIMEOUT_BLOCK);
 
+    if (TSS2_RC_SUCCESS != ret)
+        fprintf(stderr, "tss2_tcti_receive return code: %#X\n", ret);
     TEST_ASSERT(TSS2_RC_SUCCESS == ret);
 
     printf("Got response from getrandom command, of size %zu\n", response_size);
@@ -203,13 +224,39 @@ void getrandom_test()
     printf("ok\n");
 }
 
-#else
-
-#include <stdio.h>
-
-int main()
+void smallbuffer_test()
 {
-    printf("Not running tss2_tcti_socket-test\n");
+    printf("In tss2_tcti_device-test::smallbuffer_test...\n");
+
+    TSS2_RC ret;
+
+    struct test_context ctx;
+    initialize(&ctx);
+
+    uint8_t getrandom_command[] = {0x80, 0x01,    // TPM_ST_NO_SESSION
+                                   0x00, 0x00, 0x00, 0x0C,    // Size = 12 = 0x0C
+                                   0x00, 0x00, 0x01, 0x7B,    // Command code = 0x17B = getrandom
+                                   0x00, 0x10}; // 16 bytes of randomness requested
+
+    ret = tss2_tcti_transmit(ctx.tcti_ctx,
+                             sizeof(getrandom_command),
+                             getrandom_command);
+    if (TSS2_RC_SUCCESS != ret)
+        fprintf(stderr, "tss2_tcti_transmit return code: %#X\n", ret);
+    TEST_ASSERT(TSS2_RC_SUCCESS == ret);
+
+    uint8_t response[27];   // buffer will be too small!
+    size_t response_size = sizeof(response);
+    ret = tss2_tcti_receive(ctx.tcti_ctx,
+                            &response_size,
+                            response,
+                            TSS2_TCTI_TIMEOUT_BLOCK);
+
+    TEST_ASSERT(TSS2_TCTI_RC_INSUFFICIENT_BUFFER == ret);
+
+    cleanup(&ctx);
+
+    printf("ok\n");
 }
 
 #endif
