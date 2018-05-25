@@ -75,7 +75,13 @@ The following CMake configuration options are supported.
 
 ### Testing
 
-The TPM tests require a [TPM 2.0
+By default, the tests use a device-file-based TCTI.
+For this reason, `sudo` privileges may be required to run them.
+
+The tests can instead be build to use a TCP-socket-based TCTI,
+by using the CMake option `TEST_USE_TCP_TPM=ON`.
+
+If using the TCP-socket-based TCTI, the tests require a [TPM 2.0
 simulator](https://sourceforge.net/projects/ibmswtpm2/) running
 locally on TCP port 2321.
 
