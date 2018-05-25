@@ -1,3 +1,33 @@
+xaptum-tpm (0.5.2-1) unstable; urgency=medium
+
+  [ David R. Bild ]
+  * readme: shorten installation description and add license
+
+  [ Zane Beckwith ]
+  * And `apt-get` in the README should be `apt-key`.
+  * Add a read_nvram utility
+  * Update README to explain the read_nvram utility
+  * Refactor into programmatic functionality and free-standing executable.
+  * Don't tcti_finalize in library, only in top-level
+  * Add utility that uses enum to decide NVRAM to read
+  * Use strncmp, rather than strcmp
+  * Move new xaptum-specific utilities into separate header namespace
+  * Take SAPI, not TCTI, in read_nvram util
+  * Add getters for handles and lengths
+  * Set compiler flags (e.g. -std= and -Werror) as add_compile_options.
+
+  [ David R. Bild ]
+  * readme: add release badge to readme
+
+  [ Zane Beckwith ]
+  * Add a device-file-based TCTI to use with the kernel driver.
+  * Exclude device-file-based TCTI tests during travis
+  * Update README
+  * Bump patch number
+  * Include xtpm_read_nvram utility in package.
+
+ -- Zane Beckwith <zane.beckwith@xaptum.com>  Fri, 25 May 2018 16:17:34 +0000
+
 xaptum-tpm (0.5.1-1) unstable; urgency=medium
 
   [ David R. Bild ]
