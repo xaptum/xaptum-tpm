@@ -113,10 +113,12 @@ tss2_tcti_init_device(const char *dev_file_path,
     assert(DEFAULT_DEV_FILE_PATH_LENGTH == strlen(DEFAULT_DEV_FILE_PATH));
     if (NULL == dev_file_path) {
         memcpy(cast_context->dev_file_path, DEFAULT_DEV_FILE_PATH, DEFAULT_DEV_FILE_PATH_LENGTH);
+        cast_context->dev_file_path[DEFAULT_DEV_FILE_PATH_LENGTH] = 0;
     } else if (MAX_DEV_FILE_PATH_LENGTH < dev_file_path_length) {
         return TSS2_BASE_RC_INSUFFICIENT_BUFFER;
     } else {
         memcpy(cast_context->dev_file_path, dev_file_path, dev_file_path_length);
+        cast_context->dev_file_path[dev_file_path_length] = 0;
     }
 
     cast_context->magic = TCTI_MAGIC;
