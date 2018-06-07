@@ -39,17 +39,14 @@ macro(add_test_case case_file)
     RUNTIME_OUTPUT_DIRECTORY ${CURRENT_TEST_BINARY_DIR}
   )
 
-  add_test(NAME ${case_name} 
+  add_test(NAME ${case_name}
     COMMAND ${CURRENT_TEST_BINARY_DIR}/${case_name}
   )
 endmacro()
 
-if(BUILD_TESTING)
-  set(CURRENT_TEST_BINARY_DIR ${CMAKE_BINARY_DIR}/testBin/)
+set(CURRENT_TEST_BINARY_DIR ${CMAKE_BINARY_DIR}/testBin/)
 
-  file(GLOB_RECURSE TEST_SRCS "*.c")
-  foreach(case_file ${TEST_SRCS})
-    add_test_case(${case_file})
-  endforeach()
-
-endif()
+file(GLOB_RECURSE TEST_SRCS "*.c")
+foreach(case_file ${TEST_SRCS})
+  add_test_case(${case_file})
+endforeach()
