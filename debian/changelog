@@ -1,3 +1,10 @@
+xaptum-tpm (0.5.4-1) unstable; urgency=medium
+
+  * update to version 0.5.4
+  * debian/jessie: move utilities into separate deb
+
+ -- David R. Bild <david.bild@xaptum.com>  Thu, 07 Jun 2018 16:35:17 +0000
+
 xaptum-tpm (0.5.3-1) unstable; urgency=medium
 
   [ Zane Beckwith ]
