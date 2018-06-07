@@ -1,11 +1,11 @@
-# Copyright 2017 Xaptum, Inc.
-# 
+# Copyright 2017-2018 Xaptum, Inc.
+#
 #    Licensed under the Apache License, Version 2.0 (the "License");
 #    you may not use this file except in compliance with the License.
 #    You may obtain a copy of the License at
-# 
+#
 #        http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 #    Unless required by applicable law or agreed to in writing, software
 #    distributed under the License is distributed on an "AS IS" BASIS,
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,7 +21,7 @@ project(xaptum-tpm
 
 include(GNUInstallDirs)
 include(CTest)
-      
+
 add_compile_options(-std=c99 -Werror -Wall -Wextra -Wno-missing-field-initializers)
 add_definitions(-D_POSIX_C_SOURCE=200112L)
 set(CMAKE_C_FLAGS_RELWITHSANITIZE "${CMAKE_C_FLAGS_RELWITHSANITIZE} -O2 -g -fsanitize=address,undefined -fsanitize=unsigned-integer-overflow")
@@ -73,7 +73,7 @@ if(BUILD_SHARED_LIBS)
     VERSION "${XAPTUM_TPM_VERSION}"
     SOVERSION "${XAPTUM_TPM_SOVERSION}"
   )
-  
+
   target_include_directories(xaptum-tpm PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
