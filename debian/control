@@ -6,20 +6,30 @@ Build-Depends: debhelper (>= 10), cmake (>= 3.0.2)
 Standards-Version: 3.9.8
 Homepage: https://github.com/xaptum/xaptum-tpm
 
+Package: xaptum-tpm
+Architecture: any
+Multi-Arch: foreign
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: xaptum-tpm toolkit
+  This package contains general-purpose command line utilities
+  for common interactions with the Xaptum ENF TPM chip such as:
+   * reading the Xaptum-specific credentials and data from NVRAM
+
 Package: libxaptum-tpm0
 Section: libs
 Architecture: any
+Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Description: Utilities for interacting with the TPM 2.0 chip used to
  access the Xaptum Edge Network Fabric.
  .
- This package contains the library.  
+ This package contains the library.
 
 Package: libxaptum-tpm-dev
 Section: libdevel
 Architecture: any
-Pre-Depends: ${misc:Pre-Depends}
+Multi-Arch: same
 Depends: ${misc:Depends}, libxaptum-tpm0 (= ${binary:Version})
 Description: Utilities for interacting with the TPM 2.0 chip used to
  access the Xaptum Edge Network Fabric.
