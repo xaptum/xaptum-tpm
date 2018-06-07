@@ -69,6 +69,7 @@ The following CMake configuration options are supported.
 | BUILD_SHARED_LIBS               | ON, OFF         | ON         | Build shared libraries.                         |
 | BUILD_STATIC_LIBS               | ON, OFF         | OFF        | Build static libraries.                         |
 | BUILD_TESTING                   | ON, OFF         | ON         | Build the test suite.                           |
+| BUILD_UTILS                     | ON, OFF         | ON         | Build utility programs.                         |
 | STATIC_SUFFIX                   | <string>        | <none>     | Appends a suffix to the static lib name.        |
 | CMAKE_POSITION_INDEPENDENT_CODE | ON, OFF         | ON         | Compile static libs with `-fPIC`.               |
 
