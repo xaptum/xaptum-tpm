@@ -33,7 +33,7 @@ char *handle_filename_g = "handle.txt";
             printf("exiting\n"); \
             exit(1); \
         } \
-    } while(0);
+    } while(0)
 
 #define TEST_EXPECT(cond) \
     do \
@@ -42,7 +42,7 @@ char *handle_filename_g = "handle.txt";
             printf("Condition \'%s\' failed\n\tin file: \'%s\'\n\tin function: \'%s\'\n\tat line: %d\n", #cond,__FILE__,  __func__, __LINE__); \
             printf("continuing\n"); \
         } \
-    } while(0);
+    } while(0)
 
 #define parse_cmd_args(argc, argv) \
     do \
@@ -55,4 +55,4 @@ char *handle_filename_g = "handle.txt";
             handle_filename_g = argv[3]; \
         } \
         printf("Saving public key to %s and handle to %s\n", pub_key_filename_g, handle_filename_g);\
-    } while(0);
+    } while(0)
