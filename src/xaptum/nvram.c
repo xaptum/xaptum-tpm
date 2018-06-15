@@ -89,8 +89,8 @@ xtpm_read_object(unsigned char* out_buffer,
                  enum xtpm_object_name object_name,
                  TSS2_SYS_CONTEXT *sapi_context)
 {
-    uint16_t size;
-    TPM_HANDLE index;
+    uint16_t size = 0;
+    TPM_HANDLE index = 0;
 
     switch (object_name) {
         case XTPM_GROUP_PUBLIC_KEY:
@@ -117,8 +117,6 @@ xtpm_read_object(unsigned char* out_buffer,
             index = XTPM_ROOT_ASN1CERT_HANDLE;
             size = XTPM_ROOT_ASN1CERT_LENGTH;
             break;
-        default:
-            return TSS2_BASE_RC_GENERAL_FAILURE;
     }
 
     if (out_buffer_size < size)
