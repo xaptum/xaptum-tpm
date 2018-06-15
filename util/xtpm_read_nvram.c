@@ -16,8 +16,11 @@
  *
  *****************************************************************************/
 
+#include <tss2/tss2_tcti_device.h>
 #include <tss2/tss2_tcti_socket.h>
 #include <xaptum/tpm/nvram.h>
+
+#include <getopt.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -25,16 +28,27 @@
 
 #define MAX_NVRAM_SIZE 768
 
+enum tcti_type {
+    TCTI_SOCKET,
+    TCTI_DEVICE,
+};
+
 struct nvram_context {
+    enum tcti_type tcti;
+    const char *tpm_dev_file;
     const char *tpm_hostname;
     const char *tpm_port;
     const char *out_filename;
     enum xtpm_object_name obj_name;
-    unsigned char tcti_context_buffer[128];
+    unsigned char tcti_context_buffer[256];
     TSS2_TCTI_CONTEXT *tcti_context;
     unsigned char sapi_context_buffer[5120];
     TSS2_SYS_CONTEXT *sapi_context;
 };
+
+static
+void
+init_device_tcti(struct nvram_context *ctx);
 
 static
 void
@@ -61,7 +75,14 @@ int main(int argc, char *argv[])
     struct nvram_context ctx;
     parse_cli_args(argc, argv, &ctx);
 
-    init_socket_tcti(&ctx);
+    switch (ctx.tcti) {
+        case TCTI_DEVICE:
+            init_device_tcti(&ctx);
+            break;
+        case TCTI_SOCKET:
+            init_socket_tcti(&ctx);
+    }
+
     init_sapi(&ctx);
 
     unsigned char output_data[MAX_NVRAM_SIZE];
@@ -82,12 +103,30 @@ int main(int argc, char *argv[])
 }
 
 void
+init_device_tcti(struct nvram_context *ctx)
+{
+    TSS2_RC ret = TSS2_RC_SUCCESS;
+
+    if (tss2_tcti_getsize_device() >= sizeof(ctx->tcti_context_buffer)) {
+        fprintf(stderr, "TCTI device context larger than allocated buffer\n");
+        exit(1);
+    }
+    ctx->tcti_context = (TSS2_TCTI_CONTEXT*)ctx->tcti_context_buffer;
+
+    ret = tss2_tcti_init_device(ctx->tpm_dev_file, strlen(ctx->tpm_dev_file), ctx->tcti_context);
+    if (TSS2_RC_SUCCESS != ret) {
+        fprintf(stderr, "Error initializing TCTI device\n");
+        exit(1);
+    }
+}
+
+void
 init_socket_tcti(struct nvram_context *ctx)
 {
     TSS2_RC ret = TSS2_RC_SUCCESS;
 
     if (tss2_tcti_getsize_socket() >= sizeof(ctx->tcti_context_buffer)) {
-        fprintf(stderr, "TCTI context larger than allocated buffer\n");
+        fprintf(stderr, "TCTI socket context larger than allocated buffer\n");
         exit(1);
     }
     ctx->tcti_context = (TSS2_TCTI_CONTEXT*)ctx->tcti_context_buffer;
@@ -126,59 +165,108 @@ parse_cli_args(int argc,
                char *argv[],
                struct nvram_context *ctx)
 {
-    const char *usage_str = "usage: %s <object-name> <output file> [tpm hostname = 'localhost'] [tpm port = '2321']\n"
-                            "\twhere object-name:\n"
-                            "\t\tgpk\n"
-                            "\t\tcred\n"
-                            "\t\tcred_sig\n"
-                            "\t\troot_id\n"
-                            "\t\troot_pubkey\n"
-                            "\t\troot_asn1_cert\n"
-                            "\t\tbasename\n"
-                            "\t\tserver_id\n";
+    const char *usage_str = "Dump to file an NVRAM object provisioned on a Xaptum TPM.\n\n"
+        "Usage: %s [-h] [-t device|socket] [-d <path>] [-a <ip>] [-p <port>] [-o <file>] <object-name>\n"
+        "\tOptions:\n"
+        "\t\t-h --help              Display this message.\n"
+        "\t\t-t --tcti              TPM TCTI type (device|socket) [default: device].\n"
+        "\t\t-d --tpm-device-file   TCTI device file, if tcti==device [default: '/dev/tpm0'].\n"
+        "\t\t-a --tpm-ip-address    IP hostname of TPM TCP server, if tcti==socket [default: 'localhost'].\n"
+        "\t\t-p --tpm-port          TCP port of TPM TCP server, if tcti==socket [default: 2321].\n"
+        "\t\t-o --output-file       Output file. [default: '<object-name>.bin']\n"
+        "\tArguments:\n"
+        "\t\tobject-name\tOne of gpk, cred, cred_sig, root_id, root_pubkey, root_asn1_cert, basename, or server_id\n"
+        ;
 
+    ctx->tcti = TCTI_DEVICE;
+    ctx->tpm_dev_file = "/dev/tpm0";
     ctx->tpm_hostname = "localhost";
     ctx->tpm_port = "2321";
+    ctx->out_filename = NULL;
 
-    const char *obj_name = NULL;
-    if (3 == argc) {
-        obj_name = argv[1];
-        ctx->out_filename = argv[2];
-    } else if (4 == argc) {
-        obj_name = argv[1];
-        ctx->out_filename = argv[2];
-        ctx->tpm_hostname = argv[3];
-    } else if (5 == argc) {
-        obj_name = argv[1];
-        ctx->out_filename = argv[2];
-        ctx->tpm_hostname = argv[3];
-        ctx->tpm_port = argv[4];
+    static struct option cli_options[] =
+    {
+        {"tcti", required_argument, NULL, 't'},
+        {"tpm-device-file", required_argument, NULL, 'd'},
+        {"tpm-ip-address", required_argument, NULL, 'a'},
+        {"tpm-port", required_argument, NULL, 'p'},
+        {"output-file", required_argument, NULL, 'o'},
+        {"help", required_argument, NULL, 'h'},
+        {NULL, 0, NULL, 0}
+    };
+
+    char opt_char;
+    while ((opt_char = getopt_long(argc, argv, "t:d:a:p:o:h", cli_options, NULL)) != -1) {
+        switch (opt_char) {
+            case 't':
+                if (0 == strcmp(optarg, "device")) {
+                    ctx->tcti = TCTI_DEVICE;
+                } else if (0 == strcmp(optarg, "socket")) {
+                    ctx->tcti = TCTI_SOCKET;
+                } else {
+                    fprintf(stderr, "Unrecognized TCTI type '%s'\n", optarg);
+                    exit(1);
+                }
+                break;
+            case 'd':
+                ctx->tpm_dev_file = optarg;
+                break;
+            case 'a':
+                ctx->tpm_hostname = optarg;
+                break;
+            case 'p':
+                ctx->tpm_port = optarg;
+                break;
+            case 'o':
+                ctx->out_filename = optarg;
+                break;
+            case 'h':
+                fprintf(stderr, usage_str, argv[0]);
+                exit(1);
+        }
+    }
+    if (argv[optind] != NULL) {
+        if (0 == strcmp(argv[optind], "gpk")) {
+            ctx->obj_name = XTPM_GROUP_PUBLIC_KEY;
+            if (ctx->out_filename == NULL)
+                ctx->out_filename = "gpk.bin";
+        } else if (0 == strcmp(argv[optind], "cred")) {
+            ctx->obj_name = XTPM_CREDENTIAL;
+            if (ctx->out_filename == NULL)
+                ctx->out_filename = "cred.bin";
+        } else if (0 == strcmp(argv[optind], "cred_sig")) {
+            ctx->obj_name = XTPM_CREDENTIAL_SIGNATURE;
+            if (ctx->out_filename == NULL)
+                ctx->out_filename = "cred_sig.bin";
+        } else if (0 == strcmp(argv[optind], "root_id")) {
+            ctx->obj_name = XTPM_ROOT_ID;
+            if (ctx->out_filename == NULL)
+                ctx->out_filename = "root_id.bin";
+        } else if (0 == strcmp(argv[optind], "root_pubkey")) {
+            ctx->obj_name = XTPM_ROOT_PUBKEY;
+            if (ctx->out_filename == NULL)
+                ctx->out_filename = "root_pubkey.bin";
+        } else if (0 == strcmp(argv[optind], "root_asn1_cert")) {
+            ctx->obj_name = XTPM_ROOT_ASN1_CERTIFICATE;
+            if (ctx->out_filename == NULL)
+                ctx->out_filename = "root_asn1_cert.bin";
+        } else if (0 == strcmp(argv[optind], "basename")) {
+            ctx->obj_name = XTPM_BASENAME;
+            if (ctx->out_filename == NULL)
+                ctx->out_filename = "basename.bin";
+        } else if (0 == strcmp(argv[optind], "server_id")) {
+            ctx->obj_name = XTPM_SERVER_ID;
+            if (ctx->out_filename == NULL)
+                ctx->out_filename = "server_id.bin";
+        } else {
+            fprintf(stderr, "Unrecognized object name '%s'\n", argv[optind]);
+            exit(1);
+        }
     } else {
-        fprintf(stderr, "Error parsing command line arguments\n");
-        fprintf(stderr, usage_str, argv[0]);
+        fprintf(stderr, "Must specify object name\n");
         exit(1);
     }
 
-    if (0 == strncmp(obj_name, "gpk", sizeof("gpk"))) {
-        ctx->obj_name = XTPM_GROUP_PUBLIC_KEY;
-    } else if (0 == strncmp(obj_name, "cred", sizeof("cred"))) {
-        ctx->obj_name = XTPM_CREDENTIAL;
-    } else if (0 == strncmp(obj_name, "cred_sig", sizeof("cred_sig"))) {
-        ctx->obj_name = XTPM_CREDENTIAL_SIGNATURE;
-    } else if (0 == strncmp(obj_name, "root_id", sizeof("root_id"))) {
-        ctx->obj_name = XTPM_ROOT_ID;
-    } else if (0 == strncmp(obj_name, "root_pubkey", sizeof("root_pubkey"))) {
-        ctx->obj_name = XTPM_ROOT_PUBKEY;
-    } else if (0 == strncmp(obj_name, "root_asn1_cert", sizeof("root_asn1_cert"))) {
-        ctx->obj_name = XTPM_ROOT_ASN1_CERTIFICATE;
-    } else if (0 == strncmp(obj_name, "basename", sizeof("basename"))) {
-        ctx->obj_name = XTPM_BASENAME;
-    } else if (0 == strncmp(obj_name, "server_id", sizeof("server_id"))) {
-        ctx->obj_name = XTPM_SERVER_ID;
-    } else {
-        fprintf(stderr, "Unrecognized object name '%s'\n", obj_name);
-        exit(1);
-    }
 }
 
 void
