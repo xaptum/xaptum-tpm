@@ -133,7 +133,9 @@ parse_cli_args(int argc,
                             "\t\tcred_sig\n"
                             "\t\troot_id\n"
                             "\t\troot_pubkey\n"
-                            "\t\troot_asn1_cert\n";
+                            "\t\troot_asn1_cert\n"
+                            "\t\tbasename\n"
+                            "\t\tserver_id\n";
 
     ctx->tpm_hostname = "localhost";
     ctx->tpm_port = "2321";
@@ -169,6 +171,10 @@ parse_cli_args(int argc,
         ctx->obj_name = XTPM_ROOT_PUBKEY;
     } else if (0 == strncmp(obj_name, "root_asn1_cert", sizeof("root_asn1_cert"))) {
         ctx->obj_name = XTPM_ROOT_ASN1_CERTIFICATE;
+    } else if (0 == strncmp(obj_name, "basename", sizeof("basename"))) {
+        ctx->obj_name = XTPM_BASENAME;
+    } else if (0 == strncmp(obj_name, "server_id", sizeof("server_id"))) {
+        ctx->obj_name = XTPM_SERVER_ID;
     } else {
         fprintf(stderr, "Unrecognized object name '%s'\n", obj_name);
         exit(1);

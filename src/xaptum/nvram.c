@@ -117,6 +117,22 @@ xtpm_read_object(unsigned char* out_buffer,
             index = XTPM_ROOT_ASN1CERT_HANDLE;
             size = XTPM_ROOT_ASN1CERT_LENGTH;
             break;
+        case XTPM_BASENAME:
+        {
+            uint8_t basename_size_out;
+            TSS2_RC bsn_size_ret = xtpm_read_nvram((unsigned char*)&basename_size_out, 1,
+                                      XTPM_BASENAME_SIZE_HANDLE, sapi_context);
+            if (TSS2_RC_SUCCESS != bsn_size_ret)
+                return bsn_size_ret;
+
+            index = XTPM_BASENAME_HANDLE;
+            size = basename_size_out;
+            break;
+        }
+        case XTPM_SERVER_ID:
+            index = XTPM_SERVER_ID_HANDLE;
+            size = XTPM_SERVER_ID_LENGTH;
+            break;
     }
 
     if (out_buffer_size < size)

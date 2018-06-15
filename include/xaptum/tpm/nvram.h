@@ -32,6 +32,8 @@ extern "C" {
 #define XTPM_ROOT_ID_LENGTH          16
 #define XTPM_ROOT_PUBKEY_LENGTH      32
 #define XTPM_ROOT_ASN1CERT_LENGTH    276
+#define XTPM_BASENAME_LENGTH         0  // size must be read from previous index
+#define XTPM_SERVER_ID_LENGTH        16
 
 uint16_t xtpm_gpk_length();
 uint16_t xtpm_cred_length();
@@ -39,6 +41,8 @@ uint16_t xtpm_cred_sig_length();
 uint16_t xtpm_root_id_length();
 uint16_t xtpm_root_pubkey_length();
 uint16_t xtpm_root_asn1cert_length();
+uint16_t xtpm_basename_length();
+uint16_t xtpm_server_id_length();
 
 #define XTPM_GPK_HANDLE             0x1410000
 #define XTPM_CRED_HANDLE            0x1410001
@@ -46,6 +50,9 @@ uint16_t xtpm_root_asn1cert_length();
 #define XTPM_ROOT_ID_HANDLE         0x1410003
 #define XTPM_ROOT_PUBKEY_HANDLE     0x1410004
 #define XTPM_ROOT_ASN1CERT_HANDLE   0x1410005
+#define XTPM_BASENAME_SIZE_HANDLE   0x1410006
+#define XTPM_BASENAME_HANDLE        0x1410007
+#define XTPM_SERVER_ID_HANDLE       0x1410008
 
 TPMI_RH_NV_INDEX xtpm_gpk_handle();
 TPMI_RH_NV_INDEX xtpm_cred_handle();
@@ -53,6 +60,8 @@ TPMI_RH_NV_INDEX xtpm_cred_sig_handle();
 TPMI_RH_NV_INDEX xtpm_root_id_handle();
 TPMI_RH_NV_INDEX xtpm_root_pubkey_handle();
 TPMI_RH_NV_INDEX xtpm_root_asn1cert_handle();
+TPMI_RH_NV_INDEX xtpm_basename_handle();
+TPMI_RH_NV_INDEX xtpm_serverid_handle();
 
 enum xtpm_object_name {
     XTPM_GROUP_PUBLIC_KEY,
@@ -60,7 +69,9 @@ enum xtpm_object_name {
     XTPM_CREDENTIAL_SIGNATURE,
     XTPM_ROOT_ID,
     XTPM_ROOT_PUBKEY,
-    XTPM_ROOT_ASN1_CERTIFICATE
+    XTPM_ROOT_ASN1_CERTIFICATE,
+    XTPM_BASENAME,
+    XTPM_SERVER_ID,
 };
 
 TSS2_RC
