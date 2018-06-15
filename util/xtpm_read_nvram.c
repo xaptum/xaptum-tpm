@@ -195,9 +195,9 @@ parse_cli_args(int argc,
         {NULL, 0, NULL, 0}
     };
 
-    char opt_char;
-    while ((opt_char = getopt_long(argc, argv, "t:d:a:p:o:h", cli_options, NULL)) != -1) {
-        switch (opt_char) {
+    int c;
+    while ((c = getopt_long(argc, argv, "t:d:a:p:o:h", cli_options, NULL)) != -1) {
+        switch (c) {
             case 't':
                 if (0 == strcmp(optarg, "device")) {
                     ctx->tcti = TCTI_DEVICE;
