@@ -191,7 +191,7 @@ parse_cli_args(int argc,
         {"tpm-ip-address", required_argument, NULL, 'a'},
         {"tpm-port", required_argument, NULL, 'p'},
         {"output-file", required_argument, NULL, 'o'},
-        {"help", required_argument, NULL, 'h'},
+        {"help", no_argument, NULL, 'h'},
         {NULL, 0, NULL, 0}
     };
 
