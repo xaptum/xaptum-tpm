@@ -1,13 +1,13 @@
 /******************************************************************************
  *
  * Copyright 2018 Xaptum, Inc.
- * 
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
- * 
+ *
  *        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,6 +22,9 @@
 #include "internal/tcti_common.h"
 #include "internal/marshal.h"
 
+#include <unistd.h>
+#include <sys/types.h>
+#include <fcntl.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -35,11 +38,6 @@
 #define DEFAULT_DEV_FILE_PATH_LENGTH 9
 
 static const char* DEFAULT_DEV_FILE_PATH = "/dev/tpm0";
-
-enum _TCTI_DEVICE_STATE {
-    _TCTI_DEVICE_STATE_READY,
-    _TCTI_DEVICE_STATE_AWAITING_RESPONSE,
-};
 
 typedef struct {
     uint64_t magic;
@@ -55,8 +53,7 @@ typedef struct {
     TSS2_RC (*setLocality) (TSS2_TCTI_CONTEXT *tctiContext, uint8_t locality);
 
     char dev_file_path[MAX_DEV_FILE_PATH_LENGTH];
-    FILE* file_ptr;
-    enum _TCTI_DEVICE_STATE state;
+    int file_fd;
 } TSS2_TCTI_CONTEXT_OPAQUE_DEVICE;
 
 #ifdef VERBOSE_LOGGING
@@ -93,7 +90,7 @@ setLocality_device(TSS2_TCTI_CONTEXT *tcti_context,
 
 static
 TSS2_RC
-send_all(FILE* file_ptr,
+send_all(int file_fd,
          uint8_t *in,
          size_t requested_length);
 
@@ -130,8 +127,17 @@ tss2_tcti_init_device(const char *dev_file_path,
     cast_context->getPollHandles = getPollHandles_device;
     cast_context->setLocality = setLocality_device;
 
-    cast_context->state = _TCTI_DEVICE_STATE_READY;
-    cast_context->file_ptr = NULL;
+    cast_context->file_fd = -1;
+
+    // Open file
+    cast_context->file_fd = open(cast_context->dev_file_path, O_RDWR);
+    if (-1 == cast_context->file_fd) {
+#ifdef TCTI_VERBOSE_LOGGING
+        fprintf(stderr, "tcti_device::init - Error with open: (%d) %s\n", errno, strerror(errno));
+#endif
+        return TSS2_TCTI_RC_IO_ERROR;
+    }
+
 
     return TSS2_RC_SUCCESS;
 }
@@ -165,28 +171,12 @@ TSS2_RC transmit_device(TSS2_TCTI_CONTEXT *tcti_context,
     TSS2_TCTI_CONTEXT_OPAQUE_DEVICE *cast_context = (TSS2_TCTI_CONTEXT_OPAQUE_DEVICE*)tcti_context;
     TSS2_RC send_ret = TSS2_RC_SUCCESS;
 
-    if (_TCTI_DEVICE_STATE_READY != cast_context->state) {
-#ifdef TCTI_VERBOSE_LOGGING
-        fprintf(stderr, "tcti_device::transmit - transmit called while awaiting a response\n");
-#endif
-        return TSS2_BASE_RC_BAD_SEQUENCE;
-    }
-
-    // Open file
-    cast_context->file_ptr = fopen(cast_context->dev_file_path, "r+");
-    if (NULL == cast_context->file_ptr) {
-#ifdef TCTI_VERBOSE_LOGGING
-        fprintf(stderr, "tcti_device::transmit - Error with fopen: (%d) %s\n", errno, strerror(errno));
-#endif
-        return TSS2_TCTI_RC_IO_ERROR; 
-    }
-
     // Send the command.
-    send_ret = send_all(cast_context->file_ptr,
+    send_ret = send_all(cast_context->file_fd,
                         command,
                         size);
     if (send_ret != TSS2_RC_SUCCESS) {
-        goto transmit_cleanup;
+        return send_ret;
     }
 #ifdef TCTI_VERBOSE_LOGGING
     printf("tcti_device::transmit - command={");
@@ -197,14 +187,6 @@ TSS2_RC transmit_device(TSS2_TCTI_CONTEXT *tcti_context,
     printf("}\n");
 #endif
 
-transmit_cleanup:
-    if (TSS2_RC_SUCCESS != send_ret && cast_context->file_ptr) {
-        fclose(cast_context->file_ptr);
-        cast_context->file_ptr = NULL;
-    } else {
-        cast_context->state = _TCTI_DEVICE_STATE_AWAITING_RESPONSE;
-    }
-
     return send_ret;
 }
 
@@ -213,79 +195,68 @@ TSS2_RC receive_device(TSS2_TCTI_CONTEXT *tcti_context,
                        uint8_t *response,
                        int32_t timeout)
 {
-    TSS2_RC recv_ret = TSS2_RC_SUCCESS;
-
     TSS2_TCTI_CONTEXT_OPAQUE_DEVICE *cast_context = (TSS2_TCTI_CONTEXT_OPAQUE_DEVICE*)tcti_context;
 
     // Nb. We don't support timeouts
     if (TSS2_TCTI_TIMEOUT_BLOCK != timeout) {
-        recv_ret = TSS2_TCTI_RC_NOT_IMPLEMENTED;
-        goto receive_cleanup;
+        return TSS2_TCTI_RC_NOT_IMPLEMENTED;
     }
 
     // Nb. We don't support reporting the size.
     //   A caller must give us enough buffer to read the entire response in one go.
     if (NULL == response || NULL == size) {
-        recv_ret = TSS2_BASE_RC_BAD_REFERENCE;
-        goto receive_cleanup;
+        return TSS2_BASE_RC_BAD_REFERENCE;
     }
 
-    if (_TCTI_DEVICE_STATE_AWAITING_RESPONSE != cast_context->state) {
+    ssize_t read_ret = read(cast_context->file_fd, response, *size);
+    if (-1 == read_ret) {
 #ifdef TCTI_VERBOSE_LOGGING
-        fprintf(stderr, "tcti_device::receive - receive called without matching transmit\n");
+        fprintf(stderr, "tcti_device::receive - Error with read: (%d) %s\n", errno, strerror(errno));
 #endif
-        recv_ret = TSS2_BASE_RC_BAD_SEQUENCE;
-        goto receive_cleanup;
+        return TSS2_TCTI_RC_IO_ERROR;
     }
 
-    size_t fread_ret = fread(response, 1, *size, cast_context->file_ptr);
-    if (0 == fread_ret && ferror(cast_context->file_ptr)) {
-#ifdef TCTI_VERBOSE_LOGGING
-        fprintf(stderr, "tcti_device::receive - Error with fread: (%d) %s\n", errno, strerror(errno));
-#endif
-        recv_ret = TSS2_TCTI_RC_IO_ERROR; 
-        goto receive_cleanup;
-    }
-    
-    if (!feof(cast_context->file_ptr)) {
+    // 0 indicates EOF, so if we don't get EOF our buffer was too small to read everything.
+    uint8_t eof_buf[1];
+    ssize_t eof_read_ret = read(cast_context->file_fd, eof_buf, sizeof(eof_buf));
+    if (0 != eof_read_ret) {
 #ifdef TCTI_VERBOSE_LOGGING
         fprintf(stderr, "tcti_device::receive - Supplied buffer too small for response\n");
 #endif
-        recv_ret = TSS2_TCTI_RC_INSUFFICIENT_BUFFER;
-        goto receive_cleanup;
-    }
-
-receive_cleanup:
-    if (TSS2_RC_SUCCESS == recv_ret) {
-        *size = (size_t)fread_ret;
-#ifdef TCTI_VERBOSE_LOGGING
-        printf("response={");
-        for (size_t i=0; i < *size; i++) {
-            printf("%#X", response[i]);
-            if (i != (*size-1)) printf(", ");
+        // Clear out remaining response.
+        unsigned char trash[64];
+        ssize_t trash_ret = 1;
+        while (trash_ret != 0 && trash_ret != -1) {
+            trash_ret = read(cast_context->file_fd, trash, sizeof(trash));
         }
-        printf("}\n");
-#endif
-    } else {
+
         *size = 0;
+
+        return TSS2_TCTI_RC_INSUFFICIENT_BUFFER;
     }
 
-    if (cast_context->file_ptr) {
-        fclose(cast_context->file_ptr);
-        cast_context->file_ptr = NULL;
+    *size = (size_t)read_ret;
+
+#ifdef TCTI_VERBOSE_LOGGING
+    printf("response={");
+    for (size_t i=0; i < *size; i++) {
+        printf("%#X", response[i]);
+        if (i != (*size-1)) printf(", ");
     }
+    printf("}\n");
+#endif
 
-    cast_context->state = _TCTI_DEVICE_STATE_READY;
+    return TSS2_RC_SUCCESS;
 
-    return recv_ret;
 }
 
 TSS2_RC finalize_device(TSS2_TCTI_CONTEXT *tcti_context)
 {
     TSS2_TCTI_CONTEXT_OPAQUE_DEVICE *cast_context = (TSS2_TCTI_CONTEXT_OPAQUE_DEVICE*)tcti_context;
 
-    if (NULL != cast_context->file_ptr) {
-        fclose(cast_context->file_ptr);
+    if (-1 != cast_context->file_fd) {
+        close(cast_context->file_fd);
+        cast_context->file_fd = -1;
     }
 
     return TSS2_RC_SUCCESS;
@@ -298,26 +269,24 @@ TSS2_RC cancel_device(TSS2_TCTI_CONTEXT *tcti_context)
 }
 
 TSS2_RC
-send_all(FILE* file_ptr,
+send_all(int file_fd,
          uint8_t *in,
          size_t requested_length)
 {
     size_t length_left = requested_length;
     size_t bytes_sent = 0;
     while (bytes_sent < requested_length) {
-        size_t fwrite_ret = fwrite((char*)&(in[bytes_sent]), 1, length_left, file_ptr);
-        if (0 == fwrite_ret) {
+        ssize_t write_ret = write(file_fd, (char*)&(in[bytes_sent]), length_left);
+        if (-1 == write_ret) {
 #ifdef TCTI_VERBOSE_LOGGING
             perror("tcti_device::send_all - ");
 #endif
             return TSS2_TCTI_RC_IO_ERROR;
         }
 
-        bytes_sent += (size_t)fwrite_ret;
-        length_left -= (size_t)fwrite_ret;
+        bytes_sent += (size_t)write_ret;
+        length_left -= (size_t)write_ret;
     }
-
-    fflush(file_ptr);
 
     return TSS2_RC_SUCCESS;
 }
