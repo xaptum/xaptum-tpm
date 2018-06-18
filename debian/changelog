@@ -1,3 +1,21 @@
+xaptum-tpm (0.5.5-1) unstable; urgency=medium
+
+  [ Zane Beckwith ]
+  * Tests: Remove semicolon from end of test macros
+  * Util: Remove default case in object-type switch
+  * Util: Add ability to read basename and server_id from NVRAM
+  * Utility: Allow usage of device TCTI
+
+  [ David R. Bild ]
+  * utils: use correct return type for getopt_long
+  * utils: fix declaration of -h,--help option
+
+  [ Zane Beckwith ]
+  * Dev TCTI: Keep file open across commands, and don't use FILE*
+  * Bump patch version
+
+ -- Zane Beckwith <zane.beckwith@xaptum.com>  Mon, 18 Jun 2018 22:13:46 +0000
+
 xaptum-tpm (0.5.4-1) unstable; urgency=medium
 
   * release version 0.5.4
