@@ -97,6 +97,7 @@ typedef TPM_ALG_ID TPMI_ALG_SYM_MODE;
 #define TPM_ALG_SHA256 0x000B
 #define TPM_ALG_SHA512 0x000D
 #define TPM_ALG_NULL 0x0010
+#define TPM_ALG_ECDSA 0x0018
 #define TPM_ALG_ECDAA 0x001A
 #define TPM_ALG_KDF1_SP800_108 0x0022
 #define TPM_ALG_ECC 0x0023
@@ -116,12 +117,18 @@ typedef uint8_t TPMA_LOCALITY;
 
 typedef struct {
     TPMI_ALG_HASH hashAlg;
+} TPMS_SCHEME_HASH;
+typedef TPMS_SCHEME_HASH TPMS_SIG_SCHEME_ECDSA;
+
+typedef struct {
+    TPMI_ALG_HASH hashAlg;
     uint16_t count;
 } TPMS_SCHEME_ECDAA;
 typedef TPMS_SCHEME_ECDAA TPMS_SIG_SCHEME_ECDAA;
 
 typedef union {
-    TPMS_SCHEME_ECDAA ecdaa;
+    TPMS_SIG_SCHEME_ECDAA ecdaa;
+    TPMS_SIG_SCHEME_ECDSA ecdsa;
 } TPMU_SIG_SCHEME;
 
 typedef struct {
@@ -245,6 +252,7 @@ typedef struct {
 
 typedef union {
     TPMS_SIG_SCHEME_ECDAA ecdaa;
+    TPMS_SIG_SCHEME_ECDSA ecdsa;
 } TPMU_ASYM_SCHEME;
 
 typedef struct {
@@ -377,6 +385,7 @@ typedef struct {
 
 typedef union {
     TPMS_SIGNATURE_ECC ecdaa;
+    TPMS_SIGNATURE_ECC ecdsa;
 } TPMU_SIGNATURE;
 
 typedef struct {
