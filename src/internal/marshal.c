@@ -245,6 +245,9 @@ void marshal_tpmt_ecc_scheme(const TPMT_ECC_SCHEME * in, uint8_t **out)
             marshal_tpmi_alg_id(in->details.ecdaa.hashAlg, out);
             marshal_uint16(in->details.ecdaa.count, out);
             break;
+        case TPM_ALG_ECDSA:
+            marshal_tpmi_alg_id(in->details.ecdsa.hashAlg, out);
+            break;
     }
 }
 
@@ -259,6 +262,10 @@ int unmarshal_tpmt_ecc_scheme(uint8_t **in, uint32_t *in_max_length, TPMT_ECC_SC
                 return -1;
 
             if (0 != unmarshal_uint16(in, in_max_length, &out->details.ecdaa.count))
+                return -1;
+            break;
+        case TPM_ALG_ECDSA:
+            if (0 != unmarshal_tpmi_alg_id(in, in_max_length, &out->details.ecdsa.hashAlg))
                 return -1;
             break;
         case TPM_ALG_NULL:
@@ -622,6 +629,10 @@ void marshal_tpmt_sigscheme(const TPMT_SIG_SCHEME *in, uint8_t **out)
         case TPM_ALG_ECDAA:
             marshal_tpmi_alg_id(in->details.ecdaa.hashAlg, out);
             marshal_uint16(in->details.ecdaa.count, out);
+            break;
+        case TPM_ALG_ECDSA:
+            marshal_tpmi_alg_id(in->details.ecdsa.hashAlg, out);
+            break;
     }
 }
 
@@ -651,7 +662,19 @@ int unmarshal_tpmt_signature(uint8_t **in, uint32_t *in_max_length, TPMT_SIGNATU
                 return -1;
 
             break;
-            
+
+        case TPM_ALG_ECDSA:
+            if (0 != unmarshal_tpmi_alg_id(in, in_max_length, &out->signature.ecdsa.hash))
+                return -1;
+
+            if (0 != unmarshal_tpm2b_simple(in, in_max_length, (TPM2B_SIMPLE*)&out->signature.ecdsa.signatureR))
+                return -1;
+
+            if (0 != unmarshal_tpm2b_simple(in, in_max_length, (TPM2B_SIMPLE*)&out->signature.ecdsa.signatureS))
+                return -1;
+
+            break;
+
         default:
             return -2;
     }
