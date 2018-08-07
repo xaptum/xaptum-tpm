@@ -1,3 +1,14 @@
+xaptum-tpm (0.5.6-1) unstable; urgency=medium
+
+  [ Zane Beckwith ]
+  * Whitespace
+  * Add ECDSA with NIST256 curve as signature option.
+  * Util: Whitespace
+  * Util: Update lengths in nvram.h, to reflect ECDSA pubkey/cert.
+  * Util: Output root cert with appropriate extension
+
+ -- Zane Beckwith <zane.beckwith@xaptum.com>  Tue, 07 Aug 2018 18:03:57 +0000
+
 xaptum-tpm (0.5.5-1) unstable; urgency=medium
 
   [ Zane Beckwith ]
