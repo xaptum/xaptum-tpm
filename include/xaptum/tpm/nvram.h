@@ -30,8 +30,8 @@ extern "C" {
 #define XTPM_CRED_LENGTH             260
 #define XTPM_CRED_SIG_LENGTH         64
 #define XTPM_ROOT_ID_LENGTH          16
-#define XTPM_ROOT_PUBKEY_LENGTH      32
-#define XTPM_ROOT_ASN1CERT_LENGTH    276
+#define XTPM_ROOT_PUBKEY_LENGTH      65
+#define XTPM_ROOT_ASN1CERT_LENGTH    579
 #define XTPM_BASENAME_LENGTH         0  // size must be read from previous index
 #define XTPM_SERVER_ID_LENGTH        16
 
