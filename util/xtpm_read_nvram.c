@@ -1,13 +1,13 @@
 /******************************************************************************
  *
  * Copyright 2017 Xaptum, Inc.
- * 
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
- * 
+ *
  *        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -173,7 +173,7 @@ parse_cli_args(int argc,
         "\t\t-d --tpm-device-file   TCTI device file, if tcti==device [default: '/dev/tpm0'].\n"
         "\t\t-a --tpm-ip-address    IP hostname of TPM TCP server, if tcti==socket [default: 'localhost'].\n"
         "\t\t-p --tpm-port          TCP port of TPM TCP server, if tcti==socket [default: 2321].\n"
-        "\t\t-o --output-file       Output file. [default: '<object-name>.bin']\n"
+        "\t\t-o --output-file       Output file. [default: '<object-name>.bin' or 'root.cert.asn1.bin']\n"
         "\tArguments:\n"
         "\t\tobject-name\tOne of gpk, cred, cred_sig, root_id, root_pubkey, root_asn1_cert, basename, or server_id\n"
         ;
@@ -249,7 +249,7 @@ parse_cli_args(int argc,
         } else if (0 == strcmp(argv[optind], "root_asn1_cert")) {
             ctx->obj_name = XTPM_ROOT_ASN1_CERTIFICATE;
             if (ctx->out_filename == NULL)
-                ctx->out_filename = "root_asn1_cert.bin";
+                ctx->out_filename = "root.cert.asn1.pem";
         } else if (0 == strcmp(argv[optind], "basename")) {
             ctx->obj_name = XTPM_BASENAME;
             if (ctx->out_filename == NULL)
