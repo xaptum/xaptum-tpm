@@ -169,7 +169,7 @@ int undefine(struct test_context *ctx, int index)
     return rval;
 }
 
-int write(struct test_context *ctx,
+int write_to_nv(struct test_context *ctx,
           uint32_t index,
           uint8_t *data,
           uint32_t data_size)
@@ -222,7 +222,7 @@ int write(struct test_context *ctx,
     return data_size;
 }
 
-int read(struct test_context *ctx,
+int read_from_nv(struct test_context *ctx,
          uint32_t index,
          uint8_t *data,
          uint32_t data_size)
@@ -294,11 +294,11 @@ void full_test()
     int define_ret = define(&ctx, index, size);
     TEST_ASSERT(0 == define_ret);
 
-    int write_ret = write(&ctx, index, (uint8_t*)data, data_size);
+    int write_ret = write_to_nv(&ctx, index, (uint8_t*)data, data_size);
     TEST_ASSERT((int)data_size == write_ret);
 
     char output_data[1024];
-    int read_ret = read(&ctx, index, (uint8_t*)output_data, data_size);
+    int read_ret = read_from_nv(&ctx, index, (uint8_t*)output_data, data_size);
     TEST_ASSERT((int)data_size == read_ret);
 
     TEST_ASSERT(0 == memcmp(data, output_data, data_size));
