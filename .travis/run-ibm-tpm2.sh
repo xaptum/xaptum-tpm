@@ -13,6 +13,8 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License
 
+set -e
+
 if [[ $# -ne 1 ]]; then
         echo "usage: $0 <absolute-path-to-tpm-simulator-installation-directory>"
         exit 1
@@ -20,18 +22,10 @@ fi
 
 installation_dir="$1"
 
-pkill tpm_server
+pkill tpm_server || true
 
 pushd $installation_dir
 
-pushd tpm
-./tpm_server -rm &
-sleep 2
-popd
-
-pushd tss/utils/
-./powerup
-./startup
-popd
+./simulator.sh start
 
 popd

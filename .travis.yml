@@ -19,6 +19,7 @@ compiler: gcc
 env:
   global:
   - IBM_TPM_DIR=${TRAVIS_BUILD_DIR}/ibm-tpm-simulator
+  - IBM_TPM_TAG=1332
 
 jobs:
   include:
@@ -26,7 +27,7 @@ jobs:
   # Release build, gcc
   - env: TYPE=RELEASE
     before_script:
-      - .travis/install-ibm-tpm2.sh ${IBM_TPM_DIR}
+      - .travis/install-ibm-tpm2.sh ${IBM_TPM_TAG} ${IBM_TPM_DIR}
       - cmake . -DCMAKE_BUILD_TYPE=Release -DTEST_USE_TCP_TPM=ON
     script:
       - cmake --build . -- -j2
@@ -36,7 +37,7 @@ jobs:
   # Debug build, to get code coverage with gcov
   - env: TYPE=DEBUG
     before_script:
-      - .travis/install-ibm-tpm2.sh ${IBM_TPM_DIR}
+      - .travis/install-ibm-tpm2.sh ${IBM_TPM_TAG} ${IBM_TPM_DIR}
       - cmake . -DCMAKE_BUILD_TYPE=Debug -DTEST_USE_TCP_TPM=ON
     script:
       - cmake --build . -- -j2
@@ -47,7 +48,7 @@ jobs:
   - env: TYPE=RELEASE-WITH-CLANG
     compiler: clang
     before_script:
-      - .travis/install-ibm-tpm2.sh ${IBM_TPM_DIR}
+      - .travis/install-ibm-tpm2.sh ${IBM_TPM_TAG} ${IBM_TPM_DIR}
       - cmake . -DCMAKE_BUILD_TYPE=Release -DTEST_USE_TCP_TPM=ON
     script:
       - cmake --build . -- -j2
@@ -71,7 +72,7 @@ jobs:
     sudo: true
     compiler: clang
     before_script:
-      - .travis/install-ibm-tpm2.sh ${IBM_TPM_DIR}
+      - .travis/install-ibm-tpm2.sh ${IBM_TPM_TAG} ${IBM_TPM_DIR}
       - cmake . -DCMAKE_BUILD_TYPE=RelWithSanitize -DTEST_USE_TCP_TPM=ON
     script:
       - cmake --build . -- -j2
