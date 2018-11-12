@@ -18,63 +18,53 @@ compiler: gcc
 
 env:
   global:
+  - XTPM_BUILD_DIR=${TRAVIS_BUILD_DIR}/build
   - IBM_TPM_DIR=${TRAVIS_BUILD_DIR}/ibm-tpm-simulator
   - IBM_TPM_TAG=1332
 
-jobs:
+before_script:
+  - ${TRAVIS_BUILD_DIR}/.travis/install-ibm-tpm2.sh ${IBM_TPM_TAG} ${IBM_TPM_DIR}
+  - mkdir -p ${XTPM_BUILD_DIR}
+  - pushd ${XTPM_BUILD_DIR}
+  - cmake ${TRAVIS_BUILD_DIR} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DTEST_USE_TCP_TPM=ON
+  - popd
+
+script:
+  - pushd ${XTPM_BUILD_DIR}
+  - cmake --build . -- -j2
+  - ${TRAVIS_BUILD_DIR}/.travis/run-ibm-tpm2.sh ${IBM_TPM_DIR}
+  - ctest -VV
+  - popd
+
+matrix:
   include:
-
-  # Release build, gcc
-  - env: TYPE=RELEASE
-    before_script:
-      - .travis/install-ibm-tpm2.sh ${IBM_TPM_TAG} ${IBM_TPM_DIR}
-      - cmake . -DCMAKE_BUILD_TYPE=Release -DTEST_USE_TCP_TPM=ON
-    script:
-      - cmake --build . -- -j2
-      - .travis/run-ibm-tpm2.sh ${IBM_TPM_DIR}
-      - ctest -VV
-
-  # Debug build, to get code coverage with gcov
-  - env: TYPE=DEBUG
-    before_script:
-      - .travis/install-ibm-tpm2.sh ${IBM_TPM_TAG} ${IBM_TPM_DIR}
-      - cmake . -DCMAKE_BUILD_TYPE=Debug -DTEST_USE_TCP_TPM=ON
-    script:
-      - cmake --build . -- -j2
-      - .travis/run-ibm-tpm2.sh ${IBM_TPM_DIR}
-      - ctest -VV
-
-  # Release build, clang
-  - env: TYPE=RELEASE-WITH-CLANG
-    compiler: clang
-    before_script:
-      - .travis/install-ibm-tpm2.sh ${IBM_TPM_TAG} ${IBM_TPM_DIR}
-      - cmake . -DCMAKE_BUILD_TYPE=Release -DTEST_USE_TCP_TPM=ON
-    script:
-      - cmake --build . -- -j2
-      - .travis/run-ibm-tpm2.sh ${IBM_TPM_DIR}
-      - ctest -VV
-
-  # cppcheck
-  - env: TYPE=CPPCHECK
-    addons:
-      apt:
-        packages:
-          - cppcheck
-    before_script:
-      - cmake . -DCMAKE_BUILD_TYPE=Release -DTEST_USE_TCP_TPM=ON
-    script:
-      - cmake --build . -- -j2
-      - .travis/run-cppcheck.sh
-
-  # Sanitizers
-  - env: TYPE=SANITIZE
-    sudo: true
-    compiler: clang
-    before_script:
-      - .travis/install-ibm-tpm2.sh ${IBM_TPM_TAG} ${IBM_TPM_DIR}
-      - cmake . -DCMAKE_BUILD_TYPE=RelWithSanitize -DTEST_USE_TCP_TPM=ON
-    script:
-      - cmake --build . -- -j2
-      - .travis/run-ibm-tpm2.sh ${IBM_TPM_DIR}
-      - ctest -VV -E benchmarks
+    - name: "Release build, gcc"
+      env:
+        - TYPE=RELEASE
+        - BUILD_TYPE=Release
+    - name: "Debug build, gcc"
+      env:
+        - TYPE=DEBUG
+        - BUILD_TYPE=Debug
+    - name: "Release build, clang"
+      compiler: clang
+      env:
+        - TYPE=RELEASE-WITH-CLANG
+        - BUILD_TYPE=Release
+    - name: "CPPCheck"
+      env:
+        - TYPE=CPPCHECK
+        - BUILD_TYPE=Release
+      addons:
+        apt:
+          packages:
+            - cppcheck
+      before_script:
+      script:
+        - ${TRAVIS_BUILD_DIR}/.travis/run-cppcheck.sh
+    - name: "Sanitize build, clang"
+      sudo: true
+      compiler: clang
+      env:
+        - TYPE=SANITIZE
+        - BUILD_TYPE=RelWithSanitize
