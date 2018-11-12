@@ -1,13 +1,13 @@
 /******************************************************************************
  *
  * Copyright 2017 Xaptum, Inc.
- * 
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
- * 
+ *
  *        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -115,29 +115,17 @@ void full_test(const char* pub_key_filename, const char* handle_filename)
     struct test_context ctx;
     initialize(&ctx);
 
-    int ret = 0;
+    RETRY_FOR_SUCCESS(clear(&ctx));
 
-    ret = clear(&ctx);
+    RETRY_FOR_SUCCESS(create_primary(&ctx));
 
-    TEST_ASSERT(TSS2_RC_SUCCESS == ret);
+    RETRY_FOR_SUCCESS(create(&ctx));
 
-    ret = create_primary(&ctx);
+    RETRY_FOR_SUCCESS(load(&ctx));
 
-    TEST_ASSERT(TSS2_RC_SUCCESS == ret);
+    RETRY_FOR_SUCCESS(evict_control(&ctx));
 
-    ret = create(&ctx);
-
-    TEST_ASSERT(TSS2_RC_SUCCESS == ret);
-
-    ret = load(&ctx);
-
-    TEST_ASSERT(TSS2_RC_SUCCESS == ret);
-
-    ret = evict_control(&ctx);
-
-    TEST_ASSERT(TSS2_RC_SUCCESS == ret);
-
-    ret = save_public_key_info(&ctx, pub_key_filename, handle_filename);
+    int ret = save_public_key_info(&ctx, pub_key_filename, handle_filename);
 
     TEST_ASSERT(TSS2_RC_SUCCESS == ret);
 
