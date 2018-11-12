@@ -13,27 +13,22 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License
 
-if [[ $# -ne 1 ]]; then
-        echo "usage: $0 <absolute-path-to-tpm-simulator-installation-directory>"
+set -e
+
+if [[ $# -ne 2 ]]; then
+        echo "usage: $0 <git-tag> <absolute-path-to-tpm-simulator-installation-directory>"
         exit 1
 fi
 
-installation_dir="$1"
+source_tag="$1"
+installation_dir="$2"
 
 if [[ ! -d "$installation_dir" ]]; then
-        git clone https://github.com/zanebeckwith/ibm-tpm2-simulator-mirror "$installation_dir"
+        git clone --branch "${source_tag}" --depth 1 https://github.com/xaptum-eng/ibm-tpm2-simulator-mirror "$installation_dir"
 fi
 
 pushd $installation_dir 
 
-pushd ./tpm
 make
-popd
-
-pushd ./tss
-pushd ./utils/
-make
-popd
-popd
 
 popd
