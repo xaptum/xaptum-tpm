@@ -21,12 +21,13 @@ env:
   - XTPM_BUILD_DIR=${TRAVIS_BUILD_DIR}/build
   - IBM_TPM_DIR=${TRAVIS_BUILD_DIR}/ibm-tpm-simulator
   - IBM_TPM_TAG=1332
+  - SHARED_LIBS=ON
 
 before_script:
   - ${TRAVIS_BUILD_DIR}/.travis/install-ibm-tpm2.sh ${IBM_TPM_TAG} ${IBM_TPM_DIR}
   - mkdir -p ${XTPM_BUILD_DIR}
   - pushd ${XTPM_BUILD_DIR}
-  - cmake ${TRAVIS_BUILD_DIR} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DTEST_USE_TCP_TPM=ON
+  - cmake ${TRAVIS_BUILD_DIR} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DTEST_USE_TCP_TPM=ON -DBUILD_SHARED_LIBS=${SHARED_LIBS} -DBUILD_UTILS=ON
   - popd
 
 script:
@@ -42,6 +43,11 @@ matrix:
       env:
         - TYPE=DEV
         - BUILD_TYPE=Dev
+    - name: "Dev build, gcc, static library"
+      env:
+        - TYPE=DEV
+        - BUILD_TYPE=Dev
+        - SHARED_LIBS=OFF
     - name: "DevDebug build, gcc"
       env:
         - TYPE=DEBUG
