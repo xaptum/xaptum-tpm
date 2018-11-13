@@ -19,6 +19,7 @@ compiler: gcc
 env:
   global:
   - XTPM_BUILD_DIR=${TRAVIS_BUILD_DIR}/build
+  - XTPM_INSTALL_DIR=${TRAVIS_BUILD_DIR}/install
   - IBM_TPM_DIR=${TRAVIS_BUILD_DIR}/ibm-tpm-simulator
   - IBM_TPM_TAG=1332
   - SHARED_LIBS=ON
@@ -26,13 +27,16 @@ env:
 before_script:
   - ${TRAVIS_BUILD_DIR}/.travis/install-ibm-tpm2.sh ${IBM_TPM_TAG} ${IBM_TPM_DIR}
   - mkdir -p ${XTPM_BUILD_DIR}
+  - mkdir -p ${XTPM_INSTALL_DIR}
   - pushd ${XTPM_BUILD_DIR}
-  - cmake ${TRAVIS_BUILD_DIR} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DTEST_USE_TCP_TPM=ON -DBUILD_SHARED_LIBS=${SHARED_LIBS} -DBUILD_UTILS=ON
+  - |
+    cmake ${TRAVIS_BUILD_DIR} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=${XTPM_INSTALL_DIR} \
+    -DTEST_USE_TCP_TPM=ON -DBUILD_SHARED_LIBS=${SHARED_LIBS} -DBUILD_UTILS=ON
   - popd
 
 script:
   - pushd ${XTPM_BUILD_DIR}
-  - cmake --build . -- -j2
+  - cmake --build . --target install -- -j2
   - ${TRAVIS_BUILD_DIR}/.travis/run-ibm-tpm2.sh ${IBM_TPM_DIR}
   - ctest -VV
   - popd
