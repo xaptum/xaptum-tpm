@@ -1,13 +1,13 @@
 /******************************************************************************
  *
  * Copyright 2017 Xaptum, Inc.
- * 
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
- * 
+ *
  *        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,11 +45,6 @@ uint16_t xtpm_root_id_length()
 uint16_t xtpm_root_pubkey_length()
 {
     return XTPM_ROOT_PUBKEY_LENGTH;
-}
-
-uint16_t xtpm_root_asn1cert_length()
-{
-    return XTPM_ROOT_ASN1CERT_LENGTH;
 }
 
 TPMI_RH_NV_INDEX xtpm_gpk_handle()
@@ -114,21 +109,21 @@ xtpm_read_object(unsigned char* out_buffer,
             size = XTPM_ROOT_PUBKEY_LENGTH;
             break;
         case XTPM_ROOT_ASN1_CERTIFICATE:
+            {
             index = XTPM_ROOT_ASN1CERT_HANDLE;
-            size = XTPM_ROOT_ASN1CERT_LENGTH;
+            TSS2_RC ret = xtpm_get_nvram_size(&size, index, sapi_context);
+            if (TSS2_RC_SUCCESS != ret)
+                return ret;
             break;
+            }
         case XTPM_BASENAME:
-        {
-            uint8_t basename_size_out;
-            TSS2_RC bsn_size_ret = xtpm_read_nvram((unsigned char*)&basename_size_out, 1,
-                                      XTPM_BASENAME_SIZE_HANDLE, sapi_context);
-            if (TSS2_RC_SUCCESS != bsn_size_ret)
-                return bsn_size_ret;
-
+            {
             index = XTPM_BASENAME_HANDLE;
-            size = basename_size_out;
+            TSS2_RC ret = xtpm_get_nvram_size(&size, index, sapi_context);
+            if (TSS2_RC_SUCCESS != ret)
+                return ret;
             break;
-        }
+            }
         case XTPM_SERVER_ID:
             index = XTPM_SERVER_ID_HANDLE;
             size = XTPM_SERVER_ID_LENGTH;
@@ -199,5 +194,31 @@ xtpm_read_nvram(unsigned char *out,
     }
 
     return ret;
+}
+
+TSS2_RC
+xtpm_get_nvram_size(uint16_t *size_out,
+                    TPM_HANDLE index,
+                    TSS2_SYS_CONTEXT *sapi_context)
+{
+    TSS2_SYS_CMD_AUTHS sessionsData = {.cmdAuthsCount = 0};
+    TSS2_SYS_RSP_AUTHS sessionsDataOut = {.rspAuthsCount = 0};
+
+    TPM2B_NV_PUBLIC nv_public = {0};
+
+    TPM2B_NAME nv_name = {0};
+
+    TSS2_RC rval = Tss2_Sys_NV_ReadPublic(sapi_context,
+                                          index,
+                                          &sessionsData,
+                                          &nv_public,
+                                          &nv_name,
+                                          &sessionsDataOut);
+
+    if (rval == TSS2_RC_SUCCESS) {
+        *size_out = nv_public.nvPublic.dataSize;
+    }
+
+    return rval;
 }
 
