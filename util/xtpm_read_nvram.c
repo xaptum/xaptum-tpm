@@ -175,7 +175,7 @@ parse_cli_args(int argc,
         "\t\t-p --tpm-port          TCP port of TPM TCP server, if tcti==socket [default: 2321].\n"
         "\t\t-o --output-file       Output file. [default: '<object-name>.bin' or 'root.cert.asn1.bin']\n"
         "\tArguments:\n"
-        "\t\tobject-name\tOne of gpk, cred, cred_sig, root_id, root_pubkey, root_asn1_cert, basename, or server_id\n"
+        "\t\tobject-name\tOne of gpk, cred, cred_sig, root_asn1_cert, root_xtt_cert, basename, or server_id\n"
         ;
 
     ctx->tcti = TCTI_DEVICE;
@@ -238,18 +238,14 @@ parse_cli_args(int argc,
             ctx->obj_name = XTPM_CREDENTIAL_SIGNATURE;
             if (ctx->out_filename == NULL)
                 ctx->out_filename = "cred_sig.bin";
-        } else if (0 == strcmp(argv[optind], "root_id")) {
-            ctx->obj_name = XTPM_ROOT_ID;
-            if (ctx->out_filename == NULL)
-                ctx->out_filename = "root_id.bin";
-        } else if (0 == strcmp(argv[optind], "root_pubkey")) {
-            ctx->obj_name = XTPM_ROOT_PUBKEY;
-            if (ctx->out_filename == NULL)
-                ctx->out_filename = "root_pubkey.bin";
         } else if (0 == strcmp(argv[optind], "root_asn1_cert")) {
             ctx->obj_name = XTPM_ROOT_ASN1_CERTIFICATE;
             if (ctx->out_filename == NULL)
                 ctx->out_filename = "root.cert.asn1.pem";
+        } else if (0 == strcmp(argv[optind], "root_xtt_cert")) {
+            ctx->obj_name = XTPM_ROOT_XTT_CERTIFICATE;
+            if (ctx->out_filename == NULL)
+                ctx->out_filename = "root_xtt_cert.bin";
         } else if (0 == strcmp(argv[optind], "basename")) {
             ctx->obj_name = XTPM_BASENAME;
             if (ctx->out_filename == NULL)

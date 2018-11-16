@@ -37,16 +37,6 @@ uint16_t xtpm_cred_sig_length()
     return XTPM_CRED_SIG_LENGTH;
 }
 
-uint16_t xtpm_root_id_length()
-{
-    return XTPM_ROOT_ID_LENGTH;
-}
-
-uint16_t xtpm_root_pubkey_length()
-{
-    return XTPM_ROOT_PUBKEY_LENGTH;
-}
-
 TPMI_RH_NV_INDEX xtpm_gpk_handle()
 {
     return XTPM_GPK_HANDLE;
@@ -62,19 +52,14 @@ TPMI_RH_NV_INDEX xtpm_cred_sig_handle()
     return XTPM_CRED_SIG_HANDLE;
 }
 
-TPMI_RH_NV_INDEX xtpm_root_id_handle()
-{
-    return XTPM_ROOT_ID_HANDLE;
-}
-
-TPMI_RH_NV_INDEX xtpm_root_pubkey_handle()
-{
-    return XTPM_ROOT_PUBKEY_HANDLE;
-}
-
 TPMI_RH_NV_INDEX xtpm_root_asn1cert_handle()
 {
     return XTPM_ROOT_ASN1CERT_HANDLE;
+}
+
+TPMI_RH_NV_INDEX xtpm_root_xttcert_handle()
+{
+    return XTPM_ROOT_XTTCERT_HANDLE;
 }
 
 TSS2_RC
@@ -100,14 +85,6 @@ xtpm_read_object(unsigned char* out_buffer,
             index = XTPM_CRED_SIG_HANDLE;
             size = XTPM_CRED_SIG_LENGTH;
             break;
-        case XTPM_ROOT_ID:
-            index = XTPM_ROOT_ID_HANDLE;
-            size = XTPM_ROOT_ID_LENGTH;
-            break;
-        case XTPM_ROOT_PUBKEY:
-            index = XTPM_ROOT_PUBKEY_HANDLE;
-            size = XTPM_ROOT_PUBKEY_LENGTH;
-            break;
         case XTPM_ROOT_ASN1_CERTIFICATE:
             {
             index = XTPM_ROOT_ASN1CERT_HANDLE;
@@ -128,6 +105,14 @@ xtpm_read_object(unsigned char* out_buffer,
             index = XTPM_SERVER_ID_HANDLE;
             size = XTPM_SERVER_ID_LENGTH;
             break;
+        case XTPM_ROOT_XTT_CERTIFICATE:
+            {
+            index = XTPM_ROOT_XTTCERT_HANDLE;
+            TSS2_RC ret = xtpm_get_nvram_size(&size, index, sapi_context);
+            if (TSS2_RC_SUCCESS != ret)
+                return ret;
+            break;
+            }
     }
 
     if (out_buffer_size < size)
