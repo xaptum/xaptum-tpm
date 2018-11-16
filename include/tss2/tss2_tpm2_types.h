@@ -60,6 +60,7 @@ typedef uint32_t TPM_CC;
 #define TPM_CC_Create 0x00000153
 #define TPM_CC_Load 0x00000157
 #define TPM_CC_Sign 0x0000015D
+#define TPM_CC_NV_ReadPublic 0x00000169
 #define TPM_CC_GetCapability 0x0000017A
 #define TPM_CC_Commit 0x0000018B
 #define TPM_CC_EvictControl 0x00000120

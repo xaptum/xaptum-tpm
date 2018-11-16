@@ -1,13 +1,13 @@
 /******************************************************************************
  *
  * Copyright 2017 Xaptum, Inc.
- * 
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
- * 
+ *
  *        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -76,6 +76,8 @@ int unmarshal_tpmt_signature(uint8_t **in, uint32_t *in_max_length, TPMT_SIGNATU
 void marshal_tpm2b_auth(const TPM2B_AUTH *in, uint8_t **out);
 
 void marshal_tpm2b_nvpublic(const TPM2B_NV_PUBLIC *in, uint8_t **out);
+
+int unmarshal_tpm2b_nvpublic(uint8_t **in, uint32_t *in_max_length, TPM2B_NV_PUBLIC *out);
 
 void marshal_tpm2b_maxnvbuffer(const TPM2B_MAX_NV_BUFFER *in, uint8_t **out);
 
