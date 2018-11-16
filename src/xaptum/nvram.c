@@ -22,21 +22,6 @@
 
 #include <string.h>
 
-uint16_t xtpm_gpk_length()
-{
-    return XTPM_GPK_LENGTH;
-}
-
-uint16_t xtpm_cred_length()
-{
-    return XTPM_CRED_LENGTH;
-}
-
-uint16_t xtpm_cred_sig_length()
-{
-    return XTPM_CRED_SIG_LENGTH;
-}
-
 TPMI_RH_NV_INDEX xtpm_gpk_handle()
 {
     return XTPM_GPK_HANDLE;
@@ -57,6 +42,11 @@ TPMI_RH_NV_INDEX xtpm_root_asn1cert_handle()
     return XTPM_ROOT_ASN1CERT_HANDLE;
 }
 
+TPMI_RH_NV_INDEX xtpm_serverid_handle()
+{
+    return XTPM_SERVER_ID_HANDLE;
+}
+
 TPMI_RH_NV_INDEX xtpm_root_xttcert_handle()
 {
     return XTPM_ROOT_XTTCERT_HANDLE;
@@ -69,51 +59,36 @@ xtpm_read_object(unsigned char* out_buffer,
                  enum xtpm_object_name object_name,
                  TSS2_SYS_CONTEXT *sapi_context)
 {
-    uint16_t size = 0;
     TPM_HANDLE index = 0;
 
     switch (object_name) {
         case XTPM_GROUP_PUBLIC_KEY:
             index = XTPM_GPK_HANDLE;
-            size = XTPM_GPK_LENGTH;
             break;
         case XTPM_CREDENTIAL:
             index = XTPM_CRED_HANDLE;
-            size = XTPM_CRED_LENGTH;
             break;
         case XTPM_CREDENTIAL_SIGNATURE:
             index = XTPM_CRED_SIG_HANDLE;
-            size = XTPM_CRED_SIG_LENGTH;
             break;
         case XTPM_ROOT_ASN1_CERTIFICATE:
-            {
             index = XTPM_ROOT_ASN1CERT_HANDLE;
-            TSS2_RC ret = xtpm_get_nvram_size(&size, index, sapi_context);
-            if (TSS2_RC_SUCCESS != ret)
-                return ret;
             break;
-            }
         case XTPM_BASENAME:
-            {
             index = XTPM_BASENAME_HANDLE;
-            TSS2_RC ret = xtpm_get_nvram_size(&size, index, sapi_context);
-            if (TSS2_RC_SUCCESS != ret)
-                return ret;
             break;
-            }
         case XTPM_SERVER_ID:
             index = XTPM_SERVER_ID_HANDLE;
-            size = XTPM_SERVER_ID_LENGTH;
             break;
         case XTPM_ROOT_XTT_CERTIFICATE:
-            {
             index = XTPM_ROOT_XTTCERT_HANDLE;
-            TSS2_RC ret = xtpm_get_nvram_size(&size, index, sapi_context);
-            if (TSS2_RC_SUCCESS != ret)
-                return ret;
             break;
-            }
     }
+
+    uint16_t size = 0;
+    TSS2_RC ret = xtpm_get_nvram_size(&size, index, sapi_context);
+    if (TSS2_RC_SUCCESS != ret)
+        return ret;
 
     if (out_buffer_size < size)
         return TSS2_BASE_RC_INSUFFICIENT_BUFFER;

@@ -26,16 +26,6 @@
 extern "C" {
 #endif
 
-#define XTPM_GPK_LENGTH              258
-#define XTPM_CRED_LENGTH             260
-#define XTPM_CRED_SIG_LENGTH         64
-#define XTPM_SERVER_ID_LENGTH        16
-
-uint16_t xtpm_gpk_length();
-uint16_t xtpm_cred_length();
-uint16_t xtpm_cred_sig_length();
-uint16_t xtpm_server_id_length();
-
 #define XTPM_GPK_HANDLE             0x1410000
 #define XTPM_CRED_HANDLE            0x1410001
 #define XTPM_CRED_SIG_HANDLE        0x1410002
