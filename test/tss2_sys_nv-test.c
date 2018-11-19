@@ -136,6 +136,29 @@ int define(struct test_context *ctx, int index, uint16_t size)
     return rval;
 }
 
+int get_public(struct test_context *ctx, int index, uint16_t *size_from_public)
+{
+    TSS2_SYS_CMD_AUTHS sessionsData = {.cmdAuthsCount = 0};
+    TSS2_SYS_RSP_AUTHS sessionsDataOut = {.rspAuthsCount = 0};
+
+    TPM2B_NV_PUBLIC nv_public = {0};
+
+    TPM2B_NAME nv_name = {0};
+
+    TSS2_RC rval = Tss2_Sys_NV_ReadPublic(ctx->sapi_ctx,
+                                          index,
+                                          &sessionsData,
+                                          &nv_public,
+                                          &nv_name,
+                                          &sessionsDataOut);
+
+    if (rval == TSS2_RC_SUCCESS) {
+        *size_from_public = nv_public.nvPublic.dataSize;
+    }
+
+    return rval;
+}
+
 int undefine(struct test_context *ctx, int index)
 {
     TPMS_AUTH_COMMAND session_data = {
@@ -293,6 +316,11 @@ void full_test()
 
     int define_ret = define(&ctx, index, size);
     TEST_ASSERT(0 == define_ret);
+
+    uint16_t size_from_public;
+    int public_ret = get_public(&ctx, index, &size_from_public);
+    TEST_ASSERT(0 == public_ret);
+    TEST_ASSERT(size == size_from_public);
 
     int write_ret = write_to_nv(&ctx, index, (uint8_t*)data, data_size);
     TEST_ASSERT((int)data_size == write_ret);

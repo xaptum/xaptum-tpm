@@ -1,13 +1,13 @@
 /******************************************************************************
  *
  * Copyright 2017 Xaptum, Inc.
- * 
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
- * 
+ *
  *        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,36 +21,6 @@
 #include <tss2/tss2_sys.h>
 
 #include <string.h>
-
-uint16_t xtpm_gpk_length()
-{
-    return XTPM_GPK_LENGTH;
-}
-
-uint16_t xtpm_cred_length()
-{
-    return XTPM_CRED_LENGTH;
-}
-
-uint16_t xtpm_cred_sig_length()
-{
-    return XTPM_CRED_SIG_LENGTH;
-}
-
-uint16_t xtpm_root_id_length()
-{
-    return XTPM_ROOT_ID_LENGTH;
-}
-
-uint16_t xtpm_root_pubkey_length()
-{
-    return XTPM_ROOT_PUBKEY_LENGTH;
-}
-
-uint16_t xtpm_root_asn1cert_length()
-{
-    return XTPM_ROOT_ASN1CERT_LENGTH;
-}
 
 TPMI_RH_NV_INDEX xtpm_gpk_handle()
 {
@@ -67,19 +37,19 @@ TPMI_RH_NV_INDEX xtpm_cred_sig_handle()
     return XTPM_CRED_SIG_HANDLE;
 }
 
-TPMI_RH_NV_INDEX xtpm_root_id_handle()
-{
-    return XTPM_ROOT_ID_HANDLE;
-}
-
-TPMI_RH_NV_INDEX xtpm_root_pubkey_handle()
-{
-    return XTPM_ROOT_PUBKEY_HANDLE;
-}
-
 TPMI_RH_NV_INDEX xtpm_root_asn1cert_handle()
 {
     return XTPM_ROOT_ASN1CERT_HANDLE;
+}
+
+TPMI_RH_NV_INDEX xtpm_serverid_handle()
+{
+    return XTPM_SERVER_ID_HANDLE;
+}
+
+TPMI_RH_NV_INDEX xtpm_root_xttcert_handle()
+{
+    return XTPM_ROOT_XTTCERT_HANDLE;
 }
 
 TSS2_RC
@@ -89,51 +59,36 @@ xtpm_read_object(unsigned char* out_buffer,
                  enum xtpm_object_name object_name,
                  TSS2_SYS_CONTEXT *sapi_context)
 {
-    uint16_t size = 0;
     TPM_HANDLE index = 0;
 
     switch (object_name) {
         case XTPM_GROUP_PUBLIC_KEY:
             index = XTPM_GPK_HANDLE;
-            size = XTPM_GPK_LENGTH;
             break;
         case XTPM_CREDENTIAL:
             index = XTPM_CRED_HANDLE;
-            size = XTPM_CRED_LENGTH;
             break;
         case XTPM_CREDENTIAL_SIGNATURE:
             index = XTPM_CRED_SIG_HANDLE;
-            size = XTPM_CRED_SIG_LENGTH;
-            break;
-        case XTPM_ROOT_ID:
-            index = XTPM_ROOT_ID_HANDLE;
-            size = XTPM_ROOT_ID_LENGTH;
-            break;
-        case XTPM_ROOT_PUBKEY:
-            index = XTPM_ROOT_PUBKEY_HANDLE;
-            size = XTPM_ROOT_PUBKEY_LENGTH;
             break;
         case XTPM_ROOT_ASN1_CERTIFICATE:
             index = XTPM_ROOT_ASN1CERT_HANDLE;
-            size = XTPM_ROOT_ASN1CERT_LENGTH;
             break;
         case XTPM_BASENAME:
-        {
-            uint8_t basename_size_out;
-            TSS2_RC bsn_size_ret = xtpm_read_nvram((unsigned char*)&basename_size_out, 1,
-                                      XTPM_BASENAME_SIZE_HANDLE, sapi_context);
-            if (TSS2_RC_SUCCESS != bsn_size_ret)
-                return bsn_size_ret;
-
             index = XTPM_BASENAME_HANDLE;
-            size = basename_size_out;
             break;
-        }
         case XTPM_SERVER_ID:
             index = XTPM_SERVER_ID_HANDLE;
-            size = XTPM_SERVER_ID_LENGTH;
+            break;
+        case XTPM_ROOT_XTT_CERTIFICATE:
+            index = XTPM_ROOT_XTTCERT_HANDLE;
             break;
     }
+
+    uint16_t size = 0;
+    TSS2_RC ret = xtpm_get_nvram_size(&size, index, sapi_context);
+    if (TSS2_RC_SUCCESS != ret)
+        return ret;
 
     if (out_buffer_size < size)
         return TSS2_BASE_RC_INSUFFICIENT_BUFFER;
@@ -199,5 +154,31 @@ xtpm_read_nvram(unsigned char *out,
     }
 
     return ret;
+}
+
+TSS2_RC
+xtpm_get_nvram_size(uint16_t *size_out,
+                    TPM_HANDLE index,
+                    TSS2_SYS_CONTEXT *sapi_context)
+{
+    TSS2_SYS_CMD_AUTHS sessionsData = {.cmdAuthsCount = 0};
+    TSS2_SYS_RSP_AUTHS sessionsDataOut = {.rspAuthsCount = 0};
+
+    TPM2B_NV_PUBLIC nv_public = {0};
+
+    TPM2B_NAME nv_name = {0};
+
+    TSS2_RC rval = Tss2_Sys_NV_ReadPublic(sapi_context,
+                                          index,
+                                          &sessionsData,
+                                          &nv_public,
+                                          &nv_name,
+                                          &sessionsDataOut);
+
+    if (rval == TSS2_RC_SUCCESS) {
+        *size_out = nv_public.nvPublic.dataSize;
+    }
+
+    return rval;
 }
 
