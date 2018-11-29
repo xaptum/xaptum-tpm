@@ -1,3 +1,27 @@
+xaptum-tpm (0.5.7-1) unstable; urgency=medium
+
+  [ Zane Beckwith ]
+  * Whitespace
+  * test: Remove check that signatureR == input-hash
+  * Whitespace
+  * test: Rename write/read to NV-specific.
+  * travis: Use new mirror for IBM TPM simulator
+  * Include the TPM return code TPM_RC_RETRY.
+  * test: Make sure to retry in create-load-evict-test.
+  * cmake: Remove -Werror, except in new "DEV" builds.
+  * travis: Reorganize travis.yml using a matrix.
+  * travis: Use new DEV builds in travis
+  * travis: Add a static-library build
+  * travis: Install locally, to test installation
+  * Add the NV_ReadPublic command.
+  * Use NV_ReadPublic to query sizes of ASN1 cert and basename.
+  * Replace root_id and root_pub with root_xtt_cert.
+  * Remove all hard-coded nvram lengths.
+  * util: Remove the utility.
+  * Don't install the (now non-existant) CLI util.
+
+ -- Zane Beckwith <zane.beckwith@xaptum.com>  Thu, 29 Nov 2018 16:55:25 +0000
+
 xaptum-tpm (0.5.6-1) unstable; urgency=medium
 
   [ Zane Beckwith ]
