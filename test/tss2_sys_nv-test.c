@@ -1,13 +1,13 @@
 /******************************************************************************
  *
  * Copyright 2017 Xaptum, Inc.
- * 
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
- * 
+ *
  *        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -66,7 +66,7 @@ void initialize(struct test_context *ctx)
 
     ctx->sapi_ctx = malloc(sapi_ctx_size);
     TEST_EXPECT(NULL != ctx->sapi_ctx);
-    
+
     TSS2_ABI_VERSION abi_version = TSS2_ABI_CURRENT_VERSION;
     init_ret = Tss2_Sys_Initialize(ctx->sapi_ctx,
                                    sapi_ctx_size,
@@ -136,6 +136,29 @@ int define(struct test_context *ctx, int index, uint16_t size)
     return rval;
 }
 
+int get_public(struct test_context *ctx, int index, uint16_t *size_from_public)
+{
+    TSS2_SYS_CMD_AUTHS sessionsData = {.cmdAuthsCount = 0};
+    TSS2_SYS_RSP_AUTHS sessionsDataOut = {.rspAuthsCount = 0};
+
+    TPM2B_NV_PUBLIC nv_public = {0};
+
+    TPM2B_NAME nv_name = {0};
+
+    TSS2_RC rval = Tss2_Sys_NV_ReadPublic(ctx->sapi_ctx,
+                                          index,
+                                          &sessionsData,
+                                          &nv_public,
+                                          &nv_name,
+                                          &sessionsDataOut);
+
+    if (rval == TSS2_RC_SUCCESS) {
+        *size_from_public = nv_public.nvPublic.dataSize;
+    }
+
+    return rval;
+}
+
 int undefine(struct test_context *ctx, int index)
 {
     TPMS_AUTH_COMMAND session_data = {
@@ -169,7 +192,7 @@ int undefine(struct test_context *ctx, int index)
     return rval;
 }
 
-int write(struct test_context *ctx,
+int write_to_nv(struct test_context *ctx,
           uint32_t index,
           uint8_t *data,
           uint32_t data_size)
@@ -222,7 +245,7 @@ int write(struct test_context *ctx,
     return data_size;
 }
 
-int read(struct test_context *ctx,
+int read_from_nv(struct test_context *ctx,
          uint32_t index,
          uint8_t *data,
          uint32_t data_size)
@@ -294,11 +317,16 @@ void full_test()
     int define_ret = define(&ctx, index, size);
     TEST_ASSERT(0 == define_ret);
 
-    int write_ret = write(&ctx, index, (uint8_t*)data, data_size);
+    uint16_t size_from_public;
+    int public_ret = get_public(&ctx, index, &size_from_public);
+    TEST_ASSERT(0 == public_ret);
+    TEST_ASSERT(size == size_from_public);
+
+    int write_ret = write_to_nv(&ctx, index, (uint8_t*)data, data_size);
     TEST_ASSERT((int)data_size == write_ret);
 
     char output_data[1024];
-    int read_ret = read(&ctx, index, (uint8_t*)output_data, data_size);
+    int read_ret = read_from_nv(&ctx, index, (uint8_t*)output_data, data_size);
     TEST_ASSERT((int)data_size == read_ret);
 
     TEST_ASSERT(0 == memcmp(data, output_data, data_size));

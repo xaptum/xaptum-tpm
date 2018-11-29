@@ -149,6 +149,14 @@ Tss2_Sys_NV_Read(TSS2_SYS_CONTEXT *sysContext,
                  TSS2_SYS_RSP_AUTHS *rspAuthsArray);
 
 TSS2_RC
+Tss2_Sys_NV_ReadPublic(TSS2_SYS_CONTEXT *sysContext,
+                       TPMI_RH_NV_INDEX nvIndex,
+                       const TSS2_SYS_CMD_AUTHS  *cmdAuthsArray,
+                       TPM2B_NV_PUBLIC *nvPublic,
+                       TPM2B_NAME *nvName,
+                       TSS2_SYS_RSP_AUTHS *rspAuthsArray);
+
+TSS2_RC
 Tss2_Sys_NV_UndefineSpace(TSS2_SYS_CONTEXT *sysContext,
                           TPMI_RH_PROVISION authHandle,
                           TPMI_RH_NV_INDEX nvIndex,
