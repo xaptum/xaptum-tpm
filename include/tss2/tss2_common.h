@@ -147,6 +147,9 @@ typedef uint32_t TSS2_RC;
 // TPM errors
 #define TSS2_TPM_RC_LEVEL 0
 
+#define RC_WARN 0x900
+#define TPM_RC_RETRY RC_WARN + 0x022
+
 #ifdef __cplusplus
 }
 #endif

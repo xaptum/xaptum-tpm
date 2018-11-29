@@ -1,13 +1,13 @@
 /******************************************************************************
  *
  * Copyright 2017 Xaptum, Inc.
- * 
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
- * 
+ *
  *        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -186,7 +186,7 @@ int unmarshal_tpm2b_simple(uint8_t **in, uint32_t *in_max_length, TPM2B_SIMPLE *
 {
     if (0 != unmarshal_uint16(in, in_max_length, &out->size))
         return -1;
-    
+
     if (*in_max_length < out->size)
         return -1;
     memcpy(out->buffer, *in, out->size);
@@ -459,19 +459,19 @@ int unmarshal_tpma_session(uint8_t **in, uint32_t *in_max_length, TPMA_SESSION *
 
     memset(out, 0, sizeof(TPMA_SESSION));  // clear all
 
-    if ((*in[0]) & BIT_ZERO)
+    if (((*in)[0]) & BIT_ZERO)
         out->continueSession = 1;
-    if ((*in[0]) & BIT_ONE)
+    if (((*in)[0]) & BIT_ONE)
         out->auditExclusive = 1;
-    if ((*in[0]) & BIT_TWO)
+    if (((*in)[0]) & BIT_TWO)
         out->auditReset = 1;
     // bit three is reserved
     // bit four is reserved
-    if ((*in[0]) & BIT_FIVE)
+    if (((*in)[0]) & BIT_FIVE)
         out->decrypt = 1;
-    if ((*in[0]) & BIT_SIX)
+    if (((*in)[0]) & BIT_SIX)
         out->encrypt = 1;
-    if ((*in[0]) & BIT_SEVEN)
+    if (((*in)[0]) & BIT_SEVEN)
         out->audit = 1;
 
     *in += 1;
@@ -524,7 +524,7 @@ int unmarshal_tpm2b_creationdata(uint8_t **in, uint32_t *in_max_length, TPM2B_CR
         return -1;
     if (*in_max_length < out->size)
         return -1;
-    
+
     if (0 != unmarshal_tpml_pcrselection(in, in_max_length, &out->creationData.pcrSelect))
         return -1;
 
@@ -542,7 +542,7 @@ int unmarshal_tpm2b_creationdata(uint8_t **in, uint32_t *in_max_length, TPM2B_CR
 
     if (0 != unmarshal_tpm2b_name(in, in_max_length, &out->creationData.parentName))
         return -1;
-    
+
     if (0 != unmarshal_tpm2b_name(in, in_max_length, &out->creationData.parentQualifiedName))
         return -1;
 
@@ -751,6 +751,76 @@ void marshal_tpmanv(const TPMA_NV *in, uint8_t **out)
     *out += 4;
 }
 
+int unmarshal_tpmanv(uint8_t **in, uint32_t *in_max_length, TPMA_NV *out)
+{
+    if (*in_max_length < 4)
+        return -1;
+
+    memset(out, 0, sizeof(TPMA_NV));  // clear all
+
+    if (((*in)[3]) & BIT_ZERO)
+        out->TPMA_NV_PPWRITE = 1;
+    if (((*in)[3]) & BIT_ONE)
+        out->TPMA_NV_OWNERWRITE = 1;
+    if (((*in)[3]) & BIT_TWO)
+        out->TPMA_NV_AUTHWRITE = 1;
+    if (((*in)[3]) & BIT_THREE)
+        out->TPMA_NV_POLICYWRITE = 1;
+    if (((*in)[3]) & BIT_FOUR)
+        out->TPMA_NV_COUNTER = 1;
+    if (((*in)[3]) & BIT_FIVE)
+        out->TPMA_NV_BITS = 1;
+    if (((*in)[3]) & BIT_SIX)
+        out->TPMA_NV_EXTEND = 1;
+    // bit 7 is reserved
+    // bit 8 is reserved
+    // bit 9 is reserved
+    if (((*in)[2]) & BIT_TWO)
+        out->TPMA_NV_POLICY_DELETE = 1;
+    if (((*in)[2]) & BIT_THREE)
+        out->TPMA_NV_WRITELOCKED = 1;
+    if (((*in)[2]) & BIT_FOUR)
+        out->TPMA_NV_WRITEALL = 1;
+    if (((*in)[2]) & BIT_FIVE)
+        out->TPMA_NV_WRITEDEFINE = 1;
+    if (((*in)[2]) & BIT_SIX)
+        out->TPMA_NV_WRITE_STCLEAR = 1;
+    if (((*in)[2]) & BIT_SEVEN)
+        out->TPMA_NV_GLOBALLOCK = 1;
+    if (((*in)[1]) & BIT_ZERO)
+        out->TPMA_NV_PPREAD = 1;
+    if (((*in)[1]) & BIT_ONE)
+        out->TPMA_NV_OWNERREAD = 1;
+    if (((*in)[1]) & BIT_TWO)
+        out->TPMA_NV_AUTHREAD = 1;
+    if (((*in)[1]) & BIT_THREE)
+        out->TPMA_NV_POLICYREAD = 1;
+    // bit 20 is reserved
+    // bit 21 is reserved
+    // bit 22 is reserved
+    // bit 23 is reserved
+    // bit 24 is reserved
+    if (((*in)[0]) & BIT_ONE)
+        out->TPMA_NV_NO_DA = 1;
+    if (((*in)[0]) & BIT_TWO)
+        out->TPMA_NV_ORDERLY = 1;
+    if (((*in)[0]) & BIT_THREE)
+        out->TPMA_NV_CLEAR_STCLEAR = 1;
+    if (((*in)[0]) & BIT_FOUR)
+        out->TPMA_NV_READLOCKED = 1;
+    if (((*in)[0]) & BIT_FIVE)
+        out->TPMA_NV_WRITTEN = 1;
+    if (((*in)[0]) & BIT_SIX)
+        out->TPMA_NV_PLATFORMCREATE = 1;
+    if (((*in)[0]) & BIT_SEVEN)
+        out->TPMA_NV_READ_STCLEAR = 1;
+
+    *in += 4;
+    *in_max_length -= 4;
+
+    return 0;
+}
+
 void marshal_tpm2b_nvpublic(const TPM2B_NV_PUBLIC *in, uint8_t **out)
 {
     uint8_t *size_ptr = *out;
@@ -768,6 +838,31 @@ void marshal_tpm2b_nvpublic(const TPM2B_NV_PUBLIC *in, uint8_t **out)
 
     uint16_t size = *out - size_ptr - sizeof(uint16_t);
     marshal_uint16(size, &size_ptr);
+}
+
+int unmarshal_tpm2b_nvpublic(uint8_t **in, uint32_t *in_max_length, TPM2B_NV_PUBLIC *out)
+{
+    if (0 != unmarshal_uint16(in, in_max_length, &out->size))
+        return -1;
+    if (*in_max_length < out->size)
+        return -1;
+
+    if (0 != unmarshal_uint32(in, in_max_length, &out->nvPublic.nvIndex))
+        return -1;
+
+    if (0 != unmarshal_tpmi_alg_id(in, in_max_length, &out->nvPublic.nameAlg))
+        return -1;
+
+    if (0 != unmarshal_tpmanv(in, in_max_length, &out->nvPublic.attributes))
+        return -1;
+
+    if (0 != unmarshal_tpm2b_digest(in, in_max_length, &out->nvPublic.authPolicy))
+        return -1;
+
+    if (0 != unmarshal_uint16(in, in_max_length, &out->nvPublic.dataSize))
+        return -1;
+
+    return 0;
 }
 
 void marshal_tpm2b_maxnvbuffer(const TPM2B_MAX_NV_BUFFER *in, uint8_t **out)

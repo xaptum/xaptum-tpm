@@ -22,13 +22,14 @@ project(xaptum-tpm
 include(GNUInstallDirs)
 include(CTest)
 
-add_compile_options(-std=c99 -Werror -Wall -Wextra -Wno-missing-field-initializers)
+add_compile_options(-std=c99 -Wall -Wextra -Wno-missing-field-initializers)
 add_definitions(-D_POSIX_C_SOURCE=200112L)
 set(CMAKE_C_FLAGS_RELWITHSANITIZE "${CMAKE_C_FLAGS_RELWITHSANITIZE} -O2 -g -fsanitize=address,undefined -fsanitize=unsigned-integer-overflow")
+set(CMAKE_C_FLAGS_DEV "${CMAKE_C_FLAGS_RELEASE} -Werror")
+set(CMAKE_C_FLAGS_DEVDEBUG "${CMAKE_C_FLAGS_DEBUG} -Werror")
 
 option(BUILD_SHARED_LIBS "Build as a shared library" ON)
 option(BUILD_STATIC_LIBS "Build as a static library" OFF)
-option(BUILD_UTILS "Build utility programs" ON)
 
 # If not building as a shared library, force build as a static.  This
 # is to match the CMake default semantics of using
@@ -155,11 +156,4 @@ install(FILES
 
 if(BUILD_TESTING)
   add_subdirectory(test)
-endif()
-
-################################################################################
-# Util
-################################################################################
-if(BUILD_UTILS)
-  add_subdirectory(util)
 endif()

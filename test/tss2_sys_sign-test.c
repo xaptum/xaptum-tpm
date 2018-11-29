@@ -1,13 +1,13 @@
 /******************************************************************************
  *
  * Copyright 2017 Xaptum, Inc.
- * 
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
- * 
+ *
  *        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -70,7 +70,7 @@ void initialize(struct test_context *ctx)
 
     ctx->sapi_ctx = malloc(sapi_ctx_size);
     TEST_EXPECT(NULL != ctx->sapi_ctx);
-    
+
     TSS2_ABI_VERSION abi_version = TSS2_ABI_CURRENT_VERSION;
     init_ret = Tss2_Sys_Initialize(ctx->sapi_ctx,
                                    sapi_ctx_size,
@@ -152,7 +152,7 @@ int createprimary(struct test_context *ctx)
 
     TPM2B_NAME name = {.size=sizeof(TPMU_NAME)};
 
-    TPM2B_PUBLIC public_key; 
+    TPM2B_PUBLIC public_key;
 
     TSS2_RC ret = Tss2_Sys_CreatePrimary(ctx->sapi_ctx,
                                                            hierarchy,
@@ -278,7 +278,6 @@ void full_test()
 
     TEST_ASSERT(digest.size != 0);
     TEST_ASSERT(digest.size == signature.signature.ecdaa.signatureR.size);
-    TEST_ASSERT(memcmp(digest.buffer, signature.signature.ecdaa.signatureR.buffer, digest.size) == 0);
 
     TEST_ASSERT(signature.signature.ecdaa.signatureS.size != 0);
     uint8_t zeroes[64];

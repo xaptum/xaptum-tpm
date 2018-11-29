@@ -69,7 +69,6 @@ The following CMake configuration options are supported.
 | BUILD_SHARED_LIBS               | ON, OFF         | ON         | Build shared libraries.                         |
 | BUILD_STATIC_LIBS               | ON, OFF         | OFF        | Build static libraries.                         |
 | BUILD_TESTING                   | ON, OFF         | ON         | Build the test suite.                           |
-| BUILD_UTILS                     | ON, OFF         | ON         | Build utility programs.                         |
 | STATIC_SUFFIX                   | <string>        | <none>     | Appends a suffix to the static lib name.        |
 | CMAKE_POSITION_INDEPENDENT_CODE | ON, OFF         | ON         | Compile static libs with `-fPIC`.               |
 
@@ -104,12 +103,6 @@ ctest -V
 cd build
 cmake --build . --target install
 ```
-
-## Utilities
-The following command-line utilities are provided by `xaptum-tpm` for interacting with a Xaptum TPM2.0:
-- `xtpm_read_nvram`
-  - Query the value of one of the pre-created NVRAM indices `gpk`, `cred`, `cred_sig`, `root_id`, `root_pubkey`, or `root_cert`:
-  - `xtpm_read_nvram <index-name> <output-file>`
 
 # License
 Copyright 2017-2018 Xaptum, Inc.
