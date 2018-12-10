@@ -276,8 +276,7 @@ void full_test()
 
     TEST_ASSERT(TSS2_RC_SUCCESS == ret);
 
-    TEST_ASSERT(digest.size != 0);
-    TEST_ASSERT(digest.size == signature.signature.ecdaa.signatureR.size);
+    TEST_ASSERT(signature.signature.ecdaa.signatureR.size != 0);
 
     TEST_ASSERT(signature.signature.ecdaa.signatureS.size != 0);
     uint8_t zeroes[64];
