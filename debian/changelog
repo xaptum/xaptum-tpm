@@ -1,3 +1,11 @@
+xaptum-tpm (0.5.8-1) unstable; urgency=medium
+
+  [ Zane Beckwith ]
+  * test: Don't compare length of signature.R to that of digest.
+  * Bump patch number.
+
+ -- Zane Beckwith <zane.beckwith@xaptum.com>  Mon, 10 Dec 2018 23:12:18 +0000
+
 xaptum-tpm (0.5.7-1) unstable; urgency=medium
 
   [ Zane Beckwith ]
