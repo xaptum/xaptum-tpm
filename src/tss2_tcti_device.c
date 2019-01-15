@@ -179,7 +179,7 @@ TSS2_RC transmit_device(TSS2_TCTI_CONTEXT *tcti_context,
         return send_ret;
     }
 #ifdef TCTI_VERBOSE_LOGGING
-    printf("tcti_device::transmit - command={");
+    printf("tcti_device::transmit - size=%zu, command={", size);
     for (size_t i=0; i < size; i++) {
         printf("%#X", command[i]);
         if (i != (size-1)) printf(", ");
@@ -238,7 +238,7 @@ TSS2_RC receive_device(TSS2_TCTI_CONTEXT *tcti_context,
     *size = (size_t)read_ret;
 
 #ifdef TCTI_VERBOSE_LOGGING
-    printf("response={");
+    printf("tcti_device:receive - size=%zu, response={", *size);
     for (size_t i=0; i < *size; i++) {
         printf("%#X", response[i]);
         if (i != (*size-1)) printf(", ");
