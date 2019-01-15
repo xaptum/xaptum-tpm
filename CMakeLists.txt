@@ -31,6 +31,11 @@ set(CMAKE_C_FLAGS_DEVDEBUG "${CMAKE_C_FLAGS_DEBUG} -Werror")
 option(BUILD_SHARED_LIBS "Build as a shared library" ON)
 option(BUILD_STATIC_LIBS "Build as a static library" OFF)
 
+option(XTPM_VERBOSE_LOGGING "Turn on debug-level logging OFF")
+if(XTPM_VERBOSE_LOGGING)
+  add_definitions(-DVERBOSE_LOGGING)
+endif()
+
 # If not building as a shared library, force build as a static.  This
 # is to match the CMake default semantics of using
 # BUILD_SHARED_LIBS = OFF to indicate a static build.
