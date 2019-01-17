@@ -37,6 +37,7 @@ before_script:
 script:
   - pushd ${XTPM_BUILD_DIR}
   - cmake --build . --target install -- -j2
+  - ${TRAVIS_BUILD_DIR}/.travis/build-against-installed.sh ${XTPM_INSTALL_DIR} ${TRAVIS_BUILD_DIR}
   - ${TRAVIS_BUILD_DIR}/.travis/run-ibm-tpm2.sh ${IBM_TPM_DIR}
   - ctest -VV
   - popd
