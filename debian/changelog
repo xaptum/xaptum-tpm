@@ -1,0 +1,129 @@
+xaptum-tpm (0.5.8-1) unstable; urgency=medium
+
+  [ Zane Beckwith ]
+  * test: Don't compare length of signature.R to that of digest.
+  * Bump patch number.
+
+ -- Zane Beckwith <zane.beckwith@xaptum.com>  Mon, 10 Dec 2018 23:12:18 +0000
+
+xaptum-tpm (0.5.7-1) unstable; urgency=medium
+
+  [ Zane Beckwith ]
+  * Whitespace
+  * test: Remove check that signatureR == input-hash
+  * Whitespace
+  * test: Rename write/read to NV-specific.
+  * travis: Use new mirror for IBM TPM simulator
+  * Include the TPM return code TPM_RC_RETRY.
+  * test: Make sure to retry in create-load-evict-test.
+  * cmake: Remove -Werror, except in new "DEV" builds.
+  * travis: Reorganize travis.yml using a matrix.
+  * travis: Use new DEV builds in travis
+  * travis: Add a static-library build
+  * travis: Install locally, to test installation
+  * Add the NV_ReadPublic command.
+  * Use NV_ReadPublic to query sizes of ASN1 cert and basename.
+  * Replace root_id and root_pub with root_xtt_cert.
+  * Remove all hard-coded nvram lengths.
+  * util: Remove the utility.
+  * Don't install the (now non-existant) CLI util.
+
+ -- Zane Beckwith <zane.beckwith@xaptum.com>  Thu, 29 Nov 2018 16:55:25 +0000
+
+xaptum-tpm (0.5.6-1) unstable; urgency=medium
+
+  [ Zane Beckwith ]
+  * Whitespace
+  * Add ECDSA with NIST256 curve as signature option.
+  * Util: Whitespace
+  * Util: Update lengths in nvram.h, to reflect ECDSA pubkey/cert.
+  * Util: Output root cert with appropriate extension
+
+ -- Zane Beckwith <zane.beckwith@xaptum.com>  Tue, 07 Aug 2018 18:06:10 +0000
+
+xaptum-tpm (0.5.5-1) unstable; urgency=medium
+
+  [ Zane Beckwith ]
+  * Tests: Remove semicolon from end of test macros
+  * Util: Remove default case in object-type switch
+  * Util: Add ability to read basename and server_id from NVRAM
+  * Utility: Allow usage of device TCTI
+
+  [ David R. Bild ]
+  * utils: use correct return type for getopt_long
+  * utils: fix declaration of -h,--help option
+
+  [ Zane Beckwith ]
+  * Dev TCTI: Keep file open across commands, and don't use FILE*
+  * Bump patch version
+
+ -- Zane Beckwith <zane.beckwith@xaptum.com>  Mon, 18 Jun 2018 22:13:46 +0000
+
+xaptum-tpm (0.5.4-1) unstable; urgency=medium
+
+  * release version 0.5.4
+  * debian/stretch: move utility programs into separate deb
+
+ -- David R. Bild <david.bild@xaptum.com>  Thu, 07 Jun 2018 16:43:37 +0000
+
+xaptum-tpm (0.5.3-1) unstable; urgency=medium
+
+  [ Zane Beckwith ]
+  * TCTI Dev: Explicitly null-terminate device file path string
+  * Bump patch number
+
+ -- Zane Beckwith <zane.beckwith@xaptum.com>  Tue, 05 Jun 2018 14:03:29 +0000
+
+xaptum-tpm (0.5.2-2) unstable; urgency=medium
+
+  [ Zane Beckwith ]
+  * Add the xtpm_read_nvram utility to the package.
+
+ -- Zane Beckwith <zane.beckwith@xaptum.com>  Fri, 25 May 2018 16:14:19 +0000
+
+xaptum-tpm (0.5.2-1) unstable; urgency=medium
+
+  [ David R. Bild ]
+  * readme: shorten installation description and add license
+
+  [ Zane Beckwith ]
+  * And `apt-get` in the README should be `apt-key`.
+  * Add a read_nvram utility
+  * Update README to explain the read_nvram utility
+  * Refactor into programmatic functionality and free-standing executable.
+  * Don't tcti_finalize in library, only in top-level
+  * Add utility that uses enum to decide NVRAM to read
+  * Use strncmp, rather than strcmp
+  * Move new xaptum-specific utilities into separate header namespace
+  * Take SAPI, not TCTI, in read_nvram util
+  * Add getters for handles and lengths
+  * Set compiler flags (e.g. -std= and -Werror) as add_compile_options.
+
+  [ David R. Bild ]
+  * readme: add release badge to readme
+
+  [ Zane Beckwith ]
+  * Add a device-file-based TCTI to use with the kernel driver.
+  * Exclude device-file-based TCTI tests during travis
+  * Update README
+  * Bump patch number
+
+ -- Zane Beckwith <zane.beckwith@xaptum.com>  Fri, 25 May 2018 16:07:26 +0000
+
+xaptum-tpm (0.5.1-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- David R. Bild <david.bild@xaptum.com>  Thu, 22 Mar 2018 21:34:54 +0000
+
+xaptum-tpm (0.5.0-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- David R. Bild <david.bild@xaptum.com>  Thu, 15 Mar 2018 21:17:00 +0000
+
+xaptum-tpm (0.4.0-1) unstable; urgency=medium
+
+  * Initial release.
+
+ -- Zane Beckwith <zane.beckwith@xaptum.com>  Sun, 11 Mar 2018 21:07:37 +0000
