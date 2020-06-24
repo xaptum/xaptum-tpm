@@ -23,6 +23,19 @@ echo "deb http://dl.bintray.com/xaptum/deb <dist> main" > /etc/apt/sources.list.
 sudo apt-get install libxaptum-tpm-dev
 ```
 
+### Ubuntu (Bionic)
+
+``` bash
+# Install the Xaptum API repo GPG signing key.
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys c615bfaa7fe1b4ca
+
+# Add the repository to your APT sources
+echo "deb http://dl.bintray.com/xaptum/deb bionic main" > /etc/apt/sources.list.d/xaptum.list
+
+# Install the library.
+sudo apt-get install libxaptum-tpm-dev
+```
+
 ### Homebrew (MacOS)
 
 ``` bash
