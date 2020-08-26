@@ -1,4 +1,4 @@
-# Copyright 2017-2020 Xaptum, Inc.
+# Copyright 2017 Xaptum, Inc.
 # 
 #    Licensed under the Apache License, Version 2.0 (the "License");
 #    you may not use this file except in compliance with the License.
@@ -26,37 +26,17 @@ macro(add_test_case case_file)
   add_executable(${case_name} ${case_file})
 
   if(BUILD_SHARED_LIBS)
-    if(BUILD_TSS2)
-      target_link_libraries(${case_name}
-        PRIVATE tss2-sys
-        PRIVATE tss2-tcti-device
-        PRIVATE tss2-tcti-mssim
-        PRIVATE xaptum-tpm
-      )
-    else()
-      target_link_libraries(${case_name}
-        PRIVATE tss2::sys
-        PRIVATE tss2::tcti_device
-        PRIVATE tss2::tcti_mssim
-        PRIVATE xaptum-tpm
-      )
-    endif()
+    target_link_libraries(${case_name}
+      PRIVATE tss2-sys
+      PRIVATE tss2-tcti-device
+      PRIVATE tss2-tcti-mssim
+    )
   else()
-    if(BUILD_TSS2)
-      target_link_libraries(${case_name}
-        PRIVATE tss2-sys_static
-        PRIVATE tss2-tcti-device_static
-        PRIVATE tss2-tcti-mssim_static
-        PRIVATE xaptum-tpm_static
-      )
-    else()
-      target_link_libraries(${case_name}
-        PRIVATE tss2::sys
-        PRIVATE tss2::tcti_device
-        PRIVATE tss2::tcti_mssim
-        PRIVATE xaptum-tpm_static
-      )
-    endif()
+    target_link_libraries(${case_name}
+      PRIVATE tss2-sys_static
+      PRIVATE tss2-tcti-device_static
+      PRIVATE tss2-tcti-mssim_static
+    )
   endif()
 
   target_include_directories(${case_name}
