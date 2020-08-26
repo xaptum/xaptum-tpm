@@ -16,7 +16,7 @@
  *
  *****************************************************************************/
 
-#include <xaptum/tpm/nvram.h>
+#include <xaptum-tpm/nvram.h>
 
 #include <tss2/tss2_sys.h>
 
@@ -42,6 +42,11 @@ TPMI_RH_NV_INDEX xtpm_root_asn1cert_handle()
     return XTPM_ROOT_ASN1CERT_HANDLE;
 }
 
+TPMI_RH_NV_INDEX xtpm_basename_handle()
+{
+    return XTPM_BASENAME_HANDLE;
+}
+
 TPMI_RH_NV_INDEX xtpm_serverid_handle()
 {
     return XTPM_SERVER_ID_HANDLE;
@@ -59,7 +64,7 @@ xtpm_read_object(unsigned char* out_buffer,
                  enum xtpm_object_name object_name,
                  TSS2_SYS_CONTEXT *sapi_context)
 {
-    TPM_HANDLE index = 0;
+    TPM2_HANDLE index = 0;
 
     switch (object_name) {
         case XTPM_GROUP_PUBLIC_KEY:
@@ -101,31 +106,23 @@ xtpm_read_object(unsigned char* out_buffer,
 TSS2_RC
 xtpm_read_nvram(unsigned char *out,
                 uint16_t size,
-                TPM_HANDLE index,
+                TPM2_HANDLE index,
                 TSS2_SYS_CONTEXT *sapi_context)
 {
     TSS2_RC ret = TSS2_RC_SUCCESS;
 
-    // We (Xaptum) set AUTHREAD and no password.
-    //  This means anyone can read,
-    //  by using an empty password and passing the index itself as the auth handle.
-    TPMS_AUTH_COMMAND session_data = {
-        .sessionHandle = TPM_RS_PW,
-        .sessionAttributes = {0},
+    // Assume no password required.
+    TSS2L_SYS_AUTH_COMMAND sessionsData = {
+        .auths[0] = {.sessionHandle = TPM2_RS_PW,
+            .nonce = {.size = 0},
+            .sessionAttributes = 0,
+            .hmac = {.size = 0}
+        },
+        .count = 1
     };
-    TPMS_AUTH_RESPONSE sessionDataOut = {{0}, {0}, {0}};
-    (void)sessionDataOut;
-    TSS2_SYS_CMD_AUTHS sessionsData;
-    TSS2_SYS_RSP_AUTHS sessionsDataOut;
-    TPMS_AUTH_COMMAND *sessionDataArray[1];
-    sessionDataArray[0] = &session_data;
-    TPMS_AUTH_RESPONSE *sessionDataOutArray[1];
-    sessionDataOutArray[0] = &sessionDataOut;
-    sessionsDataOut.rspAuths = &sessionDataOutArray[0];
-    sessionsData.cmdAuths = &sessionDataArray[0];
-    sessionsDataOut.rspAuthsCount = 1;
-    sessionsData.cmdAuthsCount = 1;
-    sessionsData.cmdAuths[0] = &session_data;
+
+    TSS2L_SYS_AUTH_RESPONSE sessionsDataOut;
+    sessionsDataOut.count = 1;
 
     uint16_t data_offset = 0;
 
@@ -158,11 +155,11 @@ xtpm_read_nvram(unsigned char *out,
 
 TSS2_RC
 xtpm_get_nvram_size(uint16_t *size_out,
-                    TPM_HANDLE index,
+                    TPM2_HANDLE index,
                     TSS2_SYS_CONTEXT *sapi_context)
 {
-    TSS2_SYS_CMD_AUTHS sessionsData = {.cmdAuthsCount = 0};
-    TSS2_SYS_RSP_AUTHS sessionsDataOut = {.rspAuthsCount = 0};
+    TSS2L_SYS_AUTH_COMMAND sessionsData = {.count = 0};
+    TSS2L_SYS_AUTH_RESPONSE sessionsDataOut = {.count = 0};
 
     TPM2B_NV_PUBLIC nv_public = {0};
 
@@ -181,4 +178,3 @@ xtpm_get_nvram_size(uint16_t *size_out,
 
     return rval;
 }
-

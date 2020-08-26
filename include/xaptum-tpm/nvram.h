@@ -16,8 +16,8 @@
  *
  *****************************************************************************/
 
-#ifndef XAPTUM_TPM_XAPTUMNVRAM_H
-#define XAPTUM_TPM_XAPTUMNVRAM_H
+#ifndef XAPTUM_TPM_NVRAM_H
+#define XAPTUM_TPM_NVRAM_H
 #pragma once
 
 #include <tss2/tss2_sys.h>
@@ -62,12 +62,12 @@ xtpm_read_object(unsigned char* out_buffer,
 TSS2_RC
 xtpm_read_nvram(unsigned char *out,
                 uint16_t size,
-                TPM_HANDLE index,
+                TPM2_HANDLE index,
                 TSS2_SYS_CONTEXT *sapi_context);
 
 TSS2_RC
 xtpm_get_nvram_size(uint16_t *size_out,
-                    TPM_HANDLE index,
+                    TPM2_HANDLE index,
                     TSS2_SYS_CONTEXT *sapi_context);
 
 #ifdef __cplusplus

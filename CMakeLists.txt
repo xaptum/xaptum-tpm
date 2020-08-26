@@ -1,4 +1,4 @@
-# Copyright 2017-2018 Xaptum, Inc.
+# Copyright 2017-2020 Xaptum, Inc.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License");
 #    you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ project(xaptum-tpm
 include(GNUInstallDirs)
 include(CTest)
 
+list(APPEND CMAKE_MODULE_PATH CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
+
 add_compile_options(-std=c99 -Wall -Wextra -Wno-missing-field-initializers)
 add_definitions(-D_POSIX_C_SOURCE=200112L)
 set(CMAKE_C_FLAGS_RELWITHSANITIZE "${CMAKE_C_FLAGS_RELWITHSANITIZE} -O2 -g -fsanitize=address,undefined -fsanitize=unsigned-integer-overflow")
@@ -36,6 +38,8 @@ if(XTPM_VERBOSE_LOGGING)
   add_definitions(-DVERBOSE_LOGGING)
 endif()
 
+option(BUILD_TSS2 "Build restricted subset of the TPM2.0 SAPI library" OFF)
+
 # If not building as a shared library, force build as a static.  This
 # is to match the CMake default semantics of using
 # BUILD_SHARED_LIBS = OFF to indicate a static build.
@@ -47,28 +51,12 @@ set(XAPTUM_TPM_VERSION ${PROJECT_VERSION})
 set(XAPTUM_TPM_SOVERSION ${PROJECT_VERSION_MAJOR})
 
 set(XAPTUM_TPM_SRCS
-    src/xaptum/nvram.c
+  src/nvram.c
+) 
 
-    src/tss2_tcti_device.c
-    src/tss2_tcti_socket.c
-    src/tss2_sys_context_allocation.c
-    src/tss2_sys_clear.c
-    src/tss2_sys_create.c
-    src/tss2_sys_createprimary.c
-    src/tss2_sys_commit.c
-    src/tss2_sys_hierarchychangeauth.c
-    src/tss2_sys_load.c
-    src/tss2_sys_evictcontrol.c
-    src/tss2_sys_nv.c
-    src/tss2_sys_sign.c
-
-    src/internal/cmdauths.c
-    src/internal/constants.c
-    src/internal/execute.c
-    src/internal/marshal.c
-    src/internal/sys_context_common.c
-    src/internal/command_utils.c
-)
+if(NOT BUILD_TSS2)
+  find_package(TSS2 REQUIRED QUIET)
+endif()
 
 ################################################################################
 # Shared Libary
@@ -85,6 +73,16 @@ if(BUILD_SHARED_LIBS)
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
+
+  if(BUILD_TSS2)
+    target_link_libraries(xaptum-tpm PUBLIC
+      tss2-sys
+    )
+  else()
+    target_link_libraries(xaptum-tpm PUBLIC
+      tss2::sys
+    )
+  endif()
 
   install(TARGETS xaptum-tpm
           EXPORT xaptum-tpm-targets
@@ -106,6 +104,16 @@ if(BUILD_STATIC_LIBS)
     SOVERSION "${XAPTUM_TPM_SOVERSION}"
   )
 
+  if(BUILD_TSS2)
+    target_link_libraries(xaptum-tpm_static PUBLIC
+      tss2-sys_static
+    )
+  else()
+    target_link_libraries(xaptum-tpm_static PUBLIC
+      tss2::sys
+    )
+  endif()
+
   target_include_directories(xaptum-tpm_static PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
@@ -122,7 +130,9 @@ endif()
 ################################################################################
 # Headers
 ################################################################################
-install(DIRECTORY include/tss2 DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+install(DIRECTORY include/xaptum-tpm DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+
+install(FILES include/xaptum-tpm.h DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 
 ################################################################################
 # pkgconfig
@@ -159,6 +169,16 @@ install(FILES
   DESTINATION ${INSTALL_CONFIGDIR}
 )
 
+################################################################################
+# TSS2
+################################################################################
+if(BUILD_TSS2)
+  add_subdirectory(tss2)
+endif()
+
+################################################################################
+# Tests
+################################################################################
 if(BUILD_TESTING)
   add_subdirectory(test)
 endif()
