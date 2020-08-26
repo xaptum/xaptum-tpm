@@ -21,7 +21,7 @@ env:
   - XTPM_BUILD_DIR=${TRAVIS_BUILD_DIR}/build
   - XTPM_INSTALL_DIR=${TRAVIS_BUILD_DIR}/install
   - IBM_TPM_DIR=${TRAVIS_BUILD_DIR}/ibm-tpm-simulator
-  - IBM_TPM_TAG=1332
+  - IBM_TPM_TAG=1637
   - SHARED_LIBS=ON
 
 before_script:
