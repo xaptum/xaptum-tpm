@@ -52,11 +52,11 @@ set(libtss2_tcti_device_PROCESS_LIBS libtss2_tcti_device_LIBRARY)
 libfind_process(libtss2_tcti_device)
 
 if (libtss2_tcti_device_FOUND)
-  if (NOT TARGET tss2::tcti_device)
+  if (NOT TARGET tss2::tcti-device)
 
-    add_library(tss2::tcti_device UNKNOWN IMPORTED)
+    add_library(tss2::tcti-device UNKNOWN IMPORTED)
 
-    set_target_properties(tss2::tcti_device PROPERTIES
+    set_target_properties(tss2::tcti-device PROPERTIES
       INTERFACE_INCLUDE_DIRECTORIES "${libtss2_INCLUDE_DIR}"
       IMPORTED_LINK_INTERFACE_LANGUAGES "C"
       IMPORTED_LOCATION "${libtss2_tcti_device_LIBRARY}"
@@ -79,11 +79,11 @@ set(libtss2_tcti_mssim_PROCESS_LIBS libtss2_tcti_mssim_LIBRARY)
 libfind_process(libtss2_tcti_mssim)
 
 if (libtss2_tcti_mssim_FOUND)
-  if (NOT TARGET tss2::tcti_mssim)
+  if (NOT TARGET tss2::tcti-mssim)
 
-    add_library(tss2::tcti_mssim UNKNOWN IMPORTED)
+    add_library(tss2::tcti-mssim UNKNOWN IMPORTED)
 
-    set_target_properties(tss2::tcti_mssim PROPERTIES
+    set_target_properties(tss2::tcti-mssim PROPERTIES
       INTERFACE_INCLUDE_DIRECTORIES "${libtss2_INCLUDE_DIR}"
       IMPORTED_LINK_INTERFACE_LANGUAGES "C"
       IMPORTED_LOCATION "${libtss2_tcti_mssim_LIBRARY}"

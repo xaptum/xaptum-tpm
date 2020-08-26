@@ -54,7 +54,12 @@ set(XAPTUM_TPM_SRCS
   src/nvram.c
 ) 
 
-if(NOT BUILD_TSS2)
+################################################################################
+# TSS2
+################################################################################
+if(BUILD_TSS2)
+  add_subdirectory(tss2)
+else()
   find_package(TSS2 REQUIRED QUIET)
 endif()
 
@@ -74,15 +79,9 @@ if(BUILD_SHARED_LIBS)
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
 
-  if(BUILD_TSS2)
-    target_link_libraries(xaptum-tpm PUBLIC
-      tss2-sys
-    )
-  else()
-    target_link_libraries(xaptum-tpm PUBLIC
-      tss2::sys
-    )
-  endif()
+  target_link_libraries(xaptum-tpm PUBLIC
+    tss2::sys
+  )
 
   install(TARGETS xaptum-tpm
           EXPORT xaptum-tpm-targets
@@ -106,7 +105,7 @@ if(BUILD_STATIC_LIBS)
 
   if(BUILD_TSS2)
     target_link_libraries(xaptum-tpm_static PUBLIC
-      tss2-sys_static
+      tss2::sys_static
     )
   else()
     target_link_libraries(xaptum-tpm_static PUBLIC
@@ -168,13 +167,6 @@ install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/xaptum-tpm-config-version.cmake
   DESTINATION ${INSTALL_CONFIGDIR}
 )
-
-################################################################################
-# TSS2
-################################################################################
-if(BUILD_TSS2)
-  add_subdirectory(tss2)
-endif()
 
 ################################################################################
 # Tests

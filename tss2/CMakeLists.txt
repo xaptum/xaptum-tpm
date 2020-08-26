@@ -68,6 +68,10 @@ macro(xtpm_build lib_name)
             LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
             ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     )
+
+    # Alias, to use this internally via a namespaced-name
+    string(REPLACE "tss2-" "" namespaced_name ${lib_name})
+    add_library(tss2::${namespaced_name} ALIAS ${lib_name})
   endif()
 
   # Static Libary
@@ -91,6 +95,10 @@ macro(xtpm_build lib_name)
             LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
     )
+
+    # Alias, to use this internally via a namespaced-name
+    string(REPLACE "tss2-" "" namespaced_name ${lib_name})
+    add_library(tss2::${namespaced_name}_static ALIAS ${lib_name}_static)
   endif()
 
   # Headers
