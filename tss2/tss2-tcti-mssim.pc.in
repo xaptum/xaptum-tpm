@@ -1,0 +1,10 @@
+prefix="@CMAKE_INSTALL_PREFIX@"
+exec_prefix=${prefix}
+libdir=${exec_prefix}/@CMAKE_INSTALL_LIBDIR@
+includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
+
+Name: tss2-sys
+Description: TPM2.0 TCTI library used by the Xaptum ENF, for a Microsoft TCP simulator
+Version: @XAPTUM_TPM_VERSION@
+Libs: -L${libdir} -ltss2-tcti-mssim
+Cflags: -I${includedir}
