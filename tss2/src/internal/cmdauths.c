@@ -26,10 +26,10 @@ TSS2_RC
 set_cmdauths(TSS2_SYS_CONTEXT_OPAQUE *sys_context,
              const TSS2L_SYS_AUTH_COMMAND *cmd_auths_array)
 {
-    sys_context->cmd_auths_count = cmd_auths_array->count;
-
-    if (0 == cmd_auths_array->count)
+    if (NULL == cmd_auths_array || 0 == cmd_auths_array->count)
         return TSS2_RC_SUCCESS;
+
+    sys_context->cmd_auths_count = cmd_auths_array->count;
 
     uint8_t *size_ptr = sys_context->ptr;
 
@@ -50,6 +50,9 @@ TSS2_RC
 get_rspauths(TSS2_SYS_CONTEXT_OPAQUE *sys_context,
              TSS2L_SYS_AUTH_RESPONSE *rsp_auths_array)
 {
+    if (NULL == rsp_auths_array || 0 == rsp_auths_array->count)
+        return TSS2_RC_SUCCESS;
+
     if (rsp_auths_array->count != sys_context->cmd_auths_count)
         return TSS2_SYS_RC_INVALID_SESSIONS;
 
