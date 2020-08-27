@@ -196,6 +196,15 @@ Tss2_Sys_Clear(TSS2_SYS_CONTEXT *sysContext,
                const TSS2L_SYS_AUTH_COMMAND *cmdAuthsArray,
                TSS2L_SYS_AUTH_RESPONSE *rspAuthsArray);
 
+TSS2_RC
+Tss2_Sys_ReadPublic(TSS2_SYS_CONTEXT *sysContext,
+                    TPMI_DH_OBJECT objectHandle,
+                    const TSS2L_SYS_AUTH_COMMAND *cmdAuthsArray,
+                    TPM2B_PUBLIC *outPublic,
+                    TPM2B_NAME *name,
+                    TPM2B_NAME *qualifiedName,
+                    TSS2L_SYS_AUTH_RESPONSE *rspAuthsArray);
+
 #ifdef __cplusplus
 }
 #endif
