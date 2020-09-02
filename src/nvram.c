@@ -158,19 +158,16 @@ xtpm_get_nvram_size(uint16_t *size_out,
                     TPM2_HANDLE index,
                     TSS2_SYS_CONTEXT *sapi_context)
 {
-    TSS2L_SYS_AUTH_COMMAND sessionsData = {.count = 0};
-    TSS2L_SYS_AUTH_RESPONSE sessionsDataOut = {.count = 0};
-
     TPM2B_NV_PUBLIC nv_public = {0};
 
     TPM2B_NAME nv_name = {0};
 
     TSS2_RC rval = Tss2_Sys_NV_ReadPublic(sapi_context,
                                           index,
-                                          &sessionsData,
+                                          NULL,
                                           &nv_public,
                                           &nv_name,
-                                          &sessionsDataOut);
+                                          NULL);
 
     if (rval == TSS2_RC_SUCCESS) {
         *size_out = nv_public.nvPublic.dataSize;
