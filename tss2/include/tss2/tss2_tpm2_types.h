@@ -64,6 +64,7 @@ typedef uint32_t TPM2_CC;
 #define TPM2_CC_Load 0x00000157
 #define TPM2_CC_Sign 0x0000015D
 #define TPM2_CC_NV_ReadPublic 0x00000169
+#define TPM2_CC_ReadPublic 0x00000173
 #define TPM2_CC_GetCapability 0x0000017A
 #define TPM2_CC_Commit 0x0000018B
 #define TPM2_CC_EvictControl 0x00000120

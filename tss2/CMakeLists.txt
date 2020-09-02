@@ -37,6 +37,7 @@ set(XAPTUM_TSS2_SYS_SRCS
     src/tss2_sys_hierarchychangeauth.c
     src/tss2_sys_load.c
     src/tss2_sys_evictcontrol.c
+    src/tss2_sys_readpublic.c
     src/tss2_sys_nv.c
     src/tss2_sys_sign.c
 
