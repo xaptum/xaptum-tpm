@@ -212,7 +212,7 @@ Tss2_Sys_NV_ReadPublic(TSS2_SYS_CONTEXT *sysContext,
 {
     (void)rspAuthsArray;    // auths can't be specified, so they won't be in response
 
-    if (NULL == sysContext || NULL == cmdAuthsArray)
+    if (NULL == sysContext)
         return TSS2_SYS_RC_BAD_REFERENCE;
 
     TSS2_RC ret = TSS2_RC_SUCCESS;
