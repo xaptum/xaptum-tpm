@@ -81,6 +81,8 @@ void constants_test(void)
 {
     printf("In nvram-test::constants_test...\n");
 
+    TEST_ASSERT(XTPM_ECDAA_KEY_HANDLE == xtpm_ecdaa_key_handle());
+
     TEST_ASSERT(XTPM_GPK_HANDLE == xtpm_gpk_handle());
 
     TEST_ASSERT(XTPM_CRED_HANDLE == xtpm_cred_handle());
