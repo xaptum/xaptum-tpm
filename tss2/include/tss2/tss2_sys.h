@@ -205,6 +205,10 @@ Tss2_Sys_ReadPublic(TSS2_SYS_CONTEXT *sysContext,
                     TPM2B_NAME *qualifiedName,
                     TSS2L_SYS_AUTH_RESPONSE *rspAuthsArray);
 
+TSS2_RC
+Tss2_Sys_FlushContext(TSS2_SYS_CONTEXT *sysContext,
+                      TPMI_DH_CONTEXT flushHandle);
+
 #ifdef __cplusplus
 }
 #endif

@@ -34,6 +34,7 @@ set(XAPTUM_TSS2_SYS_SRCS
     src/tss2_sys_create.c
     src/tss2_sys_createprimary.c
     src/tss2_sys_commit.c
+    src/tss2_sys_flushcontext.c
     src/tss2_sys_hierarchychangeauth.c
     src/tss2_sys_load.c
     src/tss2_sys_evictcontrol.c
