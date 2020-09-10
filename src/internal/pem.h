@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Copyright 2017-2020 Xaptum, Inc.
+ * Copyright 2020 Xaptum, Inc.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -16,11 +16,30 @@
  *
  *****************************************************************************/
 
-#ifndef XAPTUM_TPM_H
-#define XAPTUM_TPM_H
+#ifndef XAPTUM_TPM_INTERNAL_PEM_H
+#define XAPTUM_TPM_INTERNAL_PEM_H
 #pragma once
 
-#include <xaptum-tpm/keys.h>
-#include <xaptum-tpm/nvram.h>
+#include <stdint.h>
+#include <stddef.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/*
+ * Save the `buffer` of `buffer_length` bytes to a PEM-encoded file.
+ *
+ * Returns 0 on success,
+ * <0 otherwise.
+ */
+int
+write_pem(const char *filename,
+          const uint8_t *buffer,
+          size_t buffer_length);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

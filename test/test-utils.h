@@ -114,6 +114,35 @@ void free_sapi(TSS2_SYS_CONTEXT *sapi_ctx)
 }
 
 static inline
+void set_password(TSS2_TCTI_CONTEXT *tcti_ctx, const char *new_password)
+{
+    TSS2_SYS_CONTEXT *sapi_ctx;
+    init_sapi(tcti_ctx, &sapi_ctx);
+
+    TPMI_RH_HIERARCHY hierarchy = TPM2_RH_OWNER;
+
+    TSS2L_SYS_AUTH_COMMAND sessionsData = {};
+    sessionsData.auths[0].sessionHandle = TPM2_RS_PW;
+    sessionsData.count = 1;
+
+    TSS2L_SYS_AUTH_RESPONSE sessionsDataOut = {.count = 1};
+
+    size_t new_password_length = strlen(new_password);
+    TPM2B_AUTH newAuth = {.size=new_password_length};
+    memcpy(newAuth.buffer, new_password, new_password_length);
+
+    TSS2_RC ret = Tss2_Sys_HierarchyChangeAuth(sapi_ctx,
+                                               hierarchy,
+                                               &sessionsData,
+                                               &newAuth,
+                                               &sessionsDataOut);
+
+    TEST_ASSERT(TSS2_RC_SUCCESS == ret);
+
+    free(sapi_ctx);
+}
+
+static inline
 void clear(TSS2_TCTI_CONTEXT *tcti_ctx)
 {
     TSS2_SYS_CONTEXT *sapi_ctx;
