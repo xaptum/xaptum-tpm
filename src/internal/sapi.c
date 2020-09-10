@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Copyright 2017-2020 Xaptum, Inc.
+ * Copyright 2020 Xaptum, Inc.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -16,11 +16,30 @@
  *
  *****************************************************************************/
 
-#ifndef XAPTUM_TPM_H
-#define XAPTUM_TPM_H
-#pragma once
+#include "sapi.h"
 
-#include <xaptum-tpm/keys.h>
-#include <xaptum-tpm/nvram.h>
+#include <stdlib.h>
 
-#endif
+TSS2_RC
+init_sapi(TSS2_SYS_CONTEXT **sapi_ctx, TSS2_TCTI_CONTEXT *tcti_ctx)
+{
+    size_t sapi_ctx_size = Tss2_Sys_GetContextSize(0);
+
+    *sapi_ctx = malloc(sapi_ctx_size);
+    if (NULL == *sapi_ctx) {
+        return TSS2_TCTI_RC_BAD_REFERENCE;
+    }
+
+    TSS2_ABI_VERSION abi_version = TSS2_ABI_VERSION_CURRENT;
+    TSS2_RC init_ret = Tss2_Sys_Initialize(*sapi_ctx,
+                                           sapi_ctx_size,
+                                           tcti_ctx,
+                                           &abi_version);
+
+    if (TSS2_RC_SUCCESS != init_ret) {
+        free(*sapi_ctx);
+        *sapi_ctx = NULL;
+    }
+
+    return init_ret;
+}

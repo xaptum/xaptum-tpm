@@ -51,7 +51,14 @@ set(XAPTUM_TPM_VERSION ${PROJECT_VERSION})
 set(XAPTUM_TPM_SOVERSION ${PROJECT_VERSION_MAJOR})
 
 set(XAPTUM_TPM_SRCS
+  src/keys.c
   src/nvram.c
+
+  src/internal/asn1.c
+  src/internal/keys-impl.c
+  src/internal/marshal.c
+  src/internal/pem.c
+  src/internal/sapi.c
 ) 
 
 ################################################################################

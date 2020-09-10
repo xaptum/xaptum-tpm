@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Copyright 2017-2020 Xaptum, Inc.
+ * Copyright 2020 Xaptum, Inc.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -16,11 +16,31 @@
  *
  *****************************************************************************/
 
-#ifndef XAPTUM_TPM_H
-#define XAPTUM_TPM_H
+#ifndef XAPTUM_TPM_INTERNAL_SAPI_H
+#define XAPTUM_TPM_INTERNAL_SAPI_H
 #pragma once
 
-#include <xaptum-tpm/keys.h>
-#include <xaptum-tpm/nvram.h>
+#include <tss2/tss2_tcti.h>
+#include <tss2/tss2_sys.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/*
+ * Initialize a SYS_CONTEXT into memory returned in `sapi_ctx`.
+ *
+ * This allocates memory, pointed to by `*sapi_ctx`,
+ * so it must be `free`'d after use.
+ *
+ * Returns `TSS2_RC_SUCCESS` on success,
+ * other otherwise (in which case `*sapi_ctx == NULL`).
+ */
+TSS2_RC
+init_sapi(TSS2_SYS_CONTEXT **sapi_ctx, TSS2_TCTI_CONTEXT *tcti_ctx);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
