@@ -22,6 +22,11 @@
 
 #include <string.h>
 
+TPM2_HANDLE xtpm_ecdaa_key_handle()
+{
+    return XTPM_ECDAA_KEY_HANDLE;
+}
+
 TPMI_RH_NV_INDEX xtpm_gpk_handle()
 {
     return XTPM_GPK_HANDLE;

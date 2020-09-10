@@ -26,6 +26,7 @@
 extern "C" {
 #endif
 
+#define XTPM_ECDAA_KEY_HANDLE       0x81800000
 #define XTPM_GPK_HANDLE             0x1410000
 #define XTPM_CRED_HANDLE            0x1410001
 #define XTPM_CRED_SIG_HANDLE        0x1410002
@@ -34,6 +35,7 @@ extern "C" {
 #define XTPM_SERVER_ID_HANDLE       0x1410008
 #define XTPM_ROOT_XTTCERT_HANDLE    0x1410009
 
+TPM2_HANDLE xtpm_ecdaa_key_handle();
 TPMI_RH_NV_INDEX xtpm_gpk_handle();
 TPMI_RH_NV_INDEX xtpm_cred_handle();
 TPMI_RH_NV_INDEX xtpm_cred_sig_handle();
