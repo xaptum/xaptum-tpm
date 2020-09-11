@@ -1,0 +1,15 @@
+get_filename_component(tss2_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+if(NOT TARGET tss2::sys)
+    include("${tss2_CMAKE_DIR}/tss2-sys-targets.cmake")
+endif()
+
+if(NOT TARGET tss2::tcti_device)
+    include("${tss2_CMAKE_DIR}/tss2-tcti-device-targets.cmake")
+endif()
+
+if(NOT TARGET tss2::tcti_mssim)
+    include("${tss2_CMAKE_DIR}/tss2-tcti-mssim-targets.cmake")
+endif()
+
+set(tss2_LIBRARIES tss2::sys tss2::tcti_device tss2::tcti_mssim)

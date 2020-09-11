@@ -16,27 +16,31 @@
  *
  *****************************************************************************/
 
-/*
- * TSS serialization, adapted from `tss2/src/internal/marshal`.
- */
-
-#ifndef XAPTUM_TPM_INTERNAL_MARSHAL_H
-#define XAPTUM_TPM_INTERNAL_MARSHAL_H
+#ifndef XAPTUM_TPM_INTERNAL_ASN1_H
+#define XAPTUM_TPM_INTERNAL_ASN1_H
 #pragma once
 
-#include <tss2/tss2_tpm2_types.h>
+#include <xaptum-tpm/keys.h>
 
-#include <stdint.h>
+/*
+ * A buffer of this size is sufficient to hold a Tpm_Loadable_Key ASN.1 structure.
+ */
+#define ASN1_LOADABLE_KEY_MIN_BUF 2240
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void marshal_uint32(uint32_t in, uint8_t **out);
-
-void marshal_tpm2b_public(const TPM2B_PUBLIC *in, uint8_t **out);
-
-void marshal_tpm2b_private(const TPM2B_PRIVATE *in, uint8_t **out);
+/*
+ * Create a TPM_Loadable_Key ASN.1 structure for `key`.
+ *
+ * The structure is written to `buf`,
+ *  and the total size of the structure is returned in `length`.
+ */
+void
+build_asn1_from_key(const struct xtpm_key *key,
+                    uint8_t *buf,
+                    size_t *length);
 
 #ifdef __cplusplus
 }

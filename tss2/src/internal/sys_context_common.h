@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Copyright 2020 Xaptum, Inc.
+ * Copyright 2017 Xaptum, Inc.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -16,27 +16,41 @@
  *
  *****************************************************************************/
 
-/*
- * TSS serialization, adapted from `tss2/src/internal/marshal`.
- */
-
-#ifndef XAPTUM_TPM_INTERNAL_MARSHAL_H
-#define XAPTUM_TPM_INTERNAL_MARSHAL_H
+#ifndef XAPTUM_TSS2SYS_CONTEXT_COMMON_H
+#define XAPTUM_TSS2SYS_CONTEXT_COMMON_H
 #pragma once
-
-#include <tss2/tss2_tpm2_types.h>
-
-#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void marshal_uint32(uint32_t in, uint8_t **out);
+#include <tss2/tss2_sys.h>
 
-void marshal_tpm2b_public(const TPM2B_PUBLIC *in, uint8_t **out);
+typedef struct {
+    uint8_t buffer[TPM2_MAX_COMMAND_SIZE];
+    TSS2_TCTI_CONTEXT *tcti_context;
+    uint8_t *ptr;
+    TSS2_RC response_code;
+    uint32_t response_length;
+    uint32_t remaining_response;
+    uint8_t cmd_auths_count;
+} TSS2_SYS_CONTEXT_OPAQUE;
 
-void marshal_tpm2b_private(const TPM2B_PRIVATE *in, uint8_t **out);
+inline
+TSS2_SYS_CONTEXT_OPAQUE* down_cast(TSS2_SYS_CONTEXT *sysContext)
+{
+    return (TSS2_SYS_CONTEXT_OPAQUE*)sysContext;
+}
+
+inline
+void reset_sys_context(TSS2_SYS_CONTEXT_OPAQUE *sys_context)
+{
+    sys_context->ptr = sys_context->buffer;
+    sys_context->response_code = TSS2_RC_SUCCESS;
+    sys_context->response_length = 0;
+    sys_context->remaining_response = 0;
+    sys_context->cmd_auths_count = 0;
+}
 
 #ifdef __cplusplus
 }

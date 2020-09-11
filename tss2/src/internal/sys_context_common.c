@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Copyright 2020 Xaptum, Inc.
+ * Copyright 2017 Xaptum, Inc.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -16,31 +16,12 @@
  *
  *****************************************************************************/
 
-/*
- * TSS serialization, adapted from `tss2/src/internal/marshal`.
- */
+#include "sys_context_common.h"
 
-#ifndef XAPTUM_TPM_INTERNAL_MARSHAL_H
-#define XAPTUM_TPM_INTERNAL_MARSHAL_H
-#pragma once
+extern
+inline
+TSS2_SYS_CONTEXT_OPAQUE* down_cast(TSS2_SYS_CONTEXT *sysContext);
 
-#include <tss2/tss2_tpm2_types.h>
-
-#include <stdint.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-void marshal_uint32(uint32_t in, uint8_t **out);
-
-void marshal_tpm2b_public(const TPM2B_PUBLIC *in, uint8_t **out);
-
-void marshal_tpm2b_private(const TPM2B_PRIVATE *in, uint8_t **out);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif
-
+extern
+inline
+void reset_sys_context(TSS2_SYS_CONTEXT_OPAQUE *sys_context);

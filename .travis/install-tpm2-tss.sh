@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2017 Xaptum, Inc.
+# Copyright 2020 Xaptum, Inc.
 # 
 #    Licensed under the Apache License, Version 2.0 (the "License");
 #    you may not use this file except in compliance with the License.
@@ -13,5 +13,26 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License
 
-# "error-exitcode" makes bugs cause non-zero return code
-cppcheck -v --std=c99 --error-exitcode=6 --enable=all --suppress=missingIncludeSystem -I $(pwd)/include/ -I $(pwd)/tss2/include/ $(pwd)/src/ $(pwd)/tss2/src/ $(pwd)/test/ $(pwd)/tss2/test/
+set -e
+
+if [[ $# -ne 2 ]]; then
+        echo "usage: $0 <source-download-target> <install-target>"
+        exit 1
+fi
+
+repo_url=https://github.com/tpm2-software/tpm2-tss
+tag=2.3.3
+source_dir="$1"
+install_dir="$2"
+
+rm -rf "${source_dir}"
+git clone -b $tag "${repo_url}" "${source_dir}"
+
+pushd "${source_dir}"
+
+./bootstrap
+./configure --prefix=${install_dir} --disable-esapi --disable-doxygen-doc --enable-fapi=no --enable-tcti-partial-reads=no
+make -j $(nproc)
+make install
+
+popd

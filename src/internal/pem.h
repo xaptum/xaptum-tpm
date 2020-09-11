@@ -16,31 +16,30 @@
  *
  *****************************************************************************/
 
-/*
- * TSS serialization, adapted from `tss2/src/internal/marshal`.
- */
-
-#ifndef XAPTUM_TPM_INTERNAL_MARSHAL_H
-#define XAPTUM_TPM_INTERNAL_MARSHAL_H
+#ifndef XAPTUM_TPM_INTERNAL_PEM_H
+#define XAPTUM_TPM_INTERNAL_PEM_H
 #pragma once
 
-#include <tss2/tss2_tpm2_types.h>
-
 #include <stdint.h>
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void marshal_uint32(uint32_t in, uint8_t **out);
-
-void marshal_tpm2b_public(const TPM2B_PUBLIC *in, uint8_t **out);
-
-void marshal_tpm2b_private(const TPM2B_PRIVATE *in, uint8_t **out);
+/*
+ * Save the `buffer` of `buffer_length` bytes to a PEM-encoded file.
+ *
+ * Returns 0 on success,
+ * <0 otherwise.
+ */
+int
+write_pem(const char *filename,
+          const uint8_t *buffer,
+          size_t buffer_length);
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif
-

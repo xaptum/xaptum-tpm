@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Copyright 2020 Xaptum, Inc.
+ * Copyright 2017 Xaptum, Inc.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -16,31 +16,25 @@
  *
  *****************************************************************************/
 
-/*
- * TSS serialization, adapted from `tss2/src/internal/marshal`.
- */
+#include "command_utils.h"
 
-#ifndef XAPTUM_TPM_INTERNAL_MARSHAL_H
-#define XAPTUM_TPM_INTERNAL_MARSHAL_H
-#pragma once
+#include "marshal.h"
 
-#include <tss2/tss2_tpm2_types.h>
+void
+build_command_header(TSS2_SYS_CONTEXT_OPAQUE *sys_context,
+                     TPM2_CC command_code,
+                     TPMI_ST_COMMAND_TAG sessions_code)
+{
+    reset_sys_context(sys_context);
 
-#include <stdint.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-void marshal_uint32(uint32_t in, uint8_t **out);
-
-void marshal_tpm2b_public(const TPM2B_PUBLIC *in, uint8_t **out);
-
-void marshal_tpm2b_private(const TPM2B_PRIVATE *in, uint8_t **out);
-
-#ifdef __cplusplus
+    marshal_uint16(sessions_code, &sys_context->ptr);
+    sys_context->ptr += sizeof(uint32_t); // command size must be set later, so skip it
+    marshal_uint32(command_code, &sys_context->ptr);
 }
-#endif
 
-#endif
-
+void
+set_command_size(TSS2_SYS_CONTEXT_OPAQUE *sys_context)
+{
+    uint8_t *size_ptr = sys_context->buffer + sizeof(uint16_t); // command size is after command tag
+    marshal_uint32(sys_context->ptr - sys_context->buffer, &size_ptr);
+}

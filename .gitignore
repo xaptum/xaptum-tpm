@@ -1,2 +1,4 @@
 build/
 ibm-tpm2-simulator-mirror/
+tpm2-tss/
+install/
