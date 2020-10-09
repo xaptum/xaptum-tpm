@@ -16,27 +16,39 @@ language: c
 
 compiler: gcc
 
+dist: bionic
+
 env:
   global:
+  - INSTALL_PREFIX=${TRAVIS_BUILD_DIR}/usr
+  - CMAKE_PREFIX_PATH=${INSTALL_PREFIX}
   - XTPM_BUILD_DIR=${TRAVIS_BUILD_DIR}/build
   - XTPM_INSTALL_DIR=${TRAVIS_BUILD_DIR}/install
+  - TPM2_TSS_DIR=${TRAVIS_BUILD_DIR}/tpm2-tss/
+  - TPM2_TSS_INSTALL_DIR=${INSTALL_PREFIX}
   - IBM_TPM_DIR=${TRAVIS_BUILD_DIR}/ibm-tpm-simulator
-  - IBM_TPM_TAG=1332
+  - IBM_TPM_TAG=1637
   - SHARED_LIBS=ON
+  - BUILD_TSS2=OFF
+
+before_install:
+  - sudo apt-get -y --no-install-recommends install autoconf-archive libgcrypt11-dev 
 
 before_script:
   - ${TRAVIS_BUILD_DIR}/.travis/install-ibm-tpm2.sh ${IBM_TPM_TAG} ${IBM_TPM_DIR}
+  - ${TRAVIS_BUILD_DIR}/.travis/install-tpm2-tss.sh ${TPM2_TSS_DIR} ${INSTALL_PREFIX}
   - mkdir -p ${XTPM_BUILD_DIR}
   - mkdir -p ${XTPM_INSTALL_DIR}
   - pushd ${XTPM_BUILD_DIR}
   - |
     cmake ${TRAVIS_BUILD_DIR} -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_INSTALL_PREFIX=${XTPM_INSTALL_DIR} \
-    -DTEST_USE_TCP_TPM=ON -DBUILD_SHARED_LIBS=${SHARED_LIBS} -DBUILD_UTILS=ON
+    -DTEST_USE_TCP_TPM=ON -DBUILD_SHARED_LIBS=${SHARED_LIBS} -DBUILD_TSS2=${BUILD_TSS2}
   - popd
 
 script:
   - pushd ${XTPM_BUILD_DIR}
   - cmake --build . --target install -- -j2
+  - ${TRAVIS_BUILD_DIR}/.travis/build-against-installed.sh ${XTPM_INSTALL_DIR} ${TPM2_TSS_INSTALL_DIR} ${TRAVIS_BUILD_DIR}
   - ${TRAVIS_BUILD_DIR}/.travis/run-ibm-tpm2.sh ${IBM_TPM_DIR}
   - ctest -VV
   - popd
@@ -69,6 +81,11 @@ matrix:
       env:
         - TYPE=RELEASE-WITH-CLANG
         - BUILD_TYPE=Release
+    - name: "Release build, own TSS2"
+      env:
+        - BUILD_TYPE=Release
+        - BUILD_TSS2=ON
+        - TPM2_TSS_INSTALL_DIR=${XTPM_INSTALL_DIR}
     - name: "CPPCheck"
       env:
         - TYPE=CPPCHECK
