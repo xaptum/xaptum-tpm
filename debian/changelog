@@ -1,3 +1,30 @@
+xaptum-tpm (1.0.0-1) bionic; urgency=medium
+
+  [ Zane Beckwith ]
+  * cmake: Add XTPM_VERBOSE_LOGGING option
+  * debug: Output number of bytes sent/received if VERBOSE_LOGGING in TCTI.
+  * travis: Add a test of the installation.
+  * README: Add installation instructions for Ubuntu Bionic.
+  * README: Add Buster to available Debian packages.
+  * travis: Use new ibm tpm simulator and tss.
+  * Move tss into own directory, and update to new names.
+  * Move nvram utility to be main project, and build against tpm2-software tss.
+  * travis: Update for new structure.
+  * namespaced
+  * tss2: Allow NULL [cmd,rsp]Auths structs.
+  * tss2: Add Tss2_Sys_ReadPublic function.
+  * tss2: Add Tss2_Sys_ReadPublic test.
+  * tss2: Allow NULL cmdauths in NV_ReadPublic.
+  * nvram: Use NULL for cmd auths (to work with tpm2-software tss)
+  * test: Clean up test-utils.h
+  * test: Add test of xtpm_read_object NVRAM function.
+  * tss2: Add Tss2_Sys_FlushContext function.
+  * nvram: Add index for ECDAA_KEY_HANDLE
+  * Add `keys` functionality (for key generation, saving, and signing).
+  * Bump major version to 1.0.0.
+
+ -- Zane Beckwith <zane.beckwith@xaptum.com>  Fri, 09 Oct 2020 19:27:54 +0000
+
 xaptum-tpm (0.5.8-2) bionic; urgency=medium
 
   (noop)
