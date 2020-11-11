@@ -37,6 +37,8 @@ xtpm_gen_key(TSS2_TCTI_CONTEXT *tcti_ctx,
              size_t hierarchy_password_length,
              struct xtpm_key *out)
 {
+    memset(out, 0, sizeof(struct xtpm_key));
+
     TSS2_RC ret;
 
     TPMI_RH_HIERARCHY hierarchy;
@@ -177,6 +179,8 @@ xtpm_sign(TSS2_TCTI_CONTEXT *tcti_ctx,
           const TPM2B_DIGEST *digest,
           TPMT_SIGNATURE *signature_out)
 {
+    memset(signature_out, 0, sizeof(TPMT_SIGNATURE));
+
     TSS2_RC ret;
 
     TSS2_SYS_CONTEXT *sapi_ctx = NULL;
