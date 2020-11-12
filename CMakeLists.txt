@@ -16,7 +16,7 @@ cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 
 project(xaptum-tpm
         LANGUAGES C
-        VERSION "1.0.0"
+        VERSION "1.0.1"
 )
 
 include(GNUInstallDirs)
