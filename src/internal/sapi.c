@@ -16,31 +16,30 @@
  *
  *****************************************************************************/
 
-/*
- * TSS serialization, adapted from `tss2/src/internal/marshal`.
- */
+#include "sapi.h"
 
-#ifndef XAPTUM_TPM_INTERNAL_MARSHAL_H
-#define XAPTUM_TPM_INTERNAL_MARSHAL_H
-#pragma once
+#include <stdlib.h>
 
-#include <tss2/tss2_tpm2_types.h>
+TSS2_RC
+init_sapi(TSS2_SYS_CONTEXT **sapi_ctx, TSS2_TCTI_CONTEXT *tcti_ctx)
+{
+    size_t sapi_ctx_size = Tss2_Sys_GetContextSize(0);
 
-#include <stdint.h>
+    *sapi_ctx = malloc(sapi_ctx_size);
+    if (NULL == *sapi_ctx) {
+        return TSS2_TCTI_RC_BAD_REFERENCE;
+    }
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+    TSS2_ABI_VERSION abi_version = TSS2_ABI_VERSION_CURRENT;
+    TSS2_RC init_ret = Tss2_Sys_Initialize(*sapi_ctx,
+                                           sapi_ctx_size,
+                                           tcti_ctx,
+                                           &abi_version);
 
-void marshal_uint32(uint32_t in, uint8_t **out);
+    if (TSS2_RC_SUCCESS != init_ret) {
+        free(*sapi_ctx);
+        *sapi_ctx = NULL;
+    }
 
-void marshal_tpm2b_public(const TPM2B_PUBLIC *in, uint8_t **out);
-
-void marshal_tpm2b_private(const TPM2B_PRIVATE *in, uint8_t **out);
-
-#ifdef __cplusplus
+    return init_ret;
 }
-#endif
-
-#endif
-

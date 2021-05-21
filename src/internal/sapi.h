@@ -16,31 +16,31 @@
  *
  *****************************************************************************/
 
-/*
- * TSS serialization, adapted from `tss2/src/internal/marshal`.
- */
-
-#ifndef XAPTUM_TPM_INTERNAL_MARSHAL_H
-#define XAPTUM_TPM_INTERNAL_MARSHAL_H
+#ifndef XAPTUM_TPM_INTERNAL_SAPI_H
+#define XAPTUM_TPM_INTERNAL_SAPI_H
 #pragma once
 
-#include <tss2/tss2_tpm2_types.h>
-
-#include <stdint.h>
+#include <tss2/tss2_tcti.h>
+#include <tss2/tss2_sys.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void marshal_uint32(uint32_t in, uint8_t **out);
-
-void marshal_tpm2b_public(const TPM2B_PUBLIC *in, uint8_t **out);
-
-void marshal_tpm2b_private(const TPM2B_PRIVATE *in, uint8_t **out);
+/*
+ * Initialize a SYS_CONTEXT into memory returned in `sapi_ctx`.
+ *
+ * This allocates memory, pointed to by `*sapi_ctx`,
+ * so it must be `free`'d after use.
+ *
+ * Returns `TSS2_RC_SUCCESS` on success,
+ * other otherwise (in which case `*sapi_ctx == NULL`).
+ */
+TSS2_RC
+init_sapi(TSS2_SYS_CONTEXT **sapi_ctx, TSS2_TCTI_CONTEXT *tcti_ctx);
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif
-
